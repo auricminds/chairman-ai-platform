@@ -11,30 +11,25 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           flex-direction: column;
           font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", system-ui, sans-serif;
           position: relative;
-          overflow: hidden;
         }
 
-        /* Ambient gold glow */
-        .auth-root::before {
-          content: '';
+        .auth-glow-top {
           position: fixed;
           top: -20%;
           left: 50%;
           transform: translateX(-50%);
-          width: 600px;
-          height: 500px;
+          width: 700px;
+          height: 600px;
           background: radial-gradient(ellipse at center,
-            rgba(201,168,76,0.12) 0%,
-            rgba(201,168,76,0.04) 40%,
+            rgba(201,168,76,0.14) 0%,
+            rgba(201,168,76,0.05) 40%,
             transparent 70%
           );
           pointer-events: none;
           z-index: 0;
         }
 
-        /* Bottom ambient */
-        .auth-root::after {
-          content: '';
+        .auth-glow-bottom {
           position: fixed;
           bottom: -10%;
           left: 50%;
@@ -42,7 +37,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           width: 400px;
           height: 300px;
           background: radial-gradient(ellipse at center,
-            rgba(201,168,76,0.05) 0%,
+            rgba(201,168,76,0.06) 0%,
             transparent 60%
           );
           pointer-events: none;
@@ -140,24 +135,25 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
         /* Double-bezel card */
         .auth-outer-shell {
-          background: rgba(255,255,255,0.025);
-          border: 1px solid rgba(255,255,255,0.07);
+          background: rgba(255,255,255,0.03);
+          border: 1px solid rgba(255,255,255,0.09);
           border-radius: 24px;
           padding: 6px;
           width: 100%;
-          max-width: 420px;
+          max-width: 440px;
           box-shadow:
-            0 0 0 1px rgba(0,0,0,0.5),
-            0 32px 64px rgba(0,0,0,0.6),
-            0 8px 24px rgba(0,0,0,0.4);
+            0 0 0 1px rgba(0,0,0,0.6),
+            0 40px 80px rgba(0,0,0,0.7),
+            0 8px 32px rgba(0,0,0,0.5),
+            0 0 60px rgba(201,168,76,0.04);
         }
 
         .auth-inner-core {
-          background: #0c0e12;
+          background: #0d0f14;
           border-radius: 19px;
           padding: 40px 36px;
-          border: 1px solid rgba(255,255,255,0.05);
-          box-shadow: inset 0 1px 1px rgba(255,255,255,0.04);
+          border: 1px solid rgba(255,255,255,0.06);
+          box-shadow: inset 0 1px 1px rgba(255,255,255,0.05);
           position: relative;
           overflow: hidden;
         }
@@ -167,10 +163,10 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           content: '';
           position: absolute;
           top: 0;
-          left: 20%;
-          right: 20%;
+          left: 15%;
+          right: 15%;
           height: 1px;
-          background: linear-gradient(90deg, transparent, rgba(201,168,76,0.2), transparent);
+          background: linear-gradient(90deg, transparent, rgba(201,168,76,0.3), transparent);
         }
 
         /* Form elements */
@@ -382,6 +378,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       `}</style>
 
       <div className="auth-root">
+        <div className="auth-glow-top" aria-hidden="true" />
+        <div className="auth-glow-bottom" aria-hidden="true" />
         <div className="auth-grain" aria-hidden="true" />
 
         <nav className="auth-nav">
