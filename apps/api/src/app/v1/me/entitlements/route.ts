@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAuth, AuthError } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/server";
-import { PLANS } from "@chairman/contracts";
+import { PLANS } from "@/contracts";
 
 export async function GET() {
   try {

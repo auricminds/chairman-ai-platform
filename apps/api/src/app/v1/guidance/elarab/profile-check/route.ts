@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ElArabProfileCheckRequestSchema } from "@chairman/contracts";
+import { ElArabProfileCheckRequestSchema } from "@/contracts";
 import { verifySiteKey } from "@/lib/site-auth";
 
 // Required fields per role — rules-based, no AI needed

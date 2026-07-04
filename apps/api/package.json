@@ -11,15 +11,18 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "next": "^15.0.0",
-    "@supabase/supabase-js": "^2.0.0",
     "@supabase/ssr": "^0.5.0",
+    "@supabase/supabase-js": "^2.0.0",
+    "next": "^15.0.0",
     "stripe": "^16.0.0",
     "zod": "^3.23.0",
-    "@chairman/contracts": "*"
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
     "typescript": "^5.4.0",
     "vitest": "^2.0.0"
   }

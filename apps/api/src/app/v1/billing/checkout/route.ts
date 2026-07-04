@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, AuthError } from "@/lib/auth";
-import { CheckoutRequestSchema } from "@chairman/contracts";
+import { CheckoutRequestSchema } from "@/contracts";
 
 const STRIPE_PRICE_MAP: Record<string, string | undefined> = {
   chairman_private: process.env.STRIPE_PRICE_CHAIRMAN_PRIVATE_MONTHLY,

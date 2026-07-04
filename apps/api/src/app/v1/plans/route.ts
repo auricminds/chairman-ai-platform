@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { PLANS } from "@chairman/contracts";
+import { PLANS } from "@/contracts";
 
 // Customer-safe plan data only — no cost ceilings, no model IDs
 export async function GET() {

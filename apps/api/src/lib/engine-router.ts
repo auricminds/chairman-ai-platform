@@ -41,9 +41,11 @@ export async function resolveEngine(
   if (!engine) {
     throw new Error(`No engine available for mode: ${chairmanMode}`);
   }
-  if (!engine.provider_model_id) {
-    throw new Error(`Engine ${engine.internal_key} has no model configured`);
+
+  const resolved = engine as unknown as ResolvedEngine;
+  if (!resolved.provider_model_id) {
+    throw new Error(`Engine ${resolved.internal_key} has no model configured`);
   }
 
-  return engine as ResolvedEngine;
+  return resolved;
 }

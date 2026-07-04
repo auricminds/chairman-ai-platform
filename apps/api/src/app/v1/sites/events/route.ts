@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { SiteEventSchema } from "@chairman/contracts";
+import { SiteEventSchema } from "@/contracts";
 import { verifySiteKey } from "@/lib/site-auth";
 import { createAdminClient } from "@/lib/supabase/server";
 

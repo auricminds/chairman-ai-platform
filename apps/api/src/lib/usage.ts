@@ -1,5 +1,5 @@
 import { createAdminClient } from "./supabase/server";
-import { PLANS, type PlanKey } from "@chairman/contracts";
+import { PLANS, type PlanKey } from "@/contracts";
 
 type AllowanceResult =
   | { allowed: true; cycleId: string }

@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, requireActiveSubscription, AuthError } from "@/lib/auth";
 import { resolveEngine } from "@/lib/engine-router";
 import { checkAllowance, reserveRequest, settleRequest, releaseRequest } from "@/lib/usage";
-import { ChatRequestSchema } from "@chairman/contracts";
-import type { PlanKey } from "@chairman/contracts";
+import { ChatRequestSchema } from "@/contracts";
+import type { PlanKey } from "@/contracts";
 
 export async function POST(req: NextRequest) {
   let requestId: string | null = null;

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { QuickyScriptRequestSchema } from "@chairman/contracts";
+import { QuickyScriptRequestSchema } from "@/contracts";
 import { verifySiteKey } from "@/lib/site-auth";
 
 export async function POST(req: NextRequest) {
