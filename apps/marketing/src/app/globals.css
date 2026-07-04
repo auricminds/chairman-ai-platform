@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --canvas: #0a0a0a;
+  --ivory: #f5f0e8;
+  --gold: #c49435;
+}
+
+html {
+  background-color: var(--canvas);
+  color: var(--ivory);
+  scroll-behavior: smooth;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Remove gradient slop */
+.no-gradient * { background-image: none !important; }

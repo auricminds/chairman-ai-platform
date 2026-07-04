@@ -1,0 +1,22 @@
+{
+  "name": "chairman-ai-platform",
+  "private": true,
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "dev": "turbo dev",
+    "dev:marketing": "turbo dev --filter=marketing",
+    "dev:web": "turbo dev --filter=web-app",
+    "dev:api": "turbo dev --filter=api",
+    "dev:status": "turbo dev --filter=status",
+    "build": "turbo build",
+    "test": "turbo test",
+    "test:e2e": "turbo test:e2e",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0",
+    "typescript": "^5.4.0",
+    "@types/node": "^20.0.0"
+  }
+}
