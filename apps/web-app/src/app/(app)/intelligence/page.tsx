@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { streamChat, fetchEntitlements } from "@/lib/api/client";
+import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
 const MODES = [
   { id: "business",  label: "Business",  description: "Business strategy, market analysis, operational decisions.", confirmRequired: false },
@@ -24,22 +25,41 @@ interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
-  mode?: string;
+}
+
+interface Conversation {
+  id: string;
+  title: string | null;
+  created_at: string;
 }
 
 export default function IntelligencePage() {
-  const [selectedMode, setSelectedMode] = useState("business");
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [activeConvId, setActiveConvId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
+  const [selectedMode, setSelectedMode] = useState("business");
   const [streaming, setStreaming] = useState(false);
   const [allowances, setAllowances] = useState<ModeAllowance[]>([]);
   const [pendingConfirm, setPendingConfirm] = useState<(() => void) | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const conversationId = useRef(uuidv4());
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const abortRef = useRef<boolean>(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // Fetch conversations on mount
+  useEffect(() => {
+    const supabase = getSupabaseBrowserClient();
+    supabase
+      .from("conversations")
+      .select("id, title, created_at")
+      .order("created_at", { ascending: false })
+      .limit(50)
+      .then(({ data }) => {
+        if (data) setConversations(data);
+      });
+  }, []);
+
+  // Fetch entitlements
   useEffect(() => {
     fetchEntitlements()
       .then((data: { modes?: ModeAllowance[] }) => {
@@ -48,9 +68,29 @@ export default function IntelligencePage() {
       .catch(() => {});
   }, []);
 
+  // Scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  const loadConversation = async (convId: string) => {
+    setActiveConvId(convId);
+    setError(null);
+    const supabase = getSupabaseBrowserClient();
+    const { data } = await supabase
+      .from("messages")
+      .select("id, role, content")
+      .eq("conversation_id", convId)
+      .order("created_at", { ascending: true });
+    setMessages((data as Message[]) ?? []);
+  };
+
+  const startNewChat = () => {
+    setActiveConvId(null);
+    setMessages([]);
+    setInput("");
+    setError(null);
+  };
 
   const getAllowance = (modeId: string) => allowances.find((a) => a.mode === modeId);
 
@@ -67,17 +107,19 @@ export default function IntelligencePage() {
 
     setInput("");
     setError(null);
-    abortRef.current = false;
 
-    const userMsg: Message = { id: uuidv4(), role: "user", content: text, mode };
-    const assistantMsg: Message = { id: uuidv4(), role: "assistant", content: "", mode };
+    // Use existing or create new conversation ID
+    const convId = activeConvId ?? uuidv4();
+    if (!activeConvId) setActiveConvId(convId);
 
+    const userMsg: Message = { id: uuidv4(), role: "user", content: text };
+    const assistantMsg: Message = { id: uuidv4(), role: "assistant", content: "" };
     setMessages((prev) => [...prev, userMsg, assistantMsg]);
     setStreaming(true);
 
     try {
       const gen = streamChat({
-        conversationId: conversationId.current,
+        conversationId: convId,
         message: text,
         chairmanMode: mode,
         cloudConsent: true,
@@ -85,11 +127,19 @@ export default function IntelligencePage() {
       });
 
       for await (const chunk of gen) {
-        if (abortRef.current) break;
         setMessages((prev) =>
           prev.map((m) => m.id === assistantMsg.id ? { ...m, content: m.content + chunk } : m)
         );
       }
+
+      // Refresh conversation list (title may have been set server-side)
+      const supabase = getSupabaseBrowserClient();
+      const { data } = await supabase
+        .from("conversations")
+        .select("id, title, created_at")
+        .order("created_at", { ascending: false })
+        .limit(50);
+      if (data) setConversations(data);
 
       fetchEntitlements()
         .then((data: { modes?: ModeAllowance[] }) => {
@@ -103,7 +153,7 @@ export default function IntelligencePage() {
     } finally {
       setStreaming(false);
     }
-  }, [input, selectedMode, streaming]);
+  }, [input, selectedMode, streaming, activeConvId]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -112,7 +162,6 @@ export default function IntelligencePage() {
     }
   };
 
-  // Auto-resize textarea
   const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(e.target.value);
     if (textareaRef.current) {
@@ -122,382 +171,414 @@ export default function IntelligencePage() {
   };
 
   const currentMode = MODES.find((m) => m.id === selectedMode);
+  const activeConv = conversations.find((c) => c.id === activeConvId);
 
   return (
     <>
       <style>{`
-        .intel-root {
+        /* ── Conversation panel ── */
+        .conv-panel {
+          width: 260px;
+          min-width: 260px;
+          height: 100%;
+          background: #070708;
+          border-right: 1px solid rgba(255,255,255,0.04);
+          display: flex;
+          flex-direction: column;
+          font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", system-ui, sans-serif;
+        }
+
+        .conv-panel-header {
+          padding: 16px 14px 12px;
+          border-bottom: 1px solid rgba(255,255,255,0.04);
+          flex-shrink: 0;
+        }
+
+        .conv-new-btn {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          width: 100%;
+          padding: 9px 12px;
+          border-radius: 10px;
+          background: rgba(201,168,76,0.08);
+          border: 1px solid rgba(201,168,76,0.18);
+          color: rgba(201,168,76,0.85);
+          font-size: 13px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s;
+          letter-spacing: -0.01em;
+        }
+
+        .conv-new-btn:hover {
+          background: rgba(201,168,76,0.12);
+          border-color: rgba(201,168,76,0.28);
+          color: rgba(201,168,76,1);
+        }
+
+        .conv-list {
+          flex: 1;
+          overflow-y: auto;
+          padding: 8px 6px;
+        }
+
+        .conv-empty {
+          padding: 24px 14px;
+          text-align: center;
+          font-size: 12px;
+          color: rgba(255,255,255,0.18);
+          line-height: 1.6;
+        }
+
+        .conv-item {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 9px 10px;
+          border-radius: 8px;
+          cursor: pointer;
+          transition: background 0.15s;
+          margin-bottom: 1px;
+        }
+
+        .conv-item:hover {
+          background: rgba(255,255,255,0.04);
+        }
+
+        .conv-item.active {
+          background: rgba(201,168,76,0.07);
+        }
+
+        .conv-item-dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: rgba(255,255,255,0.15);
+          flex-shrink: 0;
+        }
+
+        .conv-item.active .conv-item-dot {
+          background: rgba(201,168,76,0.7);
+        }
+
+        .conv-item-title {
+          font-size: 12px;
+          color: rgba(255,255,255,0.4);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          flex: 1;
+        }
+
+        .conv-item.active .conv-item-title {
+          color: rgba(255,255,255,0.75);
+        }
+
+        /* ── Chat panel ── */
+        .chat-panel {
+          flex: 1;
           display: flex;
           flex-direction: column;
           height: 100%;
           background: #060608;
+          overflow: hidden;
           font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", system-ui, sans-serif;
-          position: relative;
         }
 
-        /* Subtle top glow */
-        .intel-root::before {
-          content: '';
-          position: absolute;
-          top: -100px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 500px;
-          height: 300px;
-          background: radial-gradient(ellipse at center, rgba(201,168,76,0.05) 0%, transparent 70%);
-          pointer-events: none;
-          z-index: 0;
-        }
-
-        /* Header */
-        .intel-header {
+        .chat-header {
+          padding: 14px 24px 12px;
+          border-bottom: 1px solid rgba(255,255,255,0.04);
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 18px 28px 16px;
-          border-bottom: 1px solid rgba(255,255,255,0.04);
-          position: relative;
-          z-index: 1;
           flex-shrink: 0;
         }
 
-        .intel-header-title {
-          font-size: 14px;
+        .chat-header-title {
+          font-size: 13px;
           font-weight: 600;
+          color: rgba(255,255,255,0.7);
           letter-spacing: -0.02em;
-          color: rgba(255,255,255,0.85);
-        }
-
-        .intel-header-desc {
-          font-size: 11px;
-          color: rgba(255,255,255,0.25);
-          margin-top: 2px;
-          letter-spacing: 0.01em;
         }
 
         /* Mode pills */
-        .intel-modes {
+        .mode-bar {
           display: flex;
           align-items: center;
-          gap: 6px;
-          padding: 12px 28px;
+          gap: 5px;
+          padding: 10px 24px;
           border-bottom: 1px solid rgba(255,255,255,0.04);
           flex-shrink: 0;
           flex-wrap: wrap;
-          position: relative;
-          z-index: 1;
         }
 
-        .intel-mode-pill {
+        .mode-pill {
           display: inline-flex;
           align-items: center;
-          gap: 6px;
-          padding: 5px 12px;
+          gap: 5px;
+          padding: 4px 11px;
           border-radius: 9999px;
-          font-size: 12px;
+          font-size: 11px;
           font-weight: 500;
-          letter-spacing: -0.01em;
-          border: 1px solid rgba(255,255,255,0.07);
-          background: rgba(255,255,255,0.02);
-          color: rgba(255,255,255,0.35);
+          border: 1px solid rgba(255,255,255,0.06);
+          background: transparent;
+          color: rgba(255,255,255,0.3);
           cursor: pointer;
-          transition: all 0.2s cubic-bezier(0.32,0.72,0,1);
+          transition: all 0.2s;
+          letter-spacing: 0.01em;
         }
 
-        .intel-mode-pill:hover:not(:disabled) {
-          border-color: rgba(255,255,255,0.15);
-          color: rgba(255,255,255,0.7);
-          background: rgba(255,255,255,0.04);
+        .mode-pill:hover:not(:disabled) {
+          border-color: rgba(255,255,255,0.14);
+          color: rgba(255,255,255,0.65);
         }
 
-        .intel-mode-pill.selected {
-          border-color: rgba(201,168,76,0.35);
+        .mode-pill.active {
+          border-color: rgba(201,168,76,0.3);
           background: rgba(201,168,76,0.07);
           color: rgba(201,168,76,0.9);
         }
 
-        .intel-mode-pill.locked {
-          opacity: 0.4;
+        .mode-pill:disabled {
+          opacity: 0.35;
           cursor: not-allowed;
         }
 
-        .intel-mode-badge {
+        .mode-pill-badge {
           font-size: 9px;
-          padding: 1px 5px;
-          border-radius: 4px;
+          padding: 1px 4px;
+          border-radius: 3px;
           background: rgba(255,255,255,0.06);
-          color: rgba(255,255,255,0.3);
-          letter-spacing: 0.02em;
+          color: rgba(255,255,255,0.25);
         }
 
-        .intel-mode-pill.selected .intel-mode-badge {
-          background: rgba(201,168,76,0.12);
-          color: rgba(201,168,76,0.6);
-        }
-
-        .intel-private-pill {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          padding: 5px 12px;
-          border-radius: 9999px;
-          font-size: 12px;
-          border: 1px solid rgba(255,255,255,0.04);
-          background: transparent;
-          color: rgba(255,255,255,0.18);
-          cursor: not-allowed;
+        .mode-pill.active .mode-pill-badge {
+          background: rgba(201,168,76,0.1);
+          color: rgba(201,168,76,0.55);
         }
 
         /* Messages */
-        .intel-messages {
+        .chat-messages {
           flex: 1;
           overflow-y: auto;
-          padding: 28px;
-          position: relative;
-          z-index: 1;
+          padding: 24px;
         }
 
-        .intel-empty {
+        .chat-empty {
+          height: 100%;
           display: flex;
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          height: 100%;
+          gap: 12px;
           text-align: center;
-          gap: 14px;
         }
 
-        .intel-empty-icon {
-          width: 48px;
-          height: 48px;
+        .chat-empty-icon {
+          width: 44px;
+          height: 44px;
           border-radius: 50%;
           background: rgba(201,168,76,0.06);
-          border: 1px solid rgba(201,168,76,0.15);
+          border: 1px solid rgba(201,168,76,0.13);
           display: flex;
           align-items: center;
           justify-content: center;
-          box-shadow: 0 0 24px rgba(201,168,76,0.06);
+          box-shadow: 0 0 20px rgba(201,168,76,0.05);
         }
 
-        .intel-empty-icon img {
-          width: 22px;
-          height: 22px;
+        .chat-empty-icon img {
+          width: 20px;
+          height: 20px;
           object-fit: contain;
-          filter: drop-shadow(0 0 4px rgba(201,168,76,0.3));
+          filter: drop-shadow(0 0 4px rgba(201,168,76,0.25));
         }
 
-        .intel-empty-title {
-          font-size: 15px;
-          font-weight: 600;
-          letter-spacing: -0.03em;
-          color: rgba(255,255,255,0.5);
+        .chat-empty-label {
+          font-size: 13px;
+          color: rgba(255,255,255,0.3);
         }
 
-        .intel-empty-sub {
-          font-size: 12px;
-          color: rgba(255,255,255,0.2);
-          max-width: 280px;
-          line-height: 1.6;
+        .chat-empty-sub {
+          font-size: 11px;
+          color: rgba(255,255,255,0.15);
+          max-width: 240px;
+          line-height: 1.65;
         }
 
-        .intel-msg-row {
-          display: flex;
-          margin-bottom: 20px;
-        }
+        .msg-row { margin-bottom: 18px; display: flex; }
+        .msg-row.user { justify-content: flex-end; }
+        .msg-row.assistant { justify-content: flex-start; }
 
-        .intel-msg-row.user {
-          justify-content: flex-end;
-        }
-
-        .intel-msg-row.assistant {
-          justify-content: flex-start;
-        }
-
-        .intel-bubble-user {
-          max-width: 68%;
+        .msg-bubble-user {
+          max-width: 66%;
           background: rgba(255,255,255,0.05);
-          border: 1px solid rgba(255,255,255,0.08);
-          border-radius: 16px 16px 4px 16px;
-          padding: 12px 16px;
+          border: 1px solid rgba(255,255,255,0.07);
+          border-radius: 14px 14px 3px 14px;
+          padding: 10px 14px;
           font-size: 13px;
           line-height: 1.65;
-          color: rgba(255,255,255,0.85);
+          color: rgba(255,255,255,0.82);
         }
 
-        .intel-bubble-assistant {
-          max-width: 80%;
+        .msg-bubble-ai {
+          max-width: 78%;
           font-size: 13px;
-          line-height: 1.75;
-          color: rgba(255,255,255,0.75);
-          padding: 4px 0;
+          line-height: 1.8;
+          color: rgba(255,255,255,0.68);
+          padding: 2px 0;
         }
 
-        .intel-bubble-assistant .intel-thinking {
+        .thinking {
           display: inline-flex;
           align-items: center;
           gap: 4px;
-          color: rgba(201,168,76,0.5);
-          font-size: 12px;
         }
 
-        .intel-thinking-dot {
+        .thinking-dot {
           width: 4px;
           height: 4px;
           border-radius: 50%;
-          background: rgba(201,168,76,0.5);
-          animation: thinkPulse 1.2s ease-in-out infinite;
+          background: rgba(201,168,76,0.45);
+          animation: blink 1.2s ease-in-out infinite;
         }
 
-        .intel-thinking-dot:nth-child(2) { animation-delay: 0.2s; }
-        .intel-thinking-dot:nth-child(3) { animation-delay: 0.4s; }
+        .thinking-dot:nth-child(2) { animation-delay: 0.2s; }
+        .thinking-dot:nth-child(3) { animation-delay: 0.4s; }
 
-        @keyframes thinkPulse {
-          0%, 100% { opacity: 0.3; transform: scale(0.8); }
+        @keyframes blink {
+          0%, 100% { opacity: 0.25; transform: scale(0.85); }
           50% { opacity: 1; transform: scale(1); }
         }
 
-        /* Input area */
-        .intel-input-area {
-          padding: 16px 28px 20px;
+        /* Input */
+        .chat-input-wrap {
+          padding: 14px 24px 18px;
           border-top: 1px solid rgba(255,255,255,0.04);
-          position: relative;
-          z-index: 1;
           flex-shrink: 0;
         }
 
-        .intel-input-shell {
-          background: rgba(255,255,255,0.025);
+        .chat-input-shell {
+          background: rgba(255,255,255,0.02);
           border: 1px solid rgba(255,255,255,0.07);
-          border-radius: 16px;
-          padding: 4px;
-          box-shadow: 0 0 0 1px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.3);
-          transition: border-color 0.25s ease;
+          border-radius: 14px;
+          padding: 3px;
+          transition: border-color 0.25s;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.25);
         }
 
-        .intel-input-shell:focus-within {
-          border-color: rgba(201,168,76,0.25);
-          box-shadow: 0 0 0 1px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.3), 0 0 0 3px rgba(201,168,76,0.04);
+        .chat-input-shell:focus-within {
+          border-color: rgba(201,168,76,0.22);
+          box-shadow: 0 4px 20px rgba(0,0,0,0.25), 0 0 0 3px rgba(201,168,76,0.04);
         }
 
-        .intel-input-inner {
-          background: #0a0b0e;
-          border-radius: 13px;
-          padding: 12px 14px;
+        .chat-input-inner {
+          background: #0b0c0f;
+          border-radius: 12px;
+          padding: 10px 12px;
           display: flex;
           align-items: flex-end;
-          gap: 10px;
+          gap: 8px;
         }
 
-        .intel-textarea {
+        .chat-textarea {
           flex: 1;
           background: transparent;
           border: none;
           outline: none;
           font-size: 13px;
           font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", system-ui, sans-serif;
-          color: rgba(255,255,255,0.85);
+          color: rgba(255,255,255,0.82);
           resize: none;
           line-height: 1.6;
-          min-height: 22px;
+          min-height: 20px;
           max-height: 160px;
           overflow-y: auto;
         }
 
-        .intel-textarea::placeholder {
-          color: rgba(255,255,255,0.2);
-        }
+        .chat-textarea::placeholder { color: rgba(255,255,255,0.18); }
+        .chat-textarea:disabled { opacity: 0.4; }
 
-        .intel-textarea:disabled {
-          opacity: 0.5;
-        }
-
-        .intel-send-btn {
-          width: 32px;
-          height: 32px;
-          border-radius: 10px;
+        .chat-send {
+          width: 30px;
+          height: 30px;
+          border-radius: 9px;
           background: linear-gradient(135deg, rgba(201,168,76,0.9), rgba(201,168,76,0.65));
-          border: 1px solid rgba(201,168,76,0.3);
-          color: #0a0a0a;
+          border: 1px solid rgba(201,168,76,0.28);
+          color: #090909;
           display: flex;
           align-items: center;
           justify-content: center;
           cursor: pointer;
           flex-shrink: 0;
-          transition: transform 0.2s cubic-bezier(0.32,0.72,0,1), box-shadow 0.2s ease, opacity 0.2s;
-          box-shadow: 0 2px 8px rgba(201,168,76,0.15);
+          transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+          box-shadow: 0 2px 8px rgba(201,168,76,0.12);
         }
 
-        .intel-send-btn:hover:not(:disabled) {
+        .chat-send:hover:not(:disabled) {
           transform: translateY(-1px);
-          box-shadow: 0 4px 14px rgba(201,168,76,0.25);
+          box-shadow: 0 4px 14px rgba(201,168,76,0.22);
         }
 
-        .intel-send-btn:active:not(:disabled) {
-          transform: scale(0.95);
-        }
+        .chat-send:active:not(:disabled) { transform: scale(0.94); }
+        .chat-send:disabled { opacity: 0.25; cursor: not-allowed; }
 
-        .intel-send-btn:disabled {
-          opacity: 0.3;
-          cursor: not-allowed;
-        }
-
-        .intel-input-hint {
+        .chat-hint {
           font-size: 10px;
-          color: rgba(255,255,255,0.15);
-          margin-top: 8px;
-          padding: 0 4px;
+          color: rgba(255,255,255,0.13);
+          margin-top: 7px;
+          padding: 0 2px;
           letter-spacing: 0.02em;
         }
 
-        /* Error */
-        .intel-error {
+        .chat-error {
+          margin: 10px 0;
           display: flex;
           justify-content: center;
-          margin: 12px 0;
         }
 
-        .intel-error-inner {
+        .chat-error-inner {
           background: rgba(239,68,68,0.07);
-          border: 1px solid rgba(239,68,68,0.18);
-          color: rgba(239,68,68,0.8);
+          border: 1px solid rgba(239,68,68,0.16);
+          color: rgba(239,68,68,0.75);
           font-size: 12px;
-          padding: 8px 14px;
-          border-radius: 10px;
+          padding: 7px 12px;
+          border-radius: 9px;
         }
 
-        /* Confirmation dialog */
-        .intel-confirm-overlay {
+        /* Confirm dialog */
+        .confirm-overlay {
           position: fixed;
           inset: 0;
           z-index: 50;
           display: flex;
           align-items: center;
           justify-content: center;
-          background: rgba(0,0,0,0.7);
+          background: rgba(0,0,0,0.72);
           backdrop-filter: blur(8px);
         }
 
-        .intel-confirm-outer {
+        .confirm-shell {
           background: rgba(255,255,255,0.025);
           border: 1px solid rgba(255,255,255,0.07);
           border-radius: 20px;
           padding: 5px;
           width: 100%;
-          max-width: 380px;
+          max-width: 360px;
           margin: 0 20px;
           box-shadow: 0 32px 64px rgba(0,0,0,0.7);
         }
 
-        .intel-confirm-inner {
+        .confirm-inner {
           background: #0c0e12;
           border-radius: 16px;
-          padding: 28px 24px;
+          padding: 26px 22px;
           border: 1px solid rgba(255,255,255,0.05);
           position: relative;
           overflow: hidden;
         }
 
-        .intel-confirm-inner::before {
+        .confirm-inner::before {
           content: '';
           position: absolute;
           top: 0;
@@ -507,214 +588,241 @@ export default function IntelligencePage() {
           background: linear-gradient(90deg, transparent, rgba(201,168,76,0.2), transparent);
         }
 
-        .intel-confirm-title {
-          font-size: 15px;
+        .confirm-title {
+          font-size: 14px;
           font-weight: 600;
           letter-spacing: -0.03em;
-          color: rgba(255,255,255,0.9);
-          margin-bottom: 8px;
+          color: rgba(255,255,255,0.88);
+          margin-bottom: 7px;
         }
 
-        .intel-confirm-body {
-          font-size: 13px;
-          color: rgba(255,255,255,0.35);
-          line-height: 1.6;
-          margin-bottom: 20px;
+        .confirm-body {
+          font-size: 12px;
+          color: rgba(255,255,255,0.32);
+          line-height: 1.65;
+          margin-bottom: 18px;
         }
 
-        .intel-confirm-actions {
+        .confirm-actions {
           display: flex;
-          gap: 8px;
+          gap: 7px;
           justify-content: flex-end;
         }
 
-        .intel-confirm-cancel {
-          padding: 9px 16px;
-          border-radius: 10px;
-          border: 1px solid rgba(255,255,255,0.08);
+        .confirm-cancel {
+          padding: 8px 14px;
+          border-radius: 9px;
+          border: 1px solid rgba(255,255,255,0.07);
           background: transparent;
-          color: rgba(255,255,255,0.35);
-          font-size: 13px;
+          color: rgba(255,255,255,0.3);
+          font-size: 12px;
           cursor: pointer;
           transition: all 0.2s;
         }
 
-        .intel-confirm-cancel:hover {
-          border-color: rgba(255,255,255,0.15);
-          color: rgba(255,255,255,0.6);
+        .confirm-cancel:hover {
+          border-color: rgba(255,255,255,0.14);
+          color: rgba(255,255,255,0.55);
         }
 
-        .intel-confirm-proceed {
-          padding: 9px 16px;
-          border-radius: 10px;
+        .confirm-proceed {
+          padding: 8px 14px;
+          border-radius: 9px;
           background: linear-gradient(135deg, rgba(201,168,76,0.9), rgba(201,168,76,0.7));
-          border: 1px solid rgba(201,168,76,0.35);
+          border: 1px solid rgba(201,168,76,0.3);
           color: #0a0a0a;
-          font-size: 13px;
+          font-size: 12px;
           font-weight: 700;
           cursor: pointer;
-          transition: all 0.2s cubic-bezier(0.32,0.72,0,1);
-          box-shadow: 0 2px 8px rgba(201,168,76,0.15);
+          transition: all 0.2s;
+          box-shadow: 0 2px 8px rgba(201,168,76,0.14);
         }
 
-        .intel-confirm-proceed:hover {
+        .confirm-proceed:hover {
           transform: translateY(-1px);
-          box-shadow: 0 4px 16px rgba(201,168,76,0.25);
+          box-shadow: 0 4px 14px rgba(201,168,76,0.24);
         }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
 
-      <div className="intel-root">
-        {/* Header */}
-        <div className="intel-header">
-          <div>
-            <div className="intel-header-title">Intelligence</div>
-            <div className="intel-header-desc">{currentMode?.description ?? "Select a mode to begin."}</div>
-          </div>
-        </div>
+      <div style={{ display: "flex", height: "100%", overflow: "hidden" }}>
 
-        {/* Mode pills */}
-        <div className="intel-modes">
-          {/* Private — desktop only */}
-          <div className="intel-private-pill" title="Runs on your device. Use Chairman AI Desktop.">
-            <svg style={{ width: 11, height: 11 }} viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clipRule="evenodd" />
-            </svg>
-            Private
-            <span className="intel-mode-badge">Desktop</span>
+        {/* ── Conversation sidebar ── */}
+        <div className="conv-panel">
+          <div className="conv-panel-header">
+            <button className="conv-new-btn" onClick={startNewChat}>
+              <svg style={{ width: 13, height: 13 }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+              New conversation
+            </button>
           </div>
 
-          {MODES.map((mode) => {
-            const allowance = getAllowance(mode.id);
-            const locked = allowance?.lockedReason != null;
-            const exhausted = allowance?.remaining !== null && allowance?.remaining !== undefined && allowance.remaining <= 0;
-            const isSelected = selectedMode === mode.id;
-
-            return (
-              <button
-                key={mode.id}
-                className={[
-                  "intel-mode-pill",
-                  isSelected ? "selected" : "",
-                  locked || exhausted ? "locked" : "",
-                ].join(" ")}
-                onClick={() => !locked && !exhausted && setSelectedMode(mode.id)}
-                disabled={locked || exhausted}
-                title={locked ? (allowance?.lockedReason ?? "Not available") : mode.description}
-              >
-                {mode.label}
-                {allowance?.monthlyLimit !== null && allowance?.monthlyLimit !== undefined && (
-                  <span className="intel-mode-badge">
-                    {exhausted ? "0 left" : `${allowance.remaining} left`}
+          <div className="conv-list">
+            {conversations.length === 0 ? (
+              <div className="conv-empty">No conversations yet</div>
+            ) : (
+              conversations.map((conv) => (
+                <div
+                  key={conv.id}
+                  className={`conv-item${conv.id === activeConvId ? " active" : ""}`}
+                  onClick={() => void loadConversation(conv.id)}
+                >
+                  <div className="conv-item-dot" />
+                  <span className="conv-item-title">
+                    {conv.title ?? "New conversation"}
                   </span>
-                )}
-                {mode.confirmRequired && !locked && !exhausted && (
-                  <span className="intel-mode-badge">confirm</span>
-                )}
-              </button>
-            );
-          })}
+                </div>
+              ))
+            )}
+          </div>
         </div>
 
-        {/* Messages */}
-        <div className="intel-messages">
-          {messages.length === 0 && (
-            <div className="intel-empty">
-              <div className="intel-empty-icon">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/logo-icon.png" alt="" />
-              </div>
-              <div className="intel-empty-title">Ready for your brief</div>
-              <div className="intel-empty-sub">
-                Select an intelligence mode above, then ask your question.
-              </div>
-            </div>
-          )}
+        {/* ── Chat area ── */}
+        <div className="chat-panel">
+          {/* Header */}
+          <div className="chat-header">
+            <span className="chat-header-title">
+              {activeConv?.title ?? "New conversation"}
+            </span>
+          </div>
 
-          {messages.map((msg) => (
-            <div key={msg.id} className={`intel-msg-row ${msg.role}`}>
-              {msg.role === "user" ? (
-                <div className="intel-bubble-user">{msg.content}</div>
-              ) : (
-                <div className="intel-bubble-assistant">
-                  {msg.content ? (
-                    msg.content
+          {/* Mode bar */}
+          <div className="mode-bar">
+            <div
+              className="mode-pill"
+              style={{ cursor: "not-allowed", opacity: 0.3 }}
+              title="Runs on your device. Use Chairman AI Desktop."
+            >
+              <svg style={{ width: 10, height: 10 }} viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clipRule="evenodd" />
+              </svg>
+              Private
+              <span className="mode-pill-badge">Desktop</span>
+            </div>
+
+            {MODES.map((mode) => {
+              const allowance = getAllowance(mode.id);
+              const locked = allowance?.lockedReason != null;
+              const exhausted = allowance?.remaining !== null && allowance?.remaining !== undefined && allowance.remaining <= 0;
+
+              return (
+                <button
+                  key={mode.id}
+                  className={`mode-pill${selectedMode === mode.id ? " active" : ""}`}
+                  onClick={() => !locked && !exhausted && setSelectedMode(mode.id)}
+                  disabled={locked || exhausted}
+                  title={locked ? (allowance?.lockedReason ?? "") : mode.description}
+                >
+                  {mode.label}
+                  {allowance?.monthlyLimit != null && (
+                    <span className="mode-pill-badge">
+                      {exhausted ? "0 left" : `${allowance.remaining} left`}
+                    </span>
+                  )}
+                  {mode.confirmRequired && !locked && !exhausted && (
+                    <span className="mode-pill-badge">confirm</span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Messages */}
+          <div className="chat-messages">
+            {messages.length === 0 ? (
+              <div className="chat-empty">
+                <div className="chat-empty-icon">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/logo-icon.png" alt="" />
+                </div>
+                <div className="chat-empty-label">Ready for your brief</div>
+                <div className="chat-empty-sub">
+                  Select an intelligence mode above, then type your question.
+                </div>
+              </div>
+            ) : (
+              messages.map((msg) => (
+                <div key={msg.id} className={`msg-row ${msg.role}`}>
+                  {msg.role === "user" ? (
+                    <div className="msg-bubble-user">{msg.content}</div>
                   ) : (
-                    <div className="intel-thinking">
-                      <div className="intel-thinking-dot" />
-                      <div className="intel-thinking-dot" />
-                      <div className="intel-thinking-dot" />
+                    <div className="msg-bubble-ai">
+                      {msg.content ? msg.content : (
+                        <div className="thinking">
+                          <div className="thinking-dot" />
+                          <div className="thinking-dot" />
+                          <div className="thinking-dot" />
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
-              )}
-            </div>
-          ))}
+              ))
+            )}
 
-          {error && (
-            <div className="intel-error">
-              <div className="intel-error-inner">{error}</div>
-            </div>
-          )}
+            {error && (
+              <div className="chat-error">
+                <div className="chat-error-inner">{error}</div>
+              </div>
+            )}
 
-          <div ref={messagesEndRef} />
-        </div>
-
-        {/* Input */}
-        <div className="intel-input-area">
-          <div className="intel-input-shell">
-            <div className="intel-input-inner">
-              <textarea
-                ref={textareaRef}
-                className="intel-textarea"
-                value={input}
-                onChange={handleInput}
-                onKeyDown={handleKeyDown}
-                disabled={streaming}
-                placeholder={`Brief Chairman AI — ${currentMode?.label ?? "select a mode"}`}
-                rows={1}
-              />
-              <button
-                className="intel-send-btn"
-                onClick={() => void sendMessage()}
-                disabled={!input.trim() || streaming}
-              >
-                {streaming ? (
-                  <svg style={{ width: 14, height: 14, animation: "spin 1s linear infinite" }} viewBox="0 0 24 24" fill="none">
-                    <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-                  </svg>
-                ) : (
-                  <svg style={{ width: 14, height: 14 }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
-                  </svg>
-                )}
-              </button>
-            </div>
+            <div ref={messagesEndRef} />
           </div>
-          <p className="intel-input-hint">
-            Cloud Intelligence · processed by Chairman AI servers · Shift+Enter for new line
-          </p>
+
+          {/* Input */}
+          <div className="chat-input-wrap">
+            <div className="chat-input-shell">
+              <div className="chat-input-inner">
+                <textarea
+                  ref={textareaRef}
+                  className="chat-textarea"
+                  value={input}
+                  onChange={handleInput}
+                  onKeyDown={handleKeyDown}
+                  disabled={streaming}
+                  placeholder="Message Chairman AI…"
+                  rows={1}
+                />
+                <button
+                  className="chat-send"
+                  onClick={() => void sendMessage()}
+                  disabled={!input.trim() || streaming}
+                >
+                  {streaming ? (
+                    <svg style={{ width: 12, height: 12, animation: "spin 1s linear infinite" }} viewBox="0 0 24 24" fill="none">
+                      <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                    </svg>
+                  ) : (
+                    <svg style={{ width: 12, height: 12 }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+                    </svg>
+                  )}
+                </button>
+              </div>
+            </div>
+            <p className="chat-hint">
+              Enter to send · Shift+Enter for new line · Cloud Intelligence
+            </p>
+          </div>
         </div>
       </div>
 
       {/* Confirmation dialog */}
       {pendingConfirm && currentMode && (
-        <div className="intel-confirm-overlay">
-          <div className="intel-confirm-outer">
-            <div className="intel-confirm-inner">
-              <div className="intel-confirm-title">{currentMode.label} Analysis</div>
-              <div className="intel-confirm-body">
-                This will use 1 {currentMode.label} from your monthly allowance. This action cannot be undone.
+        <div className="confirm-overlay">
+          <div className="confirm-shell">
+            <div className="confirm-inner">
+              <div className="confirm-title">{currentMode.label} Analysis</div>
+              <div className="confirm-body">
+                This uses 1 {currentMode.label} from your monthly allowance and cannot be undone.
               </div>
-              <div className="intel-confirm-actions">
+              <div className="confirm-actions">
+                <button className="confirm-cancel" onClick={() => setPendingConfirm(null)}>Cancel</button>
                 <button
-                  className="intel-confirm-cancel"
-                  onClick={() => setPendingConfirm(null)}
-                >
-                  Cancel
-                </button>
-                <button
-                  className="intel-confirm-proceed"
+                  className="confirm-proceed"
                   onClick={() => {
                     const fn = pendingConfirm;
                     setPendingConfirm(null);
@@ -728,10 +836,6 @@ export default function IntelligencePage() {
           </div>
         </div>
       )}
-
-      <style>{`
-        @keyframes spin { to { transform: rotate(360deg); } }
-      `}</style>
     </>
   );
 }
