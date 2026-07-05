@@ -5,6 +5,7 @@ const APP_URL = "https://app.ai.chairmans.uk";
 function Nav() {
   return (
     <header
+      className="nav-pill"
       style={{
         position: "fixed",
         top: 24,
@@ -184,6 +185,7 @@ function Hero() {
 
         {/* Main headline */}
         <h1
+          className="hero-headline"
           style={{
             fontSize: "clamp(64px, 11vw, 112px)",
             fontWeight: 800,
@@ -515,15 +517,7 @@ function Features() {
       <div style={{ maxWidth: 1000, margin: "0 auto" }}>
 
         {/* Feature 1: Privacy */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: 80,
-            alignItems: "center",
-            marginBottom: 120,
-          }}
-        >
+        <div className="feat-grid" style={{ marginBottom: 120 }}>
           <div>
             <div
               style={{
@@ -630,15 +624,7 @@ function Features() {
         </div>
 
         {/* Feature 2: Cost integrity */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: 80,
-            alignItems: "center",
-            marginBottom: 120,
-          }}
-        >
+        <div className="feat-grid feat-grid-reverse" style={{ marginBottom: 120 }}>
           <div
             style={{
               background: "rgba(255,255,255,0.02)",
@@ -747,14 +733,7 @@ function Features() {
         </div>
 
         {/* Feature 3: Site intelligence */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: 80,
-            alignItems: "center",
-          }}
-        >
+        <div className="feat-grid">
           <div>
             <div style={{ marginBottom: 20 }}>
               <span
@@ -891,13 +870,7 @@ function PricingPreview() {
         </div>
 
         {/* Cards */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: 16,
-          }}
-        >
+        <div className="price-grid">
           {/* Private plan */}
           <div
             style={{
