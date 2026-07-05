@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { v4 as uuidv4 } from "uuid";
+import ReactMarkdown from "react-markdown";
 import { streamChat, fetchEntitlements } from "@/lib/api/client";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
@@ -429,6 +430,67 @@ export default function IntelligencePage() {
           padding: 2px 0;
         }
 
+        /* Markdown rendering inside AI bubbles */
+        .msg-bubble-ai p { margin-bottom: 10px; }
+        .msg-bubble-ai p:last-child { margin-bottom: 0; }
+        .msg-bubble-ai strong { color: rgba(255,255,255,0.88); font-weight: 600; }
+        .msg-bubble-ai em { color: rgba(255,255,255,0.6); font-style: italic; }
+        .msg-bubble-ai h1, .msg-bubble-ai h2, .msg-bubble-ai h3 {
+          color: rgba(255,255,255,0.85);
+          font-weight: 600;
+          letter-spacing: -0.02em;
+          margin: 16px 0 8px;
+          line-height: 1.3;
+        }
+        .msg-bubble-ai h1 { font-size: 16px; }
+        .msg-bubble-ai h2 { font-size: 14px; }
+        .msg-bubble-ai h3 { font-size: 13px; }
+        .msg-bubble-ai ul, .msg-bubble-ai ol {
+          margin: 8px 0 10px 16px;
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+        .msg-bubble-ai ul { list-style: disc; }
+        .msg-bubble-ai ol { list-style: decimal; }
+        .msg-bubble-ai li { color: rgba(255,255,255,0.62); }
+        .msg-bubble-ai code {
+          background: rgba(255,255,255,0.06);
+          border: 1px solid rgba(255,255,255,0.08);
+          border-radius: 5px;
+          padding: 1px 6px;
+          font-family: "SF Mono", "Fira Code", monospace;
+          font-size: 11.5px;
+          color: rgba(201,168,76,0.85);
+        }
+        .msg-bubble-ai pre {
+          background: rgba(0,0,0,0.35);
+          border: 1px solid rgba(255,255,255,0.07);
+          border-radius: 10px;
+          padding: 14px 16px;
+          margin: 10px 0;
+          overflow-x: auto;
+        }
+        .msg-bubble-ai pre code {
+          background: transparent;
+          border: none;
+          padding: 0;
+          color: rgba(255,255,255,0.65);
+          font-size: 12px;
+        }
+        .msg-bubble-ai blockquote {
+          border-left: 2px solid rgba(201,168,76,0.3);
+          padding-left: 12px;
+          margin: 8px 0;
+          color: rgba(255,255,255,0.4);
+          font-style: italic;
+        }
+        .msg-bubble-ai hr {
+          border: none;
+          border-top: 1px solid rgba(255,255,255,0.07);
+          margin: 12px 0;
+        }
+
         .thinking {
           display: inline-flex;
           align-items: center;
@@ -749,7 +811,9 @@ export default function IntelligencePage() {
                     <div className="msg-bubble-user">{msg.content}</div>
                   ) : (
                     <div className="msg-bubble-ai">
-                      {msg.content ? msg.content : (
+                      {msg.content ? (
+                        <ReactMarkdown>{msg.content}</ReactMarkdown>
+                      ) : (
                         <div className="thinking">
                           <div className="thinking-dot" />
                           <div className="thinking-dot" />
