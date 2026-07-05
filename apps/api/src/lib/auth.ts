@@ -1,11 +1,23 @@
+import { headers } from "next/headers";
 import { createClient, createAdminClient } from "./supabase/server";
 
 export async function requireAuth() {
+  // Prefer Bearer token (cross-origin requests from web app)
+  const headersList = await headers();
+  const authHeader = headersList.get("Authorization");
+
+  if (authHeader?.startsWith("Bearer ")) {
+    const token = authHeader.slice(7);
+    const admin = createAdminClient();
+    const { data: { user }, error } = await admin.auth.getUser(token);
+    if (error || !user) throw new AuthError("Unauthorized", 401);
+    return user;
+  }
+
+  // Fall back to cookie-based auth (same-origin)
   const supabase = await createClient();
   const { data: { user }, error } = await supabase.auth.getUser();
-  if (error || !user) {
-    throw new AuthError("Unauthorized", 401);
-  }
+  if (error || !user) throw new AuthError("Unauthorized", 401);
   return user;
 }
 
