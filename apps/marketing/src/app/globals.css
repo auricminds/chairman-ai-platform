@@ -2,22 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --canvas: #0a0a0a;
-  --ivory: #f5f0e8;
-  --gold: #c49435;
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 html {
-  background-color: var(--canvas);
-  color: var(--ivory);
+  background-color: #0a0a0a;
+  color: rgba(255,255,255,0.85);
   scroll-behavior: smooth;
 }
 
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", system-ui, sans-serif;
 }
-
-/* Remove gradient slop */
-.no-gradient * { background-image: none !important; }
