@@ -5,26 +5,30 @@ const APP_URL = "https://app.ai.chairmans.uk";
 function Nav() {
   return (
     <header
-      className="nav-pill"
       style={{
         position: "fixed",
         top: 24,
-        left: "50%",
-        transform: "translateX(-50%)",
+        left: 0,
+        right: 0,
         zIndex: 50,
-        width: "calc(100% - 48px)",
-        maxWidth: 780,
+        display: "flex",
+        justifyContent: "center",
+        padding: "0 24px",
+        pointerEvents: "none",
       }}
     >
       <div
         style={{
+          width: "100%",
+          maxWidth: 820,
+          pointerEvents: "auto",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           padding: "10px 16px 10px 20px",
           borderRadius: 9999,
-          background: "rgba(15,13,10,0.85)",
-          border: "1px solid rgba(255,255,255,0.08)",
+          background: "rgba(15,13,10,0.88)",
+          border: "1px solid rgba(255,255,255,0.09)",
           backdropFilter: "blur(20px)",
           WebkitBackdropFilter: "blur(20px)",
           boxShadow: "0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,0,0,0.4)",
