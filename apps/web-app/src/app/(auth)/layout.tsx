@@ -131,6 +131,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
         .auth-card-wrap {
           animation: authFadeUp 0.7s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+          width: 100%;
+          max-width: 440px;
         }
 
         /* Double-bezel card */
