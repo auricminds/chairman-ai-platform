@@ -115,17 +115,52 @@ CREATE POLICY "service_insert_audit_logs"
   WITH CHECK (true); -- written by service role key
 
 -- ──────────────────────────────────────────────
--- 4. Add columns to ai_requests
--- Track which policy version was active and scope category.
+-- 4. ai_requests table
+-- Create if it doesn't exist, then add constitution columns.
 -- ──────────────────────────────────────────────
 
-ALTER TABLE public.ai_requests
-  ADD COLUMN IF NOT EXISTS policy_version        text,
-  ADD COLUMN IF NOT EXISTS scope_category        text,
-  ADD COLUMN IF NOT EXISTS cloud_consent_id      uuid,
-  ADD COLUMN IF NOT EXISTS response_validation_status text DEFAULT 'pending'
+CREATE TABLE IF NOT EXISTS public.ai_requests (
+  id                  uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id             uuid REFERENCES auth.users(id) ON DELETE SET NULL,
+  created_at          timestamptz NOT NULL DEFAULT now(),
+  policy_version                  text,
+  scope_category                  text,
+  cloud_consent_id                uuid,
+  response_validation_status      text DEFAULT 'pending'
     CHECK (response_validation_status IN ('pending', 'clean', 'sanitised', 'flagged')),
-  ADD COLUMN IF NOT EXISTS predictive_output_present boolean DEFAULT false;
+  predictive_output_present       boolean DEFAULT false
+);
+
+-- If ai_requests already existed, add the new columns safely
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'ai_requests' AND column_name = 'policy_version') THEN
+    ALTER TABLE public.ai_requests ADD COLUMN policy_version text;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'ai_requests' AND column_name = 'scope_category') THEN
+    ALTER TABLE public.ai_requests ADD COLUMN scope_category text;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'ai_requests' AND column_name = 'cloud_consent_id') THEN
+    ALTER TABLE public.ai_requests ADD COLUMN cloud_consent_id uuid;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'ai_requests' AND column_name = 'response_validation_status') THEN
+    ALTER TABLE public.ai_requests
+      ADD COLUMN response_validation_status text DEFAULT 'pending'
+        CHECK (response_validation_status IN ('pending', 'clean', 'sanitised', 'flagged'));
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'ai_requests' AND column_name = 'predictive_output_present') THEN
+    ALTER TABLE public.ai_requests ADD COLUMN predictive_output_present boolean DEFAULT false;
+  END IF;
+END $$;
 
 -- ──────────────────────────────────────────────
 -- 5. Seed the v1.0 Constitution as the initial active version
