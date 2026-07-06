@@ -17,7 +17,10 @@ export default function SettingsPage() {
   const [displayName, setDisplayName] = useState("");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const ff = { fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", system-ui, sans-serif' };
 
   useEffect(() => {
     fetchMe()
@@ -55,41 +58,94 @@ export default function SettingsPage() {
   const handlePasswordReset = async () => {
     if (!profile?.email) return;
     const supabase = getSupabaseBrowserClient();
-    await supabase.auth.resetPasswordForEmail(profile.email, {
-      redirectTo: `${window.location.origin}/settings`,
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(profile.email, {
+      redirectTo: `${window.location.origin}/auth/reset-password`,
     });
-    alert("Password reset email sent.");
+    if (resetError) {
+      setError(resetError.message);
+    } else {
+      setResetSent(true);
+      setTimeout(() => setResetSent(false), 5000);
+    }
+  };
+
+  const cardStyle: React.CSSProperties = {
+    background: "rgba(255,255,255,0.025)",
+    border: "1px solid rgba(255,255,255,0.07)",
+    borderRadius: 16,
+    overflow: "hidden",
+    marginBottom: 16,
+  };
+
+  const labelStyle: React.CSSProperties = {
+    display: "block",
+    fontSize: 10,
+    fontWeight: 500,
+    letterSpacing: "0.1em",
+    textTransform: "uppercase",
+    color: "rgba(255,255,255,0.3)",
+    marginBottom: 8,
+  };
+
+  const inputStyle: React.CSSProperties = {
+    width: "100%",
+    background: "rgba(255,255,255,0.03)",
+    border: "1px solid rgba(255,255,255,0.08)",
+    borderRadius: 10,
+    padding: "11px 14px",
+    fontSize: 14,
+    color: "rgba(255,255,255,0.85)",
+    outline: "none",
+    boxSizing: "border-box",
+    ...ff,
   };
 
   return (
-    <div className="max-w-xl mx-auto px-6 py-10 space-y-8">
-      <div>
-        <h1 className="text-xl font-semibold text-zinc-100">Account Settings</h1>
-        <p className="text-sm text-zinc-500 mt-1">Manage your profile and account security.</p>
+    <div style={{ maxWidth: 600, margin: "0 auto", padding: "40px 28px 60px", ...ff }}>
+      {/* Header */}
+      <div style={{ marginBottom: 36 }}>
+        <p style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(201,168,76,0.6)", fontWeight: 500, marginBottom: 10 }}>
+          Account
+        </p>
+        <h1 style={{ fontSize: 26, fontWeight: 700, letterSpacing: "-0.035em", color: "rgba(255,255,255,0.92)", lineHeight: 1.1 }}>
+          Settings<span style={{ color: "#c9a84c" }}>.</span>
+        </h1>
+        <p style={{ fontSize: 13, color: "rgba(255,255,255,0.35)", marginTop: 6 }}>
+          Manage your profile and account security.
+        </p>
       </div>
 
       {error && (
-        <div className="bg-red-950/40 border border-red-900/40 text-red-400 text-sm rounded-lg px-4 py-3">
+        <div style={{
+          background: "rgba(239,68,68,0.07)", border: "1px solid rgba(239,68,68,0.18)",
+          borderRadius: 10, padding: "12px 16px", marginBottom: 20,
+          fontSize: 13, color: "rgba(239,68,68,0.8)", lineHeight: 1.5,
+        }}>
           {error}
         </div>
       )}
 
-      {/* Profile */}
-      <div className="bg-zinc-900 border border-zinc-800 rounded-lg divide-y divide-zinc-800">
-        <div className="px-6 py-4">
-          <h2 className="text-sm font-semibold text-zinc-200">Profile</h2>
+      {/* Profile card */}
+      <div style={cardStyle}>
+        <div style={{ padding: "16px 24px", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+          <p style={{ fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.25)", fontWeight: 500 }}>Profile</p>
         </div>
-        <div className="px-6 py-5 space-y-4">
-          <div>
-            <label className="block text-xs text-zinc-500 mb-1.5">Email address</label>
-            <p className="text-sm text-zinc-300 bg-zinc-800/50 rounded px-3 py-2 border border-zinc-700/50">
+        <div style={{ padding: "24px" }}>
+          <div style={{ marginBottom: 20 }}>
+            <label style={labelStyle}>Email address</label>
+            <div style={{
+              ...inputStyle,
+              color: "rgba(255,255,255,0.35)",
+              background: "rgba(255,255,255,0.015)",
+              cursor: "default",
+              userSelect: "all",
+            }}>
               {profile?.email ?? "—"}
-            </p>
+            </div>
           </div>
-          <div>
-            <label htmlFor="display-name" className="block text-xs text-zinc-500 mb-1.5">
-              Display name
-            </label>
+
+          <div style={{ marginBottom: 24 }}>
+            <label htmlFor="display-name" style={labelStyle}>Display name</label>
             <input
               id="display-name"
               type="text"
@@ -97,48 +153,90 @@ export default function SettingsPage() {
               onChange={(e) => setDisplayName(e.target.value)}
               placeholder="Your name"
               maxLength={80}
-              className="w-full bg-zinc-800 border border-zinc-700 rounded px-3 py-2 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-amber-600 transition-colors"
+              style={inputStyle}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = "rgba(201,168,76,0.4)";
+                e.currentTarget.style.boxShadow = "0 0 0 3px rgba(201,168,76,0.06)";
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
+                e.currentTarget.style.boxShadow = "none";
+              }}
             />
           </div>
-          <div className="flex items-center gap-3">
+
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             <button
               onClick={() => void handleSave()}
               disabled={saving}
-              className="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded text-sm font-medium transition-colors disabled:opacity-50"
+              style={{
+                padding: "10px 20px", borderRadius: 10,
+                border: "1px solid rgba(201,168,76,0.35)",
+                background: "linear-gradient(135deg, rgba(201,168,76,0.85) 0%, rgba(201,168,76,0.65) 100%)",
+                color: "#0a0a0a", fontSize: 13, fontWeight: 700,
+                cursor: saving ? "not-allowed" : "pointer",
+                opacity: saving ? 0.5 : 1, transition: "all 0.2s",
+                boxShadow: "0 4px 12px rgba(201,168,76,0.12)",
+                ...ff,
+              }}
             >
-              {saving ? "Saving..." : "Save changes"}
+              {saving ? "Saving…" : "Save changes"}
             </button>
             {saved && (
-              <span className="text-xs text-emerald-400">Saved.</span>
+              <span style={{ fontSize: 12, color: "rgba(74,222,128,0.75)", display: "flex", alignItems: "center", gap: 5 }}>
+                <span style={{ width: 5, height: 5, borderRadius: "50%", background: "rgba(74,222,128,0.8)", display: "inline-block" }} />
+                Saved
+              </span>
             )}
           </div>
         </div>
       </div>
 
-      {/* Security */}
-      <div className="bg-zinc-900 border border-zinc-800 rounded-lg divide-y divide-zinc-800">
-        <div className="px-6 py-4">
-          <h2 className="text-sm font-semibold text-zinc-200">Security</h2>
+      {/* Security card */}
+      <div style={cardStyle}>
+        <div style={{ padding: "16px 24px", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+          <p style={{ fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.25)", fontWeight: 500 }}>Security</p>
         </div>
-        <div className="px-6 py-5">
-          <p className="text-sm text-zinc-400 mb-4">
-            Request a password reset link sent to your email address.
+        <div style={{ padding: "24px" }}>
+          <p style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", marginBottom: 20, lineHeight: 1.6 }}>
+            Send a password reset link to your email address.
           </p>
-          <button
-            onClick={() => void handlePasswordReset()}
-            className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-700 rounded text-sm font-medium transition-colors"
-          >
-            Send password reset
-          </button>
+          {resetSent ? (
+            <div style={{
+              display: "inline-flex", alignItems: "center", gap: 8,
+              fontSize: 13, color: "rgba(74,222,128,0.8)",
+              padding: "10px 16px", borderRadius: 10,
+              background: "rgba(74,222,128,0.06)", border: "1px solid rgba(74,222,128,0.15)",
+            }}>
+              <span style={{ width: 5, height: 5, borderRadius: "50%", background: "rgba(74,222,128,0.8)", display: "inline-block" }} />
+              Reset link sent — check your email
+            </div>
+          ) : (
+            <button
+              onClick={() => void handlePasswordReset()}
+              style={{
+                padding: "10px 20px", borderRadius: 10,
+                border: "1px solid rgba(255,255,255,0.08)",
+                background: "rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.65)",
+                fontSize: 13, fontWeight: 500, cursor: "pointer",
+                transition: "all 0.2s", ...ff,
+              }}
+            >
+              Send password reset →
+            </button>
+          )}
         </div>
       </div>
 
       {/* Account info */}
-      <div className="bg-zinc-900 border border-zinc-800 rounded-lg px-6 py-5 space-y-2">
-        <p className="text-xs text-zinc-600">
-          Account ID: <span className="font-mono text-zinc-700">{profile?.id ?? "—"}</span>
+      <div style={{
+        background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.05)",
+        borderRadius: 12, padding: "16px 24px",
+      }}>
+        <p style={{ fontSize: 11, color: "rgba(255,255,255,0.2)", marginBottom: 6, fontFamily: "monospace", letterSpacing: "0.02em" }}>
+          Account ID: {profile?.id ?? "—"}
         </p>
-        <p className="text-xs text-zinc-600">
+        <p style={{ fontSize: 11, color: "rgba(255,255,255,0.2)", fontFamily: "monospace", letterSpacing: "0.02em" }}>
           Member since:{" "}
           {profile?.created_at
             ? new Date(profile.created_at).toLocaleDateString("en-GB", {
