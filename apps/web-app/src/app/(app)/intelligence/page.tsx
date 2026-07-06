@@ -44,8 +44,13 @@ export default function IntelligencePage() {
   const [allowances, setAllowances] = useState<ModeAllowance[]>([]);
   const [pendingConfirm, setPendingConfirm] = useState<(() => void) | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [attachedFiles, setAttachedFiles] = useState<{ name: string; content: string }[]>([]);
+  const [recording, setRecording] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const recognitionRef = useRef<any>(null);
 
   // Fetch conversations on mount
   useEffect(() => {
@@ -98,7 +103,12 @@ export default function IntelligencePage() {
   const sendMessage = useCallback(async (confirmedMode?: string) => {
     const mode = confirmedMode ?? selectedMode;
     const text = input.trim();
-    if (!text || streaming) return;
+    if (!text && attachedFiles.length === 0) return;
+    if (streaming) return;
+    const baseText = text || "(No message)";
+    const fullText = attachedFiles.length > 0
+      ? `${baseText}\n\n---\n${attachedFiles.map(f => `**${f.name}**\n${f.content}`).join("\n\n")}`
+      : baseText;
 
     const modeConfig = MODES.find((m) => m.id === mode);
     if (modeConfig?.confirmRequired && !confirmedMode) {
@@ -107,13 +117,14 @@ export default function IntelligencePage() {
     }
 
     setInput("");
+    setAttachedFiles([]);
     setError(null);
 
     // Use existing or create new conversation ID
     const convId = activeConvId ?? uuidv4();
     if (!activeConvId) setActiveConvId(convId);
 
-    const userMsg: Message = { id: uuidv4(), role: "user", content: text };
+    const userMsg: Message = { id: uuidv4(), role: "user", content: fullText };
     const assistantMsg: Message = { id: uuidv4(), role: "assistant", content: "" };
     setMessages((prev) => [...prev, userMsg, assistantMsg]);
     setStreaming(true);
@@ -121,7 +132,7 @@ export default function IntelligencePage() {
     try {
       const gen = streamChat({
         conversationId: convId,
-        message: text,
+        message: fullText,
         chairmanMode: mode,
         cloudConsent: true,
         idempotencyKey: userMsg.id,
@@ -169,6 +180,58 @@ export default function IntelligencePage() {
       textareaRef.current.style.height = "auto";
       textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 160) + "px";
     }
+  };
+
+  const handleFileAttach = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []);
+    if (!files.length) return;
+    const results: { name: string; content: string }[] = [];
+    for (const file of files) {
+      const isText = file.type.startsWith("text/") || /\.(txt|md|csv|json|xml|html|css|js|ts)$/i.test(file.name);
+      if (isText) {
+        const text = await file.text();
+        results.push({ name: file.name, content: text.slice(0, 8000) });
+      } else {
+        // Images and other binary files: attach as a reference note
+        results.push({ name: file.name, content: `[File attached: ${file.name}]` });
+      }
+    }
+    setAttachedFiles((prev) => [...prev, ...results]);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const removeAttachment = (idx: number) => {
+    setAttachedFiles((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  const toggleVoice = () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SR) { setError("Voice input is not supported in this browser. Try Chrome or Safari."); return; }
+    if (recording) {
+      recognitionRef.current?.stop();
+      setRecording(false);
+      return;
+    }
+    const recognition = new SR() as { continuous: boolean; interimResults: boolean; lang: string; onresult: (e: any) => void; onend: () => void; onerror: () => void; start: () => void; stop: () => void };
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.lang = "en-US";
+    recognition.onresult = (e: any) => {
+      const transcript = Array.from(e.results as any[])
+        .map((r: any) => r[0].transcript as string)
+        .join("");
+      setInput(transcript);
+      if (textareaRef.current) {
+        textareaRef.current.style.height = "auto";
+        textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 160) + "px";
+      }
+    };
+    recognition.onend = () => setRecording(false);
+    recognition.onerror = () => { setRecording(false); setError("Microphone access denied or unavailable."); };
+    recognition.start();
+    recognitionRef.current = recognition;
+    setRecording(true);
   };
 
   const currentMode = MODES.find((m) => m.id === selectedMode);
@@ -593,6 +656,81 @@ export default function IntelligencePage() {
           letter-spacing: 0.02em;
         }
 
+        /* Attachment chips */
+        .attach-chips {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 6px;
+          padding: 8px 12px 0;
+        }
+
+        .attach-chip {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          padding: 3px 8px 3px 10px;
+          border-radius: 9999px;
+          background: rgba(201,168,76,0.07);
+          border: 1px solid rgba(201,168,76,0.18);
+          font-size: 11px;
+          color: rgba(201,168,76,0.75);
+          max-width: 200px;
+        }
+
+        .attach-chip-name {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .attach-chip-remove {
+          background: none;
+          border: none;
+          cursor: pointer;
+          color: rgba(201,168,76,0.4);
+          font-size: 13px;
+          line-height: 1;
+          padding: 0 2px;
+          flex-shrink: 0;
+          transition: color 0.15s;
+        }
+
+        .attach-chip-remove:hover { color: rgba(201,168,76,0.85); }
+
+        /* Action buttons (attach + voice) */
+        .chat-action-btn {
+          width: 28px;
+          height: 28px;
+          border-radius: 8px;
+          background: transparent;
+          border: 1px solid rgba(255,255,255,0.07);
+          color: rgba(255,255,255,0.28);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          flex-shrink: 0;
+          transition: background 0.2s, border-color 0.2s, color 0.2s;
+        }
+
+        .chat-action-btn:hover {
+          background: rgba(255,255,255,0.04);
+          border-color: rgba(255,255,255,0.12);
+          color: rgba(255,255,255,0.55);
+        }
+
+        .chat-action-btn.recording {
+          background: rgba(239,68,68,0.1);
+          border-color: rgba(239,68,68,0.3);
+          color: rgba(239,68,68,0.8);
+          animation: pulse-mic 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse-mic {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.3); }
+          50% { box-shadow: 0 0 0 4px rgba(239,68,68,0.1); }
+        }
+
         .chat-error {
           margin: 10px 0;
           display: flex;
@@ -838,7 +976,39 @@ export default function IntelligencePage() {
           {/* Input */}
           <div className="chat-input-wrap">
             <div className="chat-input-shell">
+              {/* Attached file chips */}
+              {attachedFiles.length > 0 && (
+                <div className="attach-chips">
+                  {attachedFiles.map((f, i) => (
+                    <div key={i} className="attach-chip">
+                      <span className="attach-chip-name">{f.name}</span>
+                      <button className="attach-chip-remove" onClick={() => removeAttachment(i)} aria-label="Remove attachment">×</button>
+                    </div>
+                  ))}
+                </div>
+              )}
               <div className="chat-input-inner">
+                {/* Hidden file input */}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  multiple
+                  accept=".txt,.md,.csv,.json,.xml,.html,.pdf,.doc,.docx,.png,.jpg,.jpeg,.gif,.webp"
+                  style={{ display: "none" }}
+                  onChange={(e) => void handleFileAttach(e)}
+                />
+                {/* Attach button */}
+                <button
+                  className="chat-action-btn"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={streaming}
+                  title="Attach file"
+                  type="button"
+                >
+                  <svg style={{ width: 13, height: 13 }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                  </svg>
+                </button>
                 <textarea
                   ref={textareaRef}
                   className="chat-textarea"
@@ -849,10 +1019,24 @@ export default function IntelligencePage() {
                   placeholder="Message Chairman AI…"
                   rows={1}
                 />
+                {/* Voice button */}
+                <button
+                  className={`chat-action-btn${recording ? " recording" : ""}`}
+                  onClick={toggleVoice}
+                  disabled={streaming}
+                  title={recording ? "Stop recording" : "Voice input"}
+                  type="button"
+                >
+                  <svg style={{ width: 13, height: 13 }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8" />
+                  </svg>
+                </button>
+                {/* Send button */}
                 <button
                   className="chat-send"
                   onClick={() => void sendMessage()}
-                  disabled={!input.trim() || streaming}
+                  disabled={(!input.trim() && attachedFiles.length === 0) || streaming}
                 >
                   {streaming ? (
                     <svg style={{ width: 12, height: 12, animation: "spin 1s linear infinite" }} viewBox="0 0 24 24" fill="none">
@@ -868,7 +1052,7 @@ export default function IntelligencePage() {
               </div>
             </div>
             <p className="chat-hint">
-              Enter to send · Shift+Enter for new line · Cloud Intelligence
+              Enter to send · Shift+Enter for new line · Attach files · Voice input
             </p>
           </div>
         </div>

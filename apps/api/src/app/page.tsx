@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+
 export default function ApiIndex() {
-  return null; // All traffic via route handlers
+  redirect("https://ai.chairmans.uk");
 }
