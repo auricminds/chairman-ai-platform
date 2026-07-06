@@ -1,117 +1,165 @@
-import Link from "next/link";
 import type { Metadata } from "next";
+import { SiteNav } from "../../_components/SiteNav";
+import { SiteFooter } from "../../_components/SiteFooter";
 
 export const metadata: Metadata = {
   title: "Terms of Service — Chairman AI",
 };
 
+const sections = [
+  {
+    title: "1. Acceptance",
+    content: [
+      "By creating a Chairman AI account or using Chairman AI Desktop, you agree to these Terms of Service. If you do not agree, do not use the service.",
+    ],
+  },
+  {
+    title: "2. Subscription and payment",
+    content: [
+      "Chairman AI Cloud Intelligence requires a paid subscription (Chairman Private at $10/month or Chairman Executive at $50/month). Subscriptions are billed monthly via Stripe. You may cancel at any time; access continues until the end of the billing period.",
+      "Prices are in USD. We reserve the right to change pricing with 30 days' notice to existing subscribers.",
+    ],
+  },
+  {
+    title: "3. Permitted use",
+    content: [
+      "You may use Chairman AI for lawful personal and professional purposes. You may not use Chairman AI to: generate content that is unlawful, harmful, or deceptive; attempt to extract, identify, or reverse-engineer the AI models used; resell or sublicence access to the service; circumvent usage limits or access controls; or send automated requests at volumes that constitute abuse.",
+    ],
+  },
+  {
+    title: "4. AI limitations",
+    content: [
+      "Chairman AI provides AI-generated analysis for informational purposes only. It is not a substitute for professional legal, financial, medical, or other regulated advice. You are responsible for verifying AI-generated content before acting on it.",
+    ],
+  },
+  {
+    title: "5. Availability",
+    content: [
+      "We do not guarantee continuous availability. Cloud Intelligence depends on third-party infrastructure. We will communicate planned downtime where possible.",
+    ],
+  },
+  {
+    title: "6. Termination",
+    content: [
+      "We may suspend or terminate accounts that violate these terms without prior notice. You may delete your account at any time by contacting desk@chairmans.uk.",
+    ],
+    hasEmail: true,
+    emailTarget: "desk@chairmans.uk",
+  },
+  {
+    title: "7. Limitation of liability",
+    content: [
+      "To the maximum extent permitted by law, Chairmans Group is not liable for any indirect, incidental, or consequential damages arising from use of Chairman AI. Our total liability in any 12-month period is limited to the amount you paid us.",
+    ],
+  },
+  {
+    title: "8. Governing law",
+    content: [
+      "These terms are governed by the laws of England and Wales. Disputes will be resolved in the courts of England and Wales.",
+    ],
+  },
+  {
+    title: "9. Contact",
+    content: ["Questions: desk@chairmans.uk"],
+    hasEmail: true,
+    emailTarget: "desk@chairmans.uk",
+    prefix: "Questions: ",
+  },
+];
+
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-[#f5f0e8]">
-      <header className="border-b border-white/5 px-6 h-16 flex items-center">
-        <Link href="/" className="flex items-center gap-2.5">
-          <div className="h-7 w-7 rounded-sm bg-amber-600 flex items-center justify-center">
-            <span className="text-white text-xs font-bold tracking-wider">C</span>
+    <>
+      <SiteNav />
+      <main style={{ paddingTop: 120 }}>
+        <div style={{ maxWidth: 680, margin: "0 auto", padding: "0 24px 120px" }}>
+
+          {/* Header */}
+          <div style={{ marginBottom: 56 }}>
+            <p
+              style={{
+                fontSize: 11,
+                color: "rgba(255,255,255,0.2)",
+                letterSpacing: "0.06em",
+                marginBottom: 12,
+                fontFamily: "monospace",
+              }}
+            >
+              Last updated: July 2025
+            </p>
+            <h1
+              style={{
+                fontSize: "clamp(32px, 4vw, 48px)",
+                fontWeight: 800,
+                letterSpacing: "-0.04em",
+                color: "rgba(255,255,255,0.92)",
+                lineHeight: 1.05,
+              }}
+            >
+              Terms of Service
+              <span style={{ color: "#c9a84c" }}>.</span>
+            </h1>
           </div>
-          <span className="text-sm font-semibold text-[#f5f0e8]">Chairman AI</span>
-        </Link>
-      </header>
 
-      <main className="max-w-2xl mx-auto px-6 py-16 space-y-8">
-        <div>
-          <p className="text-xs text-zinc-600 mb-2">Last updated: July 2025</p>
-          <h1 className="text-3xl font-semibold text-[#f5f0e8]">Terms of Service</h1>
-        </div>
-
-        <div className="space-y-6 text-zinc-400 text-sm leading-relaxed">
-          <section className="space-y-3">
-            <h2 className="text-lg font-semibold text-zinc-200">1. Acceptance</h2>
-            <p>
-              By creating a Chairman AI account or using Chairman AI Desktop, you agree to
-              these Terms of Service. If you do not agree, do not use the service.
-            </p>
-          </section>
-
-          <section className="space-y-3">
-            <h2 className="text-lg font-semibold text-zinc-200">2. Subscription and payment</h2>
-            <p>
-              Chairman AI Cloud Intelligence requires a paid subscription (Chairman Private at
-              $10/month or Chairman Executive at $50/month). Subscriptions are billed monthly
-              via Stripe. You may cancel at any time; access continues until the end of the
-              billing period.
-            </p>
-            <p>
-              Prices are in USD. We reserve the right to change pricing with 30 days&apos; notice
-              to existing subscribers.
-            </p>
-          </section>
-
-          <section className="space-y-3">
-            <h2 className="text-lg font-semibold text-zinc-200">3. Permitted use</h2>
-            <p>
-              You may use Chairman AI for lawful personal and professional purposes.
-              You may not use Chairman AI to:
-            </p>
-            <ul className="list-disc pl-5 space-y-1">
-              <li>Generate content that is unlawful, harmful, or deceptive</li>
-              <li>Attempt to extract, identify, or reverse-engineer the AI models used</li>
-              <li>Resell or sublicence access to the service</li>
-              <li>Circumvent usage limits or access controls</li>
-              <li>Send automated requests at volumes that constitute abuse</li>
-            </ul>
-          </section>
-
-          <section className="space-y-3">
-            <h2 className="text-lg font-semibold text-zinc-200">4. AI limitations</h2>
-            <p>
-              Chairman AI provides AI-generated analysis for informational purposes only.
-              It is not a substitute for professional legal, financial, medical, or other
-              regulated advice. You are responsible for verifying AI-generated content before
-              acting on it.
-            </p>
-          </section>
-
-          <section className="space-y-3">
-            <h2 className="text-lg font-semibold text-zinc-200">5. Availability</h2>
-            <p>
-              We do not guarantee continuous availability. Cloud Intelligence depends on
-              third-party infrastructure. We will communicate planned downtime where possible.
-            </p>
-          </section>
-
-          <section className="space-y-3">
-            <h2 className="text-lg font-semibold text-zinc-200">6. Termination</h2>
-            <p>
-              We may suspend or terminate accounts that violate these terms without prior notice.
-              You may delete your account at any time by contacting desk@chairmans.uk.
-            </p>
-          </section>
-
-          <section className="space-y-3">
-            <h2 className="text-lg font-semibold text-zinc-200">7. Limitation of liability</h2>
-            <p>
-              To the maximum extent permitted by law, Chairmans Group is not liable for
-              any indirect, incidental, or consequential damages arising from use of Chairman AI.
-              Our total liability in any 12-month period is limited to the amount you paid us.
-            </p>
-          </section>
-
-          <section className="space-y-3">
-            <h2 className="text-lg font-semibold text-zinc-200">8. Governing law</h2>
-            <p>
-              These terms are governed by the laws of England and Wales.
-              Disputes will be resolved in the courts of England and Wales.
-            </p>
-          </section>
-
-          <section className="space-y-3">
-            <h2 className="text-lg font-semibold text-zinc-200">9. Contact</h2>
-            <p>
-              Questions: <a href="mailto:desk@chairmans.uk" className="text-amber-500 hover:text-amber-400">desk@chairmans.uk</a>
-            </p>
-          </section>
+          {/* Sections */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 48 }}>
+            {sections.map((section) => (
+              <div key={section.title}>
+                <h2
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 600,
+                    letterSpacing: "-0.02em",
+                    color: "rgba(255,255,255,0.72)",
+                    marginBottom: 14,
+                  }}
+                >
+                  {section.title}
+                </h2>
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  {section.content.map((para, i) => {
+                    if (section.hasEmail && section.emailTarget && para.includes(section.emailTarget)) {
+                      const parts = para.split(section.emailTarget);
+                      return (
+                        <p
+                          key={i}
+                          style={{
+                            fontSize: 14,
+                            color: "rgba(255,255,255,0.3)",
+                            lineHeight: 1.75,
+                          }}
+                        >
+                          {parts[0]}
+                          <a
+                            href={`mailto:${section.emailTarget}`}
+                            style={{ color: "rgba(201,168,76,0.6)", textDecoration: "none" }}
+                          >
+                            {section.emailTarget}
+                          </a>
+                          {parts[1]}
+                        </p>
+                      );
+                    }
+                    return (
+                      <p
+                        key={i}
+                        style={{
+                          fontSize: 14,
+                          color: "rgba(255,255,255,0.3)",
+                          lineHeight: 1.75,
+                        }}
+                      >
+                        {para}
+                      </p>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </main>
-    </div>
+      <SiteFooter />
+    </>
   );
 }
