@@ -49,8 +49,7 @@ export default function IntelligencePage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<{ stop: () => void } | null>(null);
 
   // Fetch conversations on mount
   useEffect(() => {
@@ -165,7 +164,7 @@ export default function IntelligencePage() {
     } finally {
       setStreaming(false);
     }
-  }, [input, selectedMode, streaming, activeConvId]);
+  }, [input, selectedMode, streaming, activeConvId, attachedFiles]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -205,21 +204,21 @@ export default function IntelligencePage() {
   };
 
   const toggleVoice = () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const w = window as Window & { SpeechRecognition?: new () => SpeechRecognition; webkitSpeechRecognition?: new () => SpeechRecognition };
+    const SR = w.SpeechRecognition ?? w.webkitSpeechRecognition;
     if (!SR) { setError("Voice input is not supported in this browser. Try Chrome or Safari."); return; }
     if (recording) {
       recognitionRef.current?.stop();
       setRecording(false);
       return;
     }
-    const recognition = new SR() as { continuous: boolean; interimResults: boolean; lang: string; onresult: (e: any) => void; onend: () => void; onerror: () => void; start: () => void; stop: () => void };
+    const recognition = new SR();
     recognition.continuous = false;
     recognition.interimResults = true;
     recognition.lang = "en-US";
-    recognition.onresult = (e: any) => {
-      const transcript = Array.from(e.results as any[])
-        .map((r: any) => r[0].transcript as string)
+    recognition.onresult = (e: SpeechRecognitionEvent) => {
+      const transcript = Array.from(e.results)
+        .map((r) => r[0].transcript)
         .join("");
       setInput(transcript);
       if (textareaRef.current) {
