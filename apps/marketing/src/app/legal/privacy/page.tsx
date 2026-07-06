@@ -70,7 +70,7 @@ export default function PrivacyPage() {
                 fontFamily: "monospace",
               }}
             >
-              Last updated: July 2025
+              Last updated: July 2026
             </p>
             <h1
               style={{

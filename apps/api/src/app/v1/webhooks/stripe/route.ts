@@ -58,6 +58,15 @@ export async function POST(req: NextRequest) {
             stripeSubscriptionId: session.subscription as string,
             status: "active",
           });
+          // Fetch the subscription to get billing period dates
+          const stripeSub = await stripe.subscriptions.retrieve(session.subscription as string);
+          await createUsageCycle(admin, {
+            profileId: session.metadata.profile_id,
+            planKey: session.metadata.plan_key ?? "",
+            stripeSubscriptionId: session.subscription as string,
+            periodStart: new Date(stripeSub.current_period_start * 1000).toISOString(),
+            periodEnd: new Date(stripeSub.current_period_end * 1000).toISOString(),
+          });
         }
         break;
       }
@@ -80,6 +89,29 @@ export async function POST(req: NextRequest) {
         if (invoice.subscription) {
           const stripeSub = await stripe.subscriptions.retrieve(invoice.subscription as string);
           await updateSubscriptionFromStripe(admin, stripeSub);
+          // On renewal, close the previous cycle and open a new one
+          if (invoice.billing_reason === "subscription_cycle") {
+            const { data: sub } = await admin
+              .from("subscriptions")
+              .select("profile_id, plan_key")
+              .eq("stripe_subscription_id", invoice.subscription)
+              .maybeSingle();
+            if (sub) {
+              // Close previous active cycle for this subscription
+              await admin
+                .from("usage_cycles")
+                .update({ status: "closed", updated_at: new Date().toISOString() })
+                .eq("profile_id", sub.profile_id)
+                .eq("status", "active");
+              await createUsageCycle(admin, {
+                profileId: sub.profile_id,
+                planKey: sub.plan_key,
+                stripeSubscriptionId: invoice.subscription as string,
+                periodStart: new Date(stripeSub.current_period_start * 1000).toISOString(),
+                periodEnd: new Date(stripeSub.current_period_end * 1000).toISOString(),
+              });
+            }
+          }
         }
         break;
       }
@@ -131,6 +163,33 @@ async function upsertSubscription(
     },
     { onConflict: "stripe_subscription_id" }
   );
+}
+
+async function createUsageCycle(
+  admin: ReturnType<typeof createAdminClient>,
+  data: {
+    profileId: string;
+    planKey: string;
+    stripeSubscriptionId: string;
+    periodStart: string;
+    periodEnd: string;
+  }
+) {
+  // Get the subscription's internal UUID to link the cycle
+  const { data: sub } = await admin
+    .from("subscriptions")
+    .select("id")
+    .eq("stripe_subscription_id", data.stripeSubscriptionId)
+    .maybeSingle();
+
+  await admin.from("usage_cycles").insert({
+    profile_id: data.profileId,
+    subscription_id: sub?.id ?? null,
+    plan_key: data.planKey,
+    period_start: data.periodStart,
+    period_end: data.periodEnd,
+    status: "active",
+  });
 }
 
 async function updateSubscriptionFromStripe(
