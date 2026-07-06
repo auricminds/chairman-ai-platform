@@ -204,7 +204,8 @@ export default function IntelligencePage() {
   };
 
   const toggleVoice = () => {
-    const w = window as Window & { SpeechRecognition?: new () => SpeechRecognition; webkitSpeechRecognition?: new () => SpeechRecognition };
+    type SRConstructor = new () => { continuous: boolean; interimResults: boolean; lang: string; onresult: ((e: { results: { [key: number]: { [key: number]: { transcript: string } } } }) => void) | null; onend: (() => void) | null; onerror: (() => void) | null; start: () => void; stop: () => void };
+    const w = window as Window & { SpeechRecognition?: SRConstructor; webkitSpeechRecognition?: SRConstructor };
     const SR = w.SpeechRecognition ?? w.webkitSpeechRecognition;
     if (!SR) { setError("Voice input is not supported in this browser. Try Chrome or Safari."); return; }
     if (recording) {
@@ -216,10 +217,9 @@ export default function IntelligencePage() {
     recognition.continuous = false;
     recognition.interimResults = true;
     recognition.lang = "en-US";
-    recognition.onresult = (e: SpeechRecognitionEvent) => {
-      const transcript = Array.from(e.results)
-        .map((r) => r[0].transcript)
-        .join("");
+    recognition.onresult = (e) => {
+      const results = e.results as { [key: number]: { [key: number]: { transcript: string } } };
+      const transcript = Object.values(results).map((r) => r[0].transcript).join("");
       setInput(transcript);
       if (textareaRef.current) {
         textareaRef.current.style.height = "auto";
