@@ -27,11 +27,12 @@ function Nav() {
           justifyContent: "space-between",
           padding: "10px 16px 10px 20px",
           borderRadius: 9999,
-          background: "rgba(15,13,10,0.88)",
-          border: "1px solid rgba(255,255,255,0.09)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-          boxShadow: "0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,0,0,0.4)",
+          background: "rgba(12,11,8,0.82)",
+          border: "1px solid rgba(255,255,255,0.08)",
+          backdropFilter: "blur(24px)",
+          WebkitBackdropFilter: "blur(24px)",
+          boxShadow:
+            "0 8px 40px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.05)",
         }}
       >
         {/* Left: logo + name */}
@@ -42,6 +43,7 @@ function Nav() {
             alignItems: "center",
             gap: 10,
             textDecoration: "none",
+            opacity: 1,
           }}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -52,15 +54,15 @@ function Nav() {
               width: 28,
               height: 28,
               objectFit: "contain",
-              filter: "drop-shadow(0 0 6px rgba(201,168,76,0.5))",
+              filter: "drop-shadow(0 0 6px rgba(201,168,76,0.4))",
             }}
           />
           <span
             style={{
               fontSize: 15,
               fontWeight: 600,
-              color: "rgba(255,255,255,0.92)",
-              letterSpacing: "-0.02em",
+              color: "rgba(255,255,255,0.88)",
+              letterSpacing: "-0.025em",
             }}
           >
             Chairman AI
@@ -68,15 +70,14 @@ function Nav() {
         </a>
 
         {/* Right: links */}
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
           <a
             href={`${APP_URL}/signin`}
             style={{
               fontSize: 13,
-              color: "rgba(255,255,255,0.45)",
+              color: "rgba(255,255,255,0.38)",
               textDecoration: "none",
               padding: "6px 14px",
-              transition: "color 0.2s",
             }}
           >
             Sign in
@@ -87,13 +88,13 @@ function Nav() {
               fontSize: 13,
               fontWeight: 600,
               color: "#0a0a08",
-              background: "linear-gradient(135deg, rgba(201,168,76,0.95) 0%, rgba(180,145,55,0.9) 100%)",
+              background:
+                "linear-gradient(135deg, rgba(201,168,76,0.96) 0%, rgba(178,142,48,0.92) 100%)",
               padding: "8px 18px",
               borderRadius: 9999,
               textDecoration: "none",
               letterSpacing: "-0.01em",
-              boxShadow: "0 2px 12px rgba(201,168,76,0.3)",
-              transition: "transform 0.2s, box-shadow 0.2s",
+              boxShadow: "0 2px 16px rgba(201,168,76,0.28)",
               display: "inline-flex",
               alignItems: "center",
               gap: 6,
@@ -105,7 +106,7 @@ function Nav() {
                 width: 18,
                 height: 18,
                 borderRadius: "50%",
-                background: "rgba(0,0,0,0.12)",
+                background: "rgba(0,0,0,0.14)",
                 display: "inline-flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -134,24 +135,24 @@ function Hero() {
         position: "relative",
       }}
     >
-      {/* Ambient gold glow */}
+      {/* Local hero accent glow */}
       <div
         aria-hidden
         style={{
           position: "absolute",
-          top: "10%",
+          top: "5%",
           left: "50%",
           transform: "translateX(-50%)",
-          width: 800,
-          height: 600,
+          width: 680,
+          height: 480,
           background:
-            "radial-gradient(ellipse at center, rgba(201,168,76,0.09) 0%, rgba(201,168,76,0.03) 45%, transparent 70%)",
+            "radial-gradient(ellipse at center, rgba(201,168,76,0.07) 0%, rgba(201,168,76,0.02) 50%, transparent 70%)",
           pointerEvents: "none",
         }}
       />
 
-      <div style={{ position: "relative", maxWidth: 760, margin: "0 auto" }}>
-        {/* Eyebrow badge */}
+      <div style={{ position: "relative", maxWidth: 740, margin: "0 auto" }}>
+        {/* Eyebrow */}
         <div
           style={{
             display: "inline-flex",
@@ -159,9 +160,9 @@ function Hero() {
             gap: 8,
             padding: "6px 16px",
             borderRadius: 9999,
-            background: "rgba(255,255,255,0.04)",
-            border: "1px solid rgba(255,255,255,0.1)",
-            marginBottom: 40,
+            background: "rgba(255,255,255,0.035)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            marginBottom: 44,
           }}
         >
           <span
@@ -170,7 +171,7 @@ function Hero() {
               height: 6,
               borderRadius: "50%",
               background: "#c9a84c",
-              boxShadow: "0 0 8px rgba(201,168,76,0.6)",
+              boxShadow: "0 0 8px rgba(201,168,76,0.55)",
               flexShrink: 0,
             }}
           />
@@ -179,7 +180,7 @@ function Hero() {
               fontSize: 11,
               letterSpacing: "0.14em",
               textTransform: "uppercase",
-              color: "rgba(255,255,255,0.4)",
+              color: "rgba(255,255,255,0.35)",
               fontWeight: 500,
             }}
           >
@@ -195,7 +196,7 @@ function Hero() {
             fontWeight: 800,
             lineHeight: 0.92,
             letterSpacing: "-0.04em",
-            color: "rgba(255,255,255,0.95)",
+            color: "rgba(255,255,255,0.94)",
             marginBottom: 32,
           }}
         >
@@ -208,18 +209,18 @@ function Hero() {
         {/* Subheading */}
         <p
           style={{
-            fontSize: 18,
-            color: "rgba(255,255,255,0.38)",
-            lineHeight: 1.6,
-            maxWidth: 520,
+            fontSize: 17,
+            color: "rgba(255,255,255,0.32)",
+            lineHeight: 1.65,
+            maxWidth: 500,
             margin: "0 auto 52px",
           }}
         >
-          Chairman AI gives you board-level analysis, strategic reviews, and private intelligence.
-          Affordable plans — cancel anytime.
+          Board-level analysis, strategic reviews, and private intelligence.
+          Affordable plans. Cancel anytime.
         </p>
 
-        {/* CTA row */}
+        {/* CTA row — 2 buttons only */}
         <div
           style={{
             display: "flex",
@@ -227,7 +228,6 @@ function Hero() {
             alignItems: "center",
             justifyContent: "center",
             gap: 12,
-            marginBottom: 20,
           }}
         >
           <a
@@ -238,14 +238,15 @@ function Hero() {
               gap: 8,
               padding: "14px 28px",
               borderRadius: 9999,
-              background: "linear-gradient(135deg, rgba(201,168,76,0.95) 0%, rgba(175,138,44,0.9) 100%)",
-              color: "#0a0a08",
+              background:
+                "linear-gradient(135deg, rgba(201,168,76,0.96) 0%, rgba(172,135,40,0.92) 100%)",
+              color: "#080806",
               fontSize: 15,
               fontWeight: 700,
               textDecoration: "none",
               letterSpacing: "-0.02em",
-              boxShadow: "0 4px 24px rgba(201,168,76,0.25), 0 1px 4px rgba(0,0,0,0.4)",
-              transition: "transform 0.2s, box-shadow 0.2s",
+              boxShadow:
+                "0 4px 28px rgba(201,168,76,0.22), 0 1px 4px rgba(0,0,0,0.4)",
             }}
           >
             Start for free
@@ -265,27 +266,6 @@ function Hero() {
             </span>
           </a>
 
-          <a
-            href={`${APP_URL}/signin`}
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "14px 28px",
-              borderRadius: 9999,
-              background: "rgba(255,255,255,0.06)",
-              border: "1px solid rgba(255,255,255,0.1)",
-              color: "rgba(255,255,255,0.7)",
-              fontSize: 15,
-              fontWeight: 500,
-              textDecoration: "none",
-              letterSpacing: "-0.01em",
-              backdropFilter: "blur(8px)",
-            }}
-          >
-            Sign in
-          </a>
-
           <Link
             href="/desktop"
             style={{
@@ -294,29 +274,19 @@ function Hero() {
               gap: 8,
               padding: "14px 28px",
               borderRadius: 9999,
-              background: "transparent",
-              border: "1px solid rgba(255,255,255,0.12)",
-              color: "rgba(255,255,255,0.45)",
+              background: "rgba(255,255,255,0.05)",
+              border: "1px solid rgba(255,255,255,0.09)",
+              color: "rgba(255,255,255,0.5)",
               fontSize: 15,
               fontWeight: 500,
               textDecoration: "none",
               letterSpacing: "-0.01em",
+              backdropFilter: "blur(8px)",
             }}
           >
             Desktop app
           </Link>
         </div>
-
-        {/* Platform note */}
-        <p
-          style={{
-            fontSize: 12,
-            color: "rgba(255,255,255,0.2)",
-            letterSpacing: "0.02em",
-          }}
-        >
-          Cloud · macOS (Apple Silicon) · Windows 10 / 11
-        </p>
       </div>
     </section>
   );
@@ -369,7 +339,12 @@ function IntelligenceLayers() {
   ];
 
   return (
-    <section style={{ padding: "120px 24px", borderTop: "1px solid rgba(255,255,255,0.04)" }}>
+    <section
+      style={{
+        padding: "120px 24px",
+        borderTop: "1px solid rgba(255,255,255,0.04)",
+      }}
+    >
       <div style={{ maxWidth: 1000, margin: "0 auto" }}>
         {/* Section header */}
         <div style={{ marginBottom: 64 }}>
@@ -378,7 +353,7 @@ function IntelligenceLayers() {
               display: "inline-flex",
               alignItems: "center",
               gap: 6,
-              marginBottom: 16,
+              marginBottom: 20,
             }}
           >
             <span
@@ -394,7 +369,7 @@ function IntelligenceLayers() {
                 fontSize: 11,
                 letterSpacing: "0.14em",
                 textTransform: "uppercase",
-                color: "rgba(201,168,76,0.7)",
+                color: "rgba(201,168,76,0.65)",
                 fontWeight: 500,
               }}
             >
@@ -419,9 +394,9 @@ function IntelligenceLayers() {
           <p
             style={{
               fontSize: 15,
-              color: "rgba(255,255,255,0.3)",
-              maxWidth: 440,
-              lineHeight: 1.6,
+              color: "rgba(255,255,255,0.28)",
+              maxWidth: 420,
+              lineHeight: 1.65,
             }}
           >
             From quick business answers to full board-level synthesis. Each mode is purpose-built,
@@ -434,18 +409,17 @@ function IntelligenceLayers() {
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-            gap: 2,
+            gap: 12,
           }}
         >
           {layers.map((layer, i) => (
             <div
               key={i}
               style={{
-                background: "rgba(255,255,255,0.02)",
+                background: "rgba(255,255,255,0.025)",
                 border: "1px solid rgba(255,255,255,0.06)",
                 borderRadius: 16,
-                padding: "28px 28px",
-                transition: "border-color 0.25s, background 0.25s",
+                padding: "28px",
               }}
             >
               <div
@@ -453,7 +427,7 @@ function IntelligenceLayers() {
                   display: "flex",
                   alignItems: "flex-start",
                   justifyContent: "space-between",
-                  marginBottom: 12,
+                  marginBottom: 10,
                   gap: 8,
                 }}
               >
@@ -461,7 +435,7 @@ function IntelligenceLayers() {
                   style={{
                     fontSize: 14,
                     fontWeight: 600,
-                    color: "rgba(255,255,255,0.85)",
+                    color: "rgba(255,255,255,0.82)",
                     letterSpacing: "-0.02em",
                   }}
                 >
@@ -489,7 +463,7 @@ function IntelligenceLayers() {
               <p
                 style={{
                   fontSize: 11,
-                  color: "rgba(201,168,76,0.55)",
+                  color: "rgba(201,168,76,0.5)",
                   marginBottom: 10,
                   textTransform: "uppercase",
                   letterSpacing: "0.06em",
@@ -501,7 +475,7 @@ function IntelligenceLayers() {
               <p
                 style={{
                   fontSize: 13,
-                  color: "rgba(255,255,255,0.3)",
+                  color: "rgba(255,255,255,0.28)",
                   lineHeight: 1.65,
                 }}
               >
@@ -517,48 +491,34 @@ function IntelligenceLayers() {
 
 function Features() {
   return (
-    <section style={{ padding: "120px 24px", borderTop: "1px solid rgba(255,255,255,0.04)" }}>
+    <section
+      style={{
+        padding: "120px 24px",
+        borderTop: "1px solid rgba(255,255,255,0.04)",
+      }}
+    >
       <div style={{ maxWidth: 1000, margin: "0 auto" }}>
 
         {/* Feature 1: Privacy */}
         <div className="feat-grid" style={{ marginBottom: 120 }}>
           <div>
-            <div
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 6,
-                marginBottom: 20,
-              }}
-            >
-              <span
-                style={{
-                  fontSize: 11,
-                  letterSpacing: "0.14em",
-                  textTransform: "uppercase",
-                  color: "rgba(201,168,76,0.6)",
-                  fontWeight: 500,
-                }}
-              >
-                Privacy by architecture
-              </span>
-            </div>
             <h3
               style={{
                 fontSize: "clamp(24px, 3vw, 36px)",
                 fontWeight: 700,
                 letterSpacing: "-0.04em",
                 color: "rgba(255,255,255,0.92)",
-                lineHeight: 1.1,
+                lineHeight: 1.08,
                 marginBottom: 20,
               }}
             >
-              Intelligence that never touches a server<span style={{ color: "#c9a84c" }}>.</span>
+              Intelligence that never touches a server
+              <span style={{ color: "#c9a84c" }}>.</span>
             </h3>
             <p
               style={{
                 fontSize: 15,
-                color: "rgba(255,255,255,0.32)",
+                color: "rgba(255,255,255,0.3)",
                 lineHeight: 1.7,
               }}
             >
@@ -569,16 +529,16 @@ function Features() {
           </div>
           <div
             style={{
-              background: "rgba(255,255,255,0.02)",
+              background: "rgba(255,255,255,0.025)",
               border: "1px solid rgba(255,255,255,0.06)",
               borderRadius: 20,
-              padding: "28px 28px",
+              padding: "28px",
             }}
           >
             <div
               style={{
                 fontSize: 10,
-                color: "rgba(255,255,255,0.2)",
+                color: "rgba(255,255,255,0.18)",
                 fontFamily: "monospace",
                 letterSpacing: "0.06em",
                 marginBottom: 20,
@@ -609,13 +569,13 @@ function Features() {
                       height: 6,
                       borderRadius: "50%",
                       background: "#4ade80",
-                      boxShadow: "0 0 8px rgba(74,222,128,0.5)",
+                      boxShadow: "0 0 8px rgba(74,222,128,0.45)",
                       flexShrink: 0,
                     }}
                   />
                   <span
                     style={{
-                      color: "rgba(255,255,255,0.45)",
+                      color: "rgba(255,255,255,0.4)",
                       fontFamily: "monospace",
                     }}
                   >
@@ -631,16 +591,16 @@ function Features() {
         <div className="feat-grid feat-grid-reverse" style={{ marginBottom: 120 }}>
           <div
             style={{
-              background: "rgba(255,255,255,0.02)",
+              background: "rgba(255,255,255,0.025)",
               border: "1px solid rgba(255,255,255,0.06)",
               borderRadius: 20,
-              padding: "28px 28px",
+              padding: "28px",
             }}
           >
             <p
               style={{
                 fontSize: 10,
-                color: "rgba(255,255,255,0.2)",
+                color: "rgba(255,255,255,0.18)",
                 textTransform: "uppercase",
                 letterSpacing: "0.06em",
                 marginBottom: 16,
@@ -667,7 +627,7 @@ function Features() {
                       display: "flex",
                       justifyContent: "space-between",
                       fontSize: 12,
-                      color: "rgba(255,255,255,0.35)",
+                      color: "rgba(255,255,255,0.3)",
                       marginBottom: 6,
                     }}
                   >
@@ -676,8 +636,8 @@ function Features() {
                   </div>
                   <div
                     style={{
-                      height: 3,
-                      background: "rgba(255,255,255,0.06)",
+                      height: 2,
+                      background: "rgba(255,255,255,0.05)",
                       borderRadius: 9999,
                       overflow: "hidden",
                     }}
@@ -687,7 +647,7 @@ function Features() {
                         height: "100%",
                         width: `${pct}%`,
                         background:
-                          "linear-gradient(90deg, rgba(201,168,76,0.7) 0%, rgba(201,168,76,0.4) 100%)",
+                          "linear-gradient(90deg, rgba(201,168,76,0.65) 0%, rgba(201,168,76,0.35) 100%)",
                         borderRadius: 9999,
                       }}
                     />
@@ -697,91 +657,67 @@ function Features() {
             </div>
           </div>
           <div>
-            <div style={{ marginBottom: 20 }}>
-              <span
-                style={{
-                  fontSize: 11,
-                  letterSpacing: "0.14em",
-                  textTransform: "uppercase",
-                  color: "rgba(201,168,76,0.6)",
-                  fontWeight: 500,
-                }}
-              >
-                Cost integrity
-              </span>
-            </div>
             <h3
               style={{
                 fontSize: "clamp(24px, 3vw, 36px)",
                 fontWeight: 700,
                 letterSpacing: "-0.04em",
                 color: "rgba(255,255,255,0.92)",
-                lineHeight: 1.1,
+                lineHeight: 1.08,
                 marginBottom: 20,
               }}
             >
-              Hard cost ceilings. No surprise bills<span style={{ color: "#c9a84c" }}>.</span>
+              Hard cost ceilings. No surprise bills
+              <span style={{ color: "#c9a84c" }}>.</span>
             </h3>
             <p
               style={{
                 fontSize: 15,
-                color: "rgba(255,255,255,0.32)",
+                color: "rgba(255,255,255,0.3)",
                 lineHeight: 1.7,
               }}
             >
               Every plan has an internal cost ceiling that cannot be overridden. We never show
-              you token counts or AI costs. You see usage counters — not invoices. If capacity
+              you token counts or AI costs. You see usage counters, not invoices. If capacity
               is reached, the response is clear and the billing is transparent.
             </p>
           </div>
         </div>
 
-        {/* Feature 3: Site intelligence */}
+        {/* Feature 3: Connected intelligence */}
         <div className="feat-grid">
           <div>
-            <div style={{ marginBottom: 20 }}>
-              <span
-                style={{
-                  fontSize: 11,
-                  letterSpacing: "0.14em",
-                  textTransform: "uppercase",
-                  color: "rgba(201,168,76,0.6)",
-                  fontWeight: 500,
-                }}
-              >
-                Connected intelligence
-              </span>
-            </div>
             <h3
               style={{
                 fontSize: "clamp(24px, 3vw, 36px)",
                 fontWeight: 700,
                 letterSpacing: "-0.04em",
                 color: "rgba(255,255,255,0.92)",
-                lineHeight: 1.1,
+                lineHeight: 1.08,
                 marginBottom: 20,
               }}
             >
-              Intelligence connected to your platforms<span style={{ color: "#c9a84c" }}>.</span>
+              Intelligence connected to your platforms
+              <span style={{ color: "#c9a84c" }}>.</span>
             </h3>
             <p
               style={{
                 fontSize: 15,
-                color: "rgba(255,255,255,0.32)",
+                color: "rgba(255,255,255,0.3)",
                 lineHeight: 1.7,
               }}
             >
               Chairman AI connects to Quicky CV and El Arab Club to provide guidance, profile
-              analysis, and platform health reporting. All integrations use scoped API keys —
-              no shared credentials, no cross-contamination of user data.
+              analysis, and platform health reporting. All integrations use scoped API keys.
+              No shared credentials, no cross-contamination of user data.
             </p>
           </div>
           <div
             style={{
-              background: "rgba(255,255,255,0.02)",
+              background: "rgba(255,255,255,0.025)",
               border: "1px solid rgba(255,255,255,0.06)",
               borderRadius: 20,
-              padding: "28px 28px",
+              padding: "28px",
             }}
           >
             {[
@@ -797,7 +733,9 @@ function Features() {
                   justifyContent: "space-between",
                   padding: "14px 0",
                   borderBottom:
-                    i < arr.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none",
+                    i < arr.length - 1
+                      ? "1px solid rgba(255,255,255,0.05)"
+                      : "none",
                 }}
               >
                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -806,11 +744,11 @@ function Features() {
                       width: 6,
                       height: 6,
                       borderRadius: "50%",
-                      background: "rgba(201,168,76,0.5)",
+                      background: "rgba(201,168,76,0.45)",
                     }}
                   />
                   <span
-                    style={{ fontSize: 13, color: "rgba(255,255,255,0.55)" }}
+                    style={{ fontSize: 13, color: "rgba(255,255,255,0.5)" }}
                   >
                     {name}
                   </span>
@@ -818,7 +756,7 @@ function Features() {
                 <span
                   style={{
                     fontSize: 10,
-                    color: "rgba(255,255,255,0.2)",
+                    color: "rgba(255,255,255,0.18)",
                     fontFamily: "monospace",
                     letterSpacing: "0.02em",
                   }}
@@ -836,30 +774,15 @@ function Features() {
 
 function PricingPreview() {
   return (
-    <section style={{ padding: "120px 24px", borderTop: "1px solid rgba(255,255,255,0.04)" }}>
+    <section
+      style={{
+        padding: "120px 24px",
+        borderTop: "1px solid rgba(255,255,255,0.04)",
+      }}
+    >
       <div style={{ maxWidth: 760, margin: "0 auto" }}>
         {/* Header */}
         <div style={{ textAlign: "center", marginBottom: 64 }}>
-          <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 6,
-              marginBottom: 20,
-            }}
-          >
-            <span
-              style={{
-                fontSize: 11,
-                letterSpacing: "0.14em",
-                textTransform: "uppercase",
-                color: "rgba(201,168,76,0.6)",
-                fontWeight: 500,
-              }}
-            >
-              Pricing
-            </span>
-          </div>
           <h2
             style={{
               fontSize: "clamp(32px, 4vw, 52px)",
@@ -869,7 +792,8 @@ function PricingPreview() {
               lineHeight: 1.05,
             }}
           >
-            Two plans. No hidden tiers<span style={{ color: "#c9a84c" }}>.</span>
+            Two plans. No hidden tiers
+            <span style={{ color: "#c9a84c" }}>.</span>
           </h2>
         </div>
 
@@ -878,7 +802,7 @@ function PricingPreview() {
           {/* Private plan */}
           <div
             style={{
-              background: "rgba(255,255,255,0.02)",
+              background: "rgba(255,255,255,0.025)",
               border: "1px solid rgba(255,255,255,0.07)",
               borderRadius: 20,
               padding: "36px 32px",
@@ -888,7 +812,7 @@ function PricingPreview() {
               style={{
                 fontSize: 17,
                 fontWeight: 600,
-                color: "rgba(255,255,255,0.85)",
+                color: "rgba(255,255,255,0.82)",
                 letterSpacing: "-0.02em",
                 marginBottom: 8,
               }}
@@ -900,7 +824,7 @@ function PricingPreview() {
                 style={{
                   fontSize: 40,
                   fontWeight: 700,
-                  color: "rgba(255,255,255,0.9)",
+                  color: "rgba(255,255,255,0.88)",
                   letterSpacing: "-0.04em",
                 }}
               >
@@ -909,7 +833,7 @@ function PricingPreview() {
               <span
                 style={{
                   fontSize: 14,
-                  color: "rgba(255,255,255,0.25)",
+                  color: "rgba(255,255,255,0.22)",
                   marginLeft: 6,
                 }}
               >
@@ -941,13 +865,17 @@ function PricingPreview() {
                       width: 5,
                       height: 5,
                       borderRadius: "50%",
-                      background: "rgba(201,168,76,0.5)",
+                      background: "rgba(201,168,76,0.45)",
                       flexShrink: 0,
                       marginTop: 5,
                     }}
                   />
                   <span
-                    style={{ fontSize: 13, color: "rgba(255,255,255,0.3)", lineHeight: 1.5 }}
+                    style={{
+                      fontSize: 13,
+                      color: "rgba(255,255,255,0.28)",
+                      lineHeight: 1.5,
+                    }}
                   >
                     {item}
                   </span>
@@ -961,8 +889,8 @@ function PricingPreview() {
                 textAlign: "center",
                 padding: "12px 20px",
                 borderRadius: 9999,
-                border: "1px solid rgba(255,255,255,0.1)",
-                color: "rgba(255,255,255,0.5)",
+                border: "1px solid rgba(255,255,255,0.09)",
+                color: "rgba(255,255,255,0.45)",
                 fontSize: 13,
                 fontWeight: 500,
                 textDecoration: "none",
@@ -976,8 +904,8 @@ function PricingPreview() {
           {/* Executive plan */}
           <div
             style={{
-              background: "rgba(201,168,76,0.04)",
-              border: "1px solid rgba(201,168,76,0.15)",
+              background: "rgba(201,168,76,0.035)",
+              border: "1px solid rgba(201,168,76,0.14)",
               borderRadius: 20,
               padding: "36px 32px",
               position: "relative",
@@ -991,9 +919,9 @@ function PricingPreview() {
                 fontSize: 9,
                 letterSpacing: "0.1em",
                 textTransform: "uppercase",
-                color: "rgba(201,168,76,0.7)",
-                background: "rgba(201,168,76,0.08)",
-                border: "1px solid rgba(201,168,76,0.18)",
+                color: "rgba(201,168,76,0.65)",
+                background: "rgba(201,168,76,0.07)",
+                border: "1px solid rgba(201,168,76,0.16)",
                 padding: "4px 10px",
                 borderRadius: 9999,
                 fontWeight: 500,
@@ -1005,7 +933,7 @@ function PricingPreview() {
               style={{
                 fontSize: 17,
                 fontWeight: 600,
-                color: "rgba(255,255,255,0.85)",
+                color: "rgba(255,255,255,0.82)",
                 letterSpacing: "-0.02em",
                 marginBottom: 8,
               }}
@@ -1017,7 +945,7 @@ function PricingPreview() {
                 style={{
                   fontSize: 40,
                   fontWeight: 700,
-                  color: "rgba(255,255,255,0.9)",
+                  color: "rgba(255,255,255,0.88)",
                   letterSpacing: "-0.04em",
                 }}
               >
@@ -1026,7 +954,7 @@ function PricingPreview() {
               <span
                 style={{
                   fontSize: 14,
-                  color: "rgba(255,255,255,0.25)",
+                  color: "rgba(255,255,255,0.22)",
                   marginLeft: 6,
                 }}
               >
@@ -1058,13 +986,17 @@ function PricingPreview() {
                       width: 5,
                       height: 5,
                       borderRadius: "50%",
-                      background: "rgba(201,168,76,0.8)",
+                      background: "rgba(201,168,76,0.75)",
                       flexShrink: 0,
                       marginTop: 5,
                     }}
                   />
                   <span
-                    style={{ fontSize: 13, color: "rgba(255,255,255,0.35)", lineHeight: 1.5 }}
+                    style={{
+                      fontSize: 13,
+                      color: "rgba(255,255,255,0.32)",
+                      lineHeight: 1.5,
+                    }}
                   >
                     {item}
                   </span>
@@ -1079,13 +1011,13 @@ function PricingPreview() {
                 padding: "12px 20px",
                 borderRadius: 9999,
                 background:
-                  "linear-gradient(135deg, rgba(201,168,76,0.9) 0%, rgba(175,138,44,0.85) 100%)",
-                color: "#0a0a08",
+                  "linear-gradient(135deg, rgba(201,168,76,0.92) 0%, rgba(172,135,40,0.88) 100%)",
+                color: "#080806",
                 fontSize: 13,
                 fontWeight: 700,
                 textDecoration: "none",
                 letterSpacing: "-0.01em",
-                boxShadow: "0 4px 20px rgba(201,168,76,0.2)",
+                boxShadow: "0 4px 24px rgba(201,168,76,0.18)",
               }}
             >
               Get Executive access
@@ -1098,7 +1030,7 @@ function PricingPreview() {
             href="/pricing"
             style={{
               fontSize: 13,
-              color: "rgba(255,255,255,0.25)",
+              color: "rgba(255,255,255,0.2)",
               textDecoration: "underline",
               textUnderlineOffset: 3,
             }}
@@ -1140,12 +1072,10 @@ function Footer() {
               width: 22,
               height: 22,
               objectFit: "contain",
-              filter: "drop-shadow(0 0 4px rgba(201,168,76,0.3))",
+              filter: "drop-shadow(0 0 4px rgba(201,168,76,0.28))",
             }}
           />
-          <span
-            style={{ fontSize: 13, color: "rgba(255,255,255,0.25)" }}
-          >
+          <span style={{ fontSize: 13, color: "rgba(255,255,255,0.22)" }}>
             Chairman AI
           </span>
         </div>
@@ -1164,7 +1094,7 @@ function Footer() {
               href={href}
               style={{
                 fontSize: 13,
-                color: "rgba(255,255,255,0.2)",
+                color: "rgba(255,255,255,0.18)",
                 textDecoration: "none",
               }}
             >
@@ -1174,7 +1104,7 @@ function Footer() {
         </nav>
 
         {/* Copy */}
-        <p style={{ fontSize: 12, color: "rgba(255,255,255,0.12)" }}>
+        <p style={{ fontSize: 12, color: "rgba(255,255,255,0.1)" }}>
           &copy; {new Date().getFullYear()} Chairmans Group
         </p>
       </div>
