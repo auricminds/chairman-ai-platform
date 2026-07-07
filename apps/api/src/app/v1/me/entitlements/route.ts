@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAuth, AuthError } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/server";
 import { PLANS } from "@/contracts";
+import { FREE_TIER_LIMIT, checkFreeTierAllowance } from "@/lib/usage";
 
 export async function GET() {
   try {
@@ -17,12 +18,19 @@ export async function GET() {
       .maybeSingle();
 
     if (!sub) {
+      const freeTier = await checkFreeTierAllowance(user.id);
       return NextResponse.json({
         planKey: null,
         planPublicName: null,
         status: "none",
         currentPeriodEnd: null,
         modes: [],
+        freeTier: {
+          used: freeTier.used,
+          limit: FREE_TIER_LIMIT,
+          remaining: Math.max(0, FREE_TIER_LIMIT - freeTier.used),
+          exhausted: !freeTier.allowed,
+        },
       });
     }
 

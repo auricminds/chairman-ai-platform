@@ -22,6 +22,13 @@ interface ModeAllowance {
   lockedReason: string | null;
 }
 
+interface FreeTier {
+  used: number;
+  limit: number;
+  remaining: number;
+  exhausted: boolean;
+}
+
 interface Message {
   id: string;
   role: "user" | "assistant";
@@ -42,6 +49,9 @@ export default function IntelligencePage() {
   const [selectedMode, setSelectedMode] = useState("business");
   const [streaming, setStreaming] = useState(false);
   const [allowances, setAllowances] = useState<ModeAllowance[]>([]);
+  const [freeTier, setFreeTier] = useState<FreeTier | null>(null);
+  const [hasSubscription, setHasSubscription] = useState<boolean | null>(null);
+  const [showUpgrade, setShowUpgrade] = useState(false);
   const [pendingConfirm, setPendingConfirm] = useState<(() => void) | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [attachedFiles, setAttachedFiles] = useState<{ name: string; content: string }[]>([]);
@@ -67,8 +77,10 @@ export default function IntelligencePage() {
   // Fetch entitlements
   useEffect(() => {
     fetchEntitlements()
-      .then((data: { modes?: ModeAllowance[] }) => {
+      .then((data: { modes?: ModeAllowance[]; status?: string; freeTier?: FreeTier }) => {
         if (data.modes) setAllowances(data.modes);
+        setHasSubscription(data.status !== "none" && !!data.modes?.length);
+        if (data.freeTier) setFreeTier(data.freeTier);
       })
       .catch(() => {});
   }, []);
@@ -152,15 +164,22 @@ export default function IntelligencePage() {
         .limit(50);
       if (data) setConversations(data);
 
+      // Refresh free tier count after successful message
       fetchEntitlements()
-        .then((data: { modes?: ModeAllowance[] }) => {
+        .then((data: { modes?: ModeAllowance[]; status?: string; freeTier?: FreeTier }) => {
           if (data.modes) setAllowances(data.modes);
+          setHasSubscription(data.status !== "none" && !!data.modes?.length);
+          if (data.freeTier) setFreeTier(data.freeTier);
         })
         .catch(() => {});
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Analysis unavailable.";
-      setError(msg);
       setMessages((prev) => prev.filter((m) => m.id !== assistantMsg.id));
+      if (msg === "FREE_TIER_EXHAUSTED" || msg === "UPGRADE_REQUIRED" || msg === "No active subscription") {
+        setShowUpgrade(true);
+      } else {
+        setError(msg);
+      }
     } finally {
       setStreaming(false);
     }
@@ -843,6 +862,193 @@ export default function IntelligencePage() {
         }
 
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Free tier banner */
+        .free-tier-bar {
+          padding: 8px 24px;
+          border-bottom: 1px solid rgba(255,255,255,0.04);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          background: rgba(201,168,76,0.03);
+          flex-shrink: 0;
+        }
+
+        .free-tier-label {
+          font-size: 11px;
+          color: rgba(201,168,76,0.6);
+          display: flex;
+          align-items: center;
+          gap: 7px;
+        }
+
+        .free-tier-dots {
+          display: flex;
+          gap: 4px;
+        }
+
+        .free-tier-dot {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+        }
+
+        .free-tier-dot.filled {
+          background: rgba(201,168,76,0.7);
+        }
+
+        .free-tier-dot.empty {
+          background: rgba(255,255,255,0.1);
+        }
+
+        .free-tier-upgrade {
+          font-size: 11px;
+          font-weight: 600;
+          color: rgba(201,168,76,0.75);
+          background: rgba(201,168,76,0.07);
+          border: 1px solid rgba(201,168,76,0.18);
+          border-radius: 9999px;
+          padding: 3px 10px;
+          cursor: pointer;
+          transition: all 0.2s;
+          text-decoration: none;
+          letter-spacing: 0.02em;
+        }
+
+        .free-tier-upgrade:hover {
+          background: rgba(201,168,76,0.12);
+          color: rgba(201,168,76,1);
+        }
+
+        /* Upgrade overlay */
+        .upgrade-overlay {
+          position: fixed;
+          inset: 0;
+          z-index: 50;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(0,0,0,0.72);
+          backdrop-filter: blur(8px);
+        }
+
+        .upgrade-shell {
+          background: rgba(255,255,255,0.025);
+          border: 1px solid rgba(255,255,255,0.07);
+          border-radius: 24px;
+          padding: 5px;
+          width: 100%;
+          max-width: 420px;
+          margin: 0 20px;
+          box-shadow: 0 40px 80px rgba(0,0,0,0.7), 0 0 60px rgba(201,168,76,0.04);
+        }
+
+        .upgrade-inner {
+          background: #0c0e12;
+          border-radius: 20px;
+          padding: 32px 28px;
+          border: 1px solid rgba(255,255,255,0.05);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .upgrade-inner::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 15%;
+          right: 15%;
+          height: 1px;
+          background: linear-gradient(90deg, transparent, rgba(201,168,76,0.35), transparent);
+        }
+
+        .upgrade-eyebrow {
+          font-size: 10px;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: rgba(201,168,76,0.6);
+          font-weight: 500;
+          margin-bottom: 14px;
+        }
+
+        .upgrade-heading {
+          font-size: 20px;
+          font-weight: 700;
+          letter-spacing: -0.035em;
+          color: rgba(255,255,255,0.92);
+          line-height: 1.15;
+          margin-bottom: 8px;
+        }
+
+        .upgrade-sub {
+          font-size: 13px;
+          color: rgba(255,255,255,0.35);
+          line-height: 1.6;
+          margin-bottom: 24px;
+        }
+
+        .upgrade-plans {
+          display: flex;
+          gap: 10px;
+          margin-bottom: 16px;
+        }
+
+        .upgrade-plan {
+          flex: 1;
+          padding: 14px 14px 16px;
+          border-radius: 12px;
+          border: 1px solid rgba(255,255,255,0.07);
+          background: rgba(255,255,255,0.02);
+          text-align: left;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .upgrade-plan.gold {
+          border-color: rgba(201,168,76,0.25);
+          background: rgba(201,168,76,0.04);
+        }
+
+        .upgrade-plan-name {
+          font-size: 12px;
+          font-weight: 600;
+          color: rgba(255,255,255,0.7);
+          margin-bottom: 3px;
+        }
+
+        .upgrade-plan.gold .upgrade-plan-name {
+          color: rgba(201,168,76,0.85);
+        }
+
+        .upgrade-plan-price {
+          font-size: 18px;
+          font-weight: 800;
+          letter-spacing: -0.04em;
+          color: rgba(255,255,255,0.9);
+          margin-bottom: 8px;
+        }
+
+        .upgrade-plan-feat {
+          font-size: 10px;
+          color: rgba(255,255,255,0.3);
+          line-height: 1.6;
+        }
+
+        .upgrade-dismiss {
+          font-size: 12px;
+          color: rgba(255,255,255,0.2);
+          background: none;
+          border: none;
+          cursor: pointer;
+          display: block;
+          margin: 0 auto;
+          padding: 4px 8px;
+          transition: color 0.2s;
+          letter-spacing: 0.02em;
+        }
+
+        .upgrade-dismiss:hover { color: rgba(255,255,255,0.45); }
       `}</style>
 
       <div style={{ display: "flex", height: "100%", overflow: "hidden" }}>
@@ -905,28 +1111,56 @@ export default function IntelligencePage() {
               const allowance = getAllowance(mode.id);
               const locked = allowance?.lockedReason != null;
               const exhausted = allowance?.remaining !== null && allowance?.remaining !== undefined && allowance.remaining <= 0;
+              // On free tier, only Business is available
+              const freeTierLocked = hasSubscription === false && mode.id !== "business";
 
               return (
                 <button
                   key={mode.id}
                   className={`mode-pill${selectedMode === mode.id ? " active" : ""}`}
-                  onClick={() => !locked && !exhausted && setSelectedMode(mode.id)}
+                  onClick={() => {
+                    if (freeTierLocked) { setShowUpgrade(true); return; }
+                    if (!locked && !exhausted) setSelectedMode(mode.id);
+                  }}
                   disabled={locked || exhausted}
-                  title={locked ? (allowance?.lockedReason ?? "") : mode.description}
+                  title={freeTierLocked ? "Upgrade to unlock" : locked ? (allowance?.lockedReason ?? "") : mode.description}
                 >
                   {mode.label}
-                  {allowance?.monthlyLimit != null && (
+                  {freeTierLocked && (
+                    <span className="mode-pill-badge">upgrade</span>
+                  )}
+                  {!freeTierLocked && allowance?.monthlyLimit != null && (
                     <span className="mode-pill-badge">
                       {exhausted ? "0 left" : `${allowance.remaining} left`}
                     </span>
                   )}
-                  {mode.confirmRequired && !locked && !exhausted && (
+                  {!freeTierLocked && mode.confirmRequired && !locked && !exhausted && (
                     <span className="mode-pill-badge">confirm</span>
                   )}
                 </button>
               );
             })}
           </div>
+
+          {/* Free tier banner — shown only when no subscription */}
+          {hasSubscription === false && freeTier && (
+            <div className="free-tier-bar">
+              <div className="free-tier-label">
+                <div className="free-tier-dots">
+                  {Array.from({ length: freeTier.limit }).map((_, i) => (
+                    <div
+                      key={i}
+                      className={`free-tier-dot ${i < freeTier.used ? "filled" : "empty"}`}
+                    />
+                  ))}
+                </div>
+                {freeTier.exhausted
+                  ? "Free messages used — upgrade to continue"
+                  : `${freeTier.remaining} of ${freeTier.limit} free messages remaining`}
+              </div>
+              <a href="/billing" className="free-tier-upgrade">Upgrade →</a>
+            </div>
+          )}
 
           {/* Messages */}
           <div className="chat-messages">
@@ -1014,8 +1248,8 @@ export default function IntelligencePage() {
                   value={input}
                   onChange={handleInput}
                   onKeyDown={handleKeyDown}
-                  disabled={streaming}
-                  placeholder="Message Chairman AI…"
+                  disabled={streaming || (freeTier?.exhausted === true && hasSubscription === false)}
+                  placeholder={freeTier?.exhausted && hasSubscription === false ? "Upgrade to continue…" : "Message Chairman AI…"}
                   rows={1}
                 />
                 {/* Voice button */}
@@ -1056,6 +1290,38 @@ export default function IntelligencePage() {
           </div>
         </div>
       </div>
+
+      {/* Upgrade modal */}
+      {showUpgrade && (
+        <div className="upgrade-overlay" onClick={() => setShowUpgrade(false)}>
+          <div className="upgrade-shell" onClick={(e) => e.stopPropagation()}>
+            <div className="upgrade-inner">
+              <div className="upgrade-eyebrow">Free trial ended</div>
+              <h2 className="upgrade-heading">
+                Unlock Chairman AI<span style={{ color: "#c9a84c" }}>.</span>
+              </h2>
+              <p className="upgrade-sub">
+                You&apos;ve used your 3 free messages. Upgrade for full access to Business, Strategic, and Executive intelligence.
+              </p>
+              <div className="upgrade-plans">
+                <a href="/billing" className="upgrade-plan" style={{ textDecoration: "none" }}>
+                  <div className="upgrade-plan-name">Private</div>
+                  <div className="upgrade-plan-price">$10<span style={{ fontSize: 12, fontWeight: 400, color: "rgba(255,255,255,0.3)" }}>/mo</span></div>
+                  <div className="upgrade-plan-feat">Business · Extended · Strategic modes<br/>300 analyses / month</div>
+                </a>
+                <a href="/billing" className="upgrade-plan gold" style={{ textDecoration: "none" }}>
+                  <div className="upgrade-plan-name">Executive</div>
+                  <div className="upgrade-plan-price">$50<span style={{ fontSize: 12, fontWeight: 400, color: "rgba(255,255,255,0.3)" }}>/mo</span></div>
+                  <div className="upgrade-plan-feat">All modes including Board Review<br/>1,200 analyses / month</div>
+                </a>
+              </div>
+              <button className="upgrade-dismiss" onClick={() => setShowUpgrade(false)}>
+                Maybe later
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Confirmation dialog */}
       {pendingConfirm && currentMode && (

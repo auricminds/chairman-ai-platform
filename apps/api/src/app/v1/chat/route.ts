@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, requireActiveSubscription, AuthError } from "@/lib/auth";
 import { resolveEngine } from "@/lib/engine-router";
-import { checkAllowance, reserveRequest, settleRequest, releaseRequest } from "@/lib/usage";
+import { checkAllowance, reserveRequest, settleRequest, releaseRequest, checkFreeTierAllowance, reserveFreeTierRequest, FREE_TIER_MODE } from "@/lib/usage";
 import { ChatRequestSchema } from "@/contracts";
 import type { PlanKey } from "@/contracts";
 import { buildSystemPrompt, sanitiseResponse, CONSTITUTION_VERSION_NAME } from "@/policies/chairmanConstitution";
@@ -68,26 +68,45 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const sub = await requireActiveSubscription(user.id);
-    const planKey = sub.plan_key as PlanKey;
-
     const estimatedTokens = Math.ceil(message.length / 4);
 
-    const allowanceCheck = await checkAllowance(user.id, planKey, chairmanMode, estimatedTokens);
-    if (!allowanceCheck.allowed) {
-      return NextResponse.json({ error: allowanceCheck.reason }, { status: 429 });
-    }
-
-    const engine = await resolveEngine(chairmanMode, planKey);
+    // ─── Resolve subscription or fall back to free tier ──────────────────────
+    let planKey: PlanKey | null = null;
+    let cycleId: string | null = null;
+    let isFreeTier = false;
 
     try {
-      requestId = await reserveRequest(
-        allowanceCheck.cycleId,
-        chairmanMode,
-        idempotencyKey,
-        user.id,
-        conversationId
-      );
+      const sub = await requireActiveSubscription(user.id);
+      planKey = sub.plan_key as PlanKey;
+    } catch {
+      // No subscription — check free tier eligibility
+      if (chairmanMode !== FREE_TIER_MODE) {
+        return NextResponse.json(
+          { error: "UPGRADE_REQUIRED" },
+          { status: 403 }
+        );
+      }
+      const freeTierCheck = await checkFreeTierAllowance(user.id);
+      if (!freeTierCheck.allowed) {
+        return NextResponse.json({ error: "FREE_TIER_EXHAUSTED" }, { status: 403 });
+      }
+      isFreeTier = true;
+    }
+
+    if (!isFreeTier) {
+      const allowanceCheck = await checkAllowance(user.id, planKey!, chairmanMode, estimatedTokens);
+      if (!allowanceCheck.allowed) {
+        return NextResponse.json({ error: allowanceCheck.reason }, { status: 429 });
+      }
+      cycleId = allowanceCheck.cycleId;
+    }
+
+    const engine = await resolveEngine(chairmanMode, isFreeTier ? "chairman_private" : planKey!);
+
+    try {
+      requestId = isFreeTier
+        ? await reserveFreeTierRequest(idempotencyKey, user.id, conversationId)
+        : await reserveRequest(cycleId!, chairmanMode, idempotencyKey, user.id, conversationId);
     } catch (err: unknown) {
       if (err instanceof Error && err.message === "IDEMPOTENT_DUPLICATE") {
         return NextResponse.json({ error: "This request was already processed." }, { status: 409 });

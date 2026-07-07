@@ -1,9 +1,67 @@
 import { createAdminClient } from "./supabase/server";
 import { PLANS, type PlanKey } from "@/contracts";
 
+export const FREE_TIER_LIMIT = 3; // lifetime free Business Intelligence requests
+export const FREE_TIER_MODE = "business";
+
 type AllowanceResult =
   | { allowed: true; cycleId: string }
   | { allowed: false; reason: string };
+
+type FreeTierResult =
+  | { allowed: true; used: number }
+  | { allowed: false; used: number; reason: string };
+
+export async function checkFreeTierAllowance(profileId: string): Promise<FreeTierResult> {
+  const admin = createAdminClient();
+  const { count } = await admin
+    .from("ai_requests")
+    .select("*", { count: "exact", head: true })
+    .eq("profile_id", profileId)
+    .is("usage_cycle_id", null)
+    .in("status", ["completed", "reserved"]);
+
+  const used = count ?? 0;
+  if (used >= FREE_TIER_LIMIT) {
+    return { allowed: false, used, reason: "FREE_TIER_EXHAUSTED" };
+  }
+  return { allowed: true, used };
+}
+
+export async function reserveFreeTierRequest(
+  idempotencyKey: string,
+  profileId: string,
+  conversationId: string
+): Promise<string> {
+  const admin = createAdminClient();
+
+  const { data: existing } = await admin
+    .from("ai_requests")
+    .select("id, status")
+    .eq("idempotency_key", idempotencyKey)
+    .maybeSingle();
+
+  if (existing) {
+    if (existing.status === "completed") throw new Error("IDEMPOTENT_DUPLICATE");
+    return existing.id as string;
+  }
+
+  const { data: req, error } = await admin
+    .from("ai_requests")
+    .insert({
+      profile_id: profileId,
+      usage_cycle_id: null,
+      conversation_id: conversationId,
+      idempotency_key: idempotencyKey,
+      chairman_mode: FREE_TIER_MODE,
+      status: "reserved",
+    })
+    .select("id")
+    .single();
+
+  if (error || !req) throw new Error("Failed to reserve free tier request slot");
+  return req.id as string;
+}
 
 export async function checkAllowance(
   profileId: string,
