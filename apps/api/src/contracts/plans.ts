@@ -71,3 +71,73 @@ export const CustomerPlanSchema = z.object({
 });
 
 export const ChairmanModeSchema = z.enum(CHAIRMAN_MODES);
+
+// ─── API Plans (external developer API access) ─────────────────────────────────
+
+export const API_PLAN_KEYS = ["api_starter", "api_pro", "api_enterprise"] as const;
+export type ApiPlanKey = typeof API_PLAN_KEYS[number];
+
+export interface ApiPlanConfig {
+  key: ApiPlanKey;
+  publicName: string;
+  priceMonthlyUsd: number;
+  requestsPerMonth: number | null; // null = unlimited
+  rateLimitRpm: number;
+  hardCostCeilingUsd: number;
+  description: string;
+  features: string[];
+}
+
+export const API_PLANS: Record<ApiPlanKey, ApiPlanConfig> = {
+  api_starter: {
+    key: "api_starter",
+    publicName: "API Starter",
+    priceMonthlyUsd: 29,
+    requestsPerMonth: 1_000,
+    rateLimitRpm: 30,
+    hardCostCeilingUsd: 5.00,
+    description: "For small projects and testing",
+    features: [
+      "1,000 API requests / month",
+      "Standard & Strategic modes",
+      "30 requests / min",
+      "Streaming responses",
+      "Usage dashboard",
+    ],
+  },
+  api_pro: {
+    key: "api_pro",
+    publicName: "API Pro",
+    priceMonthlyUsd: 99,
+    requestsPerMonth: 10_000,
+    rateLimitRpm: 120,
+    hardCostCeilingUsd: 20.00,
+    description: "For production SaaS integrations",
+    features: [
+      "10,000 API requests / month",
+      "All Chairman modes",
+      "120 requests / min",
+      "Streaming responses",
+      "Priority model routing",
+      "Usage dashboard",
+    ],
+  },
+  api_enterprise: {
+    key: "api_enterprise",
+    publicName: "API Enterprise",
+    priceMonthlyUsd: 399,
+    requestsPerMonth: null,
+    rateLimitRpm: 600,
+    hardCostCeilingUsd: 80.00,
+    description: "Unlimited access for large-scale deployments",
+    features: [
+      "Unlimited API requests",
+      "All Chairman modes including Board",
+      "600 requests / min",
+      "Streaming responses",
+      "Dedicated model routing",
+      "Usage dashboard",
+      "Custom integration support",
+    ],
+  },
+};

@@ -16,6 +16,16 @@ const NAV_ITEMS = [
     ),
   },
   {
+    href: "/developer",
+    label: "API",
+    icon: (
+      <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path strokeLinecap="round" strokeLinejoin="round"
+          d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
+      </svg>
+    ),
+  },
+  {
     href: "/billing",
     label: "Billing",
     icon: (
@@ -110,13 +120,13 @@ export function Sidebar({ role }: SidebarProps) {
           font-size: 13px;
           text-decoration: none;
           transition: background 0.15s, color 0.15s;
-          color: rgba(255,255,255,0.35);
+          color: rgba(255,255,255,0.55);
           margin-bottom: 1px;
         }
 
         .sidebar-nav-item:hover {
           background: rgba(255,255,255,0.04);
-          color: rgba(255,255,255,0.75);
+          color: rgba(255,255,255,0.85);
         }
 
         .sidebar-nav-item.active {
@@ -131,7 +141,7 @@ export function Sidebar({ role }: SidebarProps) {
           font-weight: 600;
           letter-spacing: 0.1em;
           text-transform: uppercase;
-          color: rgba(255,255,255,0.2);
+          color: rgba(255,255,255,0.35);
         }
 
         .sidebar-footer {
@@ -147,7 +157,7 @@ export function Sidebar({ role }: SidebarProps) {
           padding: 8px 10px;
           border-radius: 8px;
           font-size: 13px;
-          color: rgba(255,255,255,0.25);
+          color: rgba(255,255,255,0.45);
           background: none;
           border: none;
           cursor: pointer;
@@ -157,7 +167,70 @@ export function Sidebar({ role }: SidebarProps) {
 
         .sidebar-signout:hover {
           background: rgba(255,255,255,0.04);
-          color: rgba(255,255,255,0.5);
+          color: rgba(255,255,255,0.7);
+        }
+
+        /* ── Mobile bottom nav ── */
+        .mobile-nav {
+          display: none;
+        }
+
+        @media (max-width: 767px) {
+          .sidebar-root {
+            display: none;
+          }
+
+          .mobile-nav {
+            display: flex;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: #080809;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            padding: 8px 0 calc(8px + env(safe-area-inset-bottom, 0px));
+          }
+
+          .mobile-nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            padding: 4px 8px;
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: 0.01em;
+            text-decoration: none;
+            color: rgba(255,255,255,0.4);
+            transition: color 0.15s;
+          }
+
+          .mobile-nav-item:hover,
+          .mobile-nav-item.active {
+            color: rgba(201,168,76,0.9);
+          }
+
+          .mobile-signout {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            padding: 4px 8px;
+            font-size: 10px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.4);
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: color 0.15s;
+          }
+
+          .mobile-signout:hover {
+            color: rgba(255,255,255,0.7);
+          }
         }
       `}</style>
 
@@ -214,6 +287,26 @@ export function Sidebar({ role }: SidebarProps) {
             Sign out
           </button>
         </div>
+      </nav>
+
+      {/* Mobile bottom navigation */}
+      <nav className="mobile-nav">
+        {NAV_ITEMS.map((item) => {
+          const active = pathname === item.href || pathname.startsWith(item.href + "/");
+          return (
+            <Link key={item.href} href={item.href} className={`mobile-nav-item${active ? " active" : ""}`}>
+              {item.icon}
+              {item.label}
+            </Link>
+          );
+        })}
+        <button className="mobile-signout" onClick={handleSignOut}>
+          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path strokeLinecap="round" strokeLinejoin="round"
+              d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+          </svg>
+          Sign out
+        </button>
       </nav>
     </>
   );

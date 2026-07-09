@@ -20,9 +20,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const role = (profile?.role as string | null) ?? "user";
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#111114]">
+    <div className="flex h-[100dvh] overflow-hidden bg-[#111114]">
       <Sidebar role={role} />
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto pb-[60px] md:pb-0">
         {children}
       </main>
     </div>

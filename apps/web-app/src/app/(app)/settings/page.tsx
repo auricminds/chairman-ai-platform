@@ -83,7 +83,7 @@ export default function SettingsPage() {
     fontWeight: 500,
     letterSpacing: "0.1em",
     textTransform: "uppercase",
-    color: "rgba(255,255,255,0.3)",
+    color: "rgba(255,255,255,0.55)",
     marginBottom: 8,
   };
 
@@ -110,7 +110,7 @@ export default function SettingsPage() {
         <h1 style={{ fontSize: 26, fontWeight: 700, letterSpacing: "-0.035em", color: "rgba(255,255,255,0.92)", lineHeight: 1.1 }}>
           Settings<span style={{ color: "#c9a84c" }}>.</span>
         </h1>
-        <p style={{ fontSize: 13, color: "rgba(255,255,255,0.35)", marginTop: 6 }}>
+        <p style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", marginTop: 6 }}>
           Manage your profile and account security.
         </p>
       </div>
@@ -128,14 +128,14 @@ export default function SettingsPage() {
       {/* Profile card */}
       <div style={cardStyle}>
         <div style={{ padding: "16px 24px", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-          <p style={{ fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.25)", fontWeight: 500 }}>Profile</p>
+          <p style={{ fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", fontWeight: 500 }}>Profile</p>
         </div>
         <div style={{ padding: "24px" }}>
           <div style={{ marginBottom: 20 }}>
             <label style={labelStyle}>Email address</label>
             <div style={{
               ...inputStyle,
-              color: "rgba(255,255,255,0.35)",
+              color: "rgba(255,255,255,0.6)",
               background: "rgba(255,255,255,0.015)",
               cursor: "default",
               userSelect: "all",
@@ -195,10 +195,10 @@ export default function SettingsPage() {
       {/* Security card */}
       <div style={cardStyle}>
         <div style={{ padding: "16px 24px", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-          <p style={{ fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.25)", fontWeight: 500 }}>Security</p>
+          <p style={{ fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", fontWeight: 500 }}>Security</p>
         </div>
         <div style={{ padding: "24px" }}>
-          <p style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", marginBottom: 20, lineHeight: 1.6 }}>
+          <p style={{ fontSize: 13, color: "rgba(255,255,255,0.65)", marginBottom: 20, lineHeight: 1.6 }}>
             Send a password reset link to your email address.
           </p>
           {resetSent ? (
@@ -217,7 +217,7 @@ export default function SettingsPage() {
               style={{
                 padding: "10px 20px", borderRadius: 10,
                 border: "1px solid rgba(255,255,255,0.08)",
-                background: "rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.65)",
+                background: "rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.85)",
                 fontSize: 13, fontWeight: 500, cursor: "pointer",
                 transition: "all 0.2s", ...ff,
               }}
@@ -233,10 +233,10 @@ export default function SettingsPage() {
         background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.05)",
         borderRadius: 12, padding: "16px 24px",
       }}>
-        <p style={{ fontSize: 11, color: "rgba(255,255,255,0.2)", marginBottom: 6, fontFamily: "monospace", letterSpacing: "0.02em" }}>
+        <p style={{ fontSize: 11, color: "rgba(255,255,255,0.45)", marginBottom: 6, fontFamily: "monospace", letterSpacing: "0.02em" }}>
           Account ID: {profile?.id ?? "—"}
         </p>
-        <p style={{ fontSize: 11, color: "rgba(255,255,255,0.2)", fontFamily: "monospace", letterSpacing: "0.02em" }}>
+        <p style={{ fontSize: 11, color: "rgba(255,255,255,0.45)", fontFamily: "monospace", letterSpacing: "0.02em" }}>
           Member since:{" "}
           {profile?.created_at
             ? new Date(profile.created_at).toLocaleDateString("en-GB", {

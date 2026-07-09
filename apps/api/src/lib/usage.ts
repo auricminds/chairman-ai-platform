@@ -51,7 +51,7 @@ export async function reserveFreeTierRequest(
     .insert({
       profile_id: profileId,
       usage_cycle_id: null,
-      conversation_id: conversationId,
+      conversation_id: null, // FK requires existing conversation; free tier doesn't persist conversations
       idempotency_key: idempotencyKey,
       chairman_mode: FREE_TIER_MODE,
       status: "reserved",
@@ -59,7 +59,7 @@ export async function reserveFreeTierRequest(
     .select("id")
     .single();
 
-  if (error || !req) throw new Error("Failed to reserve free tier request slot");
+  if (error || !req) throw new Error(`Failed to reserve free tier request slot: ${error?.message}`);
   return req.id as string;
 }
 
@@ -158,7 +158,7 @@ export async function reserveRequest(
     .select("id")
     .single();
 
-  if (error || !req) throw new Error("Failed to reserve request slot");
+  if (error || !req) throw new Error(`Failed to reserve request slot: ${error?.message}`);
 
   // Increment counter atomically via RPC
   await admin.rpc("increment_usage_counter", {

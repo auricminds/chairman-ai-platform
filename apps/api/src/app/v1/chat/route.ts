@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, requireActiveSubscription, AuthError } from "@/lib/auth";
-import { resolveEngine } from "@/lib/engine-router";
+import { createAdminClient } from "@/lib/supabase/server";
+import { resolveEngine, resolveEngineForFreeTier } from "@/lib/engine-router";
 import { checkAllowance, reserveRequest, settleRequest, releaseRequest, checkFreeTierAllowance, reserveFreeTierRequest, FREE_TIER_MODE } from "@/lib/usage";
 import { ChatRequestSchema } from "@/contracts";
 import type { PlanKey } from "@/contracts";
@@ -70,6 +71,86 @@ export async function POST(req: NextRequest) {
 
     const estimatedTokens = Math.ceil(message.length / 4);
 
+    // ─── Super admin bypass — unlimited access, no usage limits ─────────────
+    const adminDb = createAdminClient();
+    const { data: userProfile } = await adminDb
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+
+    if (userProfile?.role === "super_admin") {
+      const engine = await resolveEngineForFreeTier(chairmanMode);
+      const systemPrompt = buildSystemPrompt(chairmanMode);
+
+      const openRouterRes = await fetch(
+        `${process.env.OPENROUTER_BASE_URL ?? "https://openrouter.ai/api/v1"}/chat/completions`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+            "Content-Type": "application/json",
+            "HTTP-Referer": "https://api.ai.chairmans.uk",
+            "X-Title": "Chairman AI",
+          },
+          body: JSON.stringify({
+            model: engine.provider_model_id,
+            messages: [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: message },
+            ],
+            stream: true,
+            max_tokens: engine.max_output_tokens,
+          }),
+        }
+      );
+
+      if (!openRouterRes.ok || !openRouterRes.body) {
+        return NextResponse.json({ error: "Analysis unavailable. Please try again." }, { status: 503 });
+      }
+
+      const scopeCategory = scopeResult.category;
+      const adminStream = new ReadableStream({
+        async start(controller) {
+          const reader = openRouterRes.body!.getReader();
+          const decoder = new TextDecoder();
+          let buffer = "";
+          try {
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              buffer += decoder.decode(value, { stream: true });
+              const lines = buffer.split("\n");
+              buffer = lines.pop() ?? "";
+              for (const line of lines) {
+                if (!line.startsWith("data: ")) continue;
+                const data = line.slice(6).trim();
+                if (data === "[DONE]") continue;
+                try {
+                  const chunk = JSON.parse(data) as { choices?: Array<{ delta?: { content?: string } }> };
+                  const content = chunk.choices?.[0]?.delta?.content ?? "";
+                  if (content) controller.enqueue(new TextEncoder().encode(sanitiseResponse(content)));
+                } catch { /* skip */ }
+              }
+            }
+          } finally {
+            controller.close();
+          }
+        },
+      });
+
+      return new Response(adminStream, {
+        headers: {
+          "Content-Type": "text/plain; charset=utf-8",
+          "Cache-Control": "no-store",
+          "X-Content-Type-Options": "nosniff",
+          "X-Accel-Buffering": "no",
+          "X-Chairman-Policy": CONSTITUTION_VERSION_NAME,
+          "X-Chairman-Scope": scopeCategory,
+        },
+      });
+    }
+
     // ─── Resolve subscription or fall back to free tier ──────────────────────
     let planKey: PlanKey | null = null;
     let cycleId: string | null = null;
@@ -101,7 +182,9 @@ export async function POST(req: NextRequest) {
       cycleId = allowanceCheck.cycleId;
     }
 
-    const engine = await resolveEngine(chairmanMode, isFreeTier ? "chairman_private" : planKey!);
+    const engine = isFreeTier
+      ? await resolveEngineForFreeTier(chairmanMode)
+      : await resolveEngine(chairmanMode, planKey!);
 
     try {
       requestId = isFreeTier
@@ -234,7 +317,6 @@ export async function POST(req: NextRequest) {
 // Fire-and-forget: record policy version on the ai_request row
 async function logPolicyUsage(requestId: string, scopeCategory: string): Promise<void> {
   try {
-    const { createAdminClient } = await import("@/lib/supabase/server");
     const admin = createAdminClient();
     await admin
       .from("ai_requests")

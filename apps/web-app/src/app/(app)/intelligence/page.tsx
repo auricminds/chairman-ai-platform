@@ -55,6 +55,7 @@ export default function IntelligencePage() {
   const [pendingConfirm, setPendingConfirm] = useState<(() => void) | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [attachedFiles, setAttachedFiles] = useState<{ name: string; content: string }[]>([]);
+  const [mobileConvOpen, setMobileConvOpen] = useState(false);
   const [recording, setRecording] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -131,18 +132,42 @@ export default function IntelligencePage() {
     setAttachedFiles([]);
     setError(null);
 
-    // Use existing or create new conversation ID
-    const convId = activeConvId ?? uuidv4();
-    if (!activeConvId) setActiveConvId(convId);
+    const supabase = getSupabaseBrowserClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    // Create or reuse conversation in DB
+    let convId = activeConvId;
+    if (!convId) {
+      const title = fullText.slice(0, 60) + (fullText.length > 60 ? "…" : "");
+      const { data: newConv } = await supabase
+        .from("conversations")
+        .insert({ profile_id: user.id, title, chairman_mode: mode })
+        .select("id")
+        .single();
+      convId = newConv?.id ?? uuidv4();
+      setActiveConvId(convId);
+      setConversations((prev) => [{ id: convId!, title, created_at: new Date().toISOString() }, ...prev]);
+    }
 
     const userMsg: Message = { id: uuidv4(), role: "user", content: fullText };
     const assistantMsg: Message = { id: uuidv4(), role: "assistant", content: "" };
     setMessages((prev) => [...prev, userMsg, assistantMsg]);
     setStreaming(true);
 
+    // Save user message
+    await supabase.from("messages").insert({
+      id: userMsg.id,
+      conversation_id: convId,
+      profile_id: user.id,
+      role: "user",
+      content: fullText,
+    });
+
     try {
+      let assistantContent = "";
       const gen = streamChat({
-        conversationId: convId,
+        conversationId: convId!,
         message: fullText,
         chairmanMode: mode,
         cloudConsent: true,
@@ -150,13 +175,22 @@ export default function IntelligencePage() {
       });
 
       for await (const chunk of gen) {
+        assistantContent += chunk;
         setMessages((prev) =>
           prev.map((m) => m.id === assistantMsg.id ? { ...m, content: m.content + chunk } : m)
         );
       }
 
-      // Refresh conversation list (title may have been set server-side)
-      const supabase = getSupabaseBrowserClient();
+      // Save assistant message
+      await supabase.from("messages").insert({
+        id: assistantMsg.id,
+        conversation_id: convId,
+        profile_id: user.id,
+        role: "assistant",
+        content: assistantContent,
+      });
+
+      // Refresh conversation list
       const { data } = await supabase
         .from("conversations")
         .select("id, title, created_at")
@@ -309,7 +343,7 @@ export default function IntelligencePage() {
           padding: 24px 14px;
           text-align: center;
           font-size: 12px;
-          color: rgba(255,255,255,0.18);
+          color: rgba(255,255,255,0.4);
           line-height: 1.6;
         }
 
@@ -346,7 +380,7 @@ export default function IntelligencePage() {
 
         .conv-item-title {
           font-size: 12px;
-          color: rgba(255,255,255,0.4);
+          color: rgba(255,255,255,0.6);
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -354,7 +388,7 @@ export default function IntelligencePage() {
         }
 
         .conv-item.active .conv-item-title {
-          color: rgba(255,255,255,0.75);
+          color: rgba(255,255,255,0.92);
         }
 
         /* ── Chat panel ── */
@@ -380,7 +414,7 @@ export default function IntelligencePage() {
         .chat-header-title {
           font-size: 13px;
           font-weight: 600;
-          color: rgba(255,255,255,0.7);
+          color: rgba(255,255,255,0.92);
           letter-spacing: -0.02em;
         }
 
@@ -403,17 +437,17 @@ export default function IntelligencePage() {
           border-radius: 9999px;
           font-size: 11px;
           font-weight: 500;
-          border: 1px solid rgba(255,255,255,0.06);
+          border: 1px solid rgba(255,255,255,0.1);
           background: transparent;
-          color: rgba(255,255,255,0.3);
+          color: rgba(255,255,255,0.55);
           cursor: pointer;
           transition: all 0.2s;
           letter-spacing: 0.01em;
         }
 
         .mode-pill:hover:not(:disabled) {
-          border-color: rgba(255,255,255,0.14);
-          color: rgba(255,255,255,0.65);
+          border-color: rgba(255,255,255,0.2);
+          color: rgba(255,255,255,0.82);
         }
 
         .mode-pill.active {
@@ -431,8 +465,8 @@ export default function IntelligencePage() {
           font-size: 9px;
           padding: 1px 4px;
           border-radius: 3px;
-          background: rgba(255,255,255,0.06);
-          color: rgba(255,255,255,0.25);
+          background: rgba(255,255,255,0.08);
+          color: rgba(255,255,255,0.5);
         }
 
         .mode-pill.active .mode-pill-badge {
@@ -507,17 +541,17 @@ export default function IntelligencePage() {
           max-width: 78%;
           font-size: 13px;
           line-height: 1.8;
-          color: rgba(255,255,255,0.68);
+          color: rgba(255,255,255,0.92);
           padding: 2px 0;
         }
 
         /* Markdown rendering inside AI bubbles */
         .msg-bubble-ai p { margin-bottom: 10px; }
         .msg-bubble-ai p:last-child { margin-bottom: 0; }
-        .msg-bubble-ai strong { color: rgba(255,255,255,0.88); font-weight: 600; }
-        .msg-bubble-ai em { color: rgba(255,255,255,0.6); font-style: italic; }
+        .msg-bubble-ai strong { color: #ffffff; font-weight: 600; }
+        .msg-bubble-ai em { color: rgba(255,255,255,0.82); font-style: italic; }
         .msg-bubble-ai h1, .msg-bubble-ai h2, .msg-bubble-ai h3 {
-          color: rgba(255,255,255,0.85);
+          color: #ffffff;
           font-weight: 600;
           letter-spacing: -0.02em;
           margin: 16px 0 8px;
@@ -534,7 +568,7 @@ export default function IntelligencePage() {
         }
         .msg-bubble-ai ul { list-style: disc; }
         .msg-bubble-ai ol { list-style: decimal; }
-        .msg-bubble-ai li { color: rgba(255,255,255,0.62); }
+        .msg-bubble-ai li { color: rgba(255,255,255,0.88); }
         .msg-bubble-ai code {
           background: rgba(255,255,255,0.06);
           border: 1px solid rgba(255,255,255,0.08);
@@ -668,7 +702,7 @@ export default function IntelligencePage() {
 
         .chat-hint {
           font-size: 10px;
-          color: rgba(255,255,255,0.13);
+          color: rgba(255,255,255,0.3);
           margin-top: 7px;
           padding: 0 2px;
           letter-spacing: 0.02em;
@@ -877,7 +911,7 @@ export default function IntelligencePage() {
 
         .free-tier-label {
           font-size: 11px;
-          color: rgba(201,168,76,0.6);
+          color: rgba(201,168,76,0.85);
           display: flex;
           align-items: center;
           gap: 7px;
@@ -905,9 +939,9 @@ export default function IntelligencePage() {
         .free-tier-upgrade {
           font-size: 11px;
           font-weight: 600;
-          color: rgba(201,168,76,0.75);
-          background: rgba(201,168,76,0.07);
-          border: 1px solid rgba(201,168,76,0.18);
+          color: rgba(201,168,76,0.95);
+          background: rgba(201,168,76,0.1);
+          border: 1px solid rgba(201,168,76,0.25);
           border-radius: 9999px;
           padding: 3px 10px;
           cursor: pointer;
@@ -1049,12 +1083,106 @@ export default function IntelligencePage() {
         }
 
         .upgrade-dismiss:hover { color: rgba(255,255,255,0.45); }
+
+        /* ── Mobile responsive ── */
+        .intel-layout {
+          display: flex;
+          height: 100%;
+        }
+
+        /* Mobile conversation drawer overlay */
+        .conv-overlay {
+          display: none;
+        }
+
+        .mobile-conv-toggle {
+          display: none;
+        }
+
+        @media (max-width: 767px) {
+          .intel-layout {
+            flex-direction: column;
+          }
+
+          /* Conv panel becomes a slide-in drawer */
+          .conv-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 60px;
+            z-index: 40;
+            width: 80vw;
+            max-width: 300px;
+            transform: translateX(-100%);
+            transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+            box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+          }
+
+          .conv-panel.mobile-open {
+            transform: translateX(0);
+          }
+
+          /* Dim overlay behind drawer */
+          .conv-overlay {
+            display: block;
+            position: fixed;
+            inset: 0;
+            z-index: 39;
+            background: rgba(0,0,0,0.55);
+            backdrop-filter: blur(2px);
+          }
+
+          /* Hamburger button in chat header */
+          .mobile-conv-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.07);
+            background: transparent;
+            color: rgba(255,255,255,0.6);
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: all 0.2s;
+          }
+
+          .mobile-conv-toggle:hover {
+            background: rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.9);
+          }
+
+          /* Mode pills scroll on mobile */
+          .mode-bar {
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding: 8px 16px;
+          }
+
+          .mode-bar::-webkit-scrollbar { display: none; }
+
+          /* Shrink padding on mobile */
+          .chat-messages { padding: 16px; }
+          .chat-header { padding: 10px 16px; }
+          .free-tier-bar { padding: 7px 16px; }
+
+          /* Input area full width */
+          .chat-input-wrap { padding: 10px 12px; }
+        }
       `}</style>
 
-      <div style={{ display: "flex", height: "100%", overflow: "hidden" }}>
+      <div className="intel-layout" style={{ height: "100%", overflow: "hidden" }}>
+
+        {/* Mobile overlay backdrop */}
+        {mobileConvOpen && (
+          <div className="conv-overlay" onClick={() => setMobileConvOpen(false)} />
+        )}
 
         {/* ── Conversation sidebar ── */}
-        <div className="conv-panel">
+        <div className={`conv-panel${mobileConvOpen ? " mobile-open" : ""}`}>
           <div className="conv-panel-header">
             <button className="conv-new-btn" onClick={startNewChat}>
               <svg style={{ width: 13, height: 13 }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -1072,7 +1200,7 @@ export default function IntelligencePage() {
                 <div
                   key={conv.id}
                   className={`conv-item${conv.id === activeConvId ? " active" : ""}`}
-                  onClick={() => void loadConversation(conv.id)}
+                  onClick={() => { void loadConversation(conv.id); setMobileConvOpen(false); }}
                 >
                   <div className="conv-item-dot" />
                   <span className="conv-item-title">
@@ -1088,6 +1216,11 @@ export default function IntelligencePage() {
         <div className="chat-panel">
           {/* Header */}
           <div className="chat-header">
+            <button className="mobile-conv-toggle" onClick={() => setMobileConvOpen(v => !v)} aria-label="Toggle conversations">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" d="M3 6h18M3 12h18M3 18h18" />
+              </svg>
+            </button>
             <span className="chat-header-title">
               {activeConv?.title ?? "New conversation"}
             </span>
