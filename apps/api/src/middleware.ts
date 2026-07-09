@@ -3,7 +3,9 @@ import { NextResponse, type NextRequest } from "next/server";
 const ALLOWED_ORIGINS = [
   "https://app.ai.chairmans.uk",
   "https://ai.chairmans.uk",
+  "https://admin.chairmans.uk",
   "http://localhost:3001",
+  "http://localhost:3002",
 ];
 
 // Routes that accept API key auth from any origin (public developer API).
