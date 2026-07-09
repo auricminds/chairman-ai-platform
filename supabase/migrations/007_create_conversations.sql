@@ -1,5 +1,5 @@
 -- Conversations: per-user chat threads
-create table public.conversations (
+create table if not exists public.conversations (
   id uuid primary key default gen_random_uuid(),
   profile_id uuid not null references public.profiles(id) on delete cascade,
   title text not null default 'New conversation',
@@ -9,16 +9,24 @@ create table public.conversations (
 );
 
 alter table public.conversations enable row level security;
-create policy "Users can manage own conversations"
-  on public.conversations for all
-  using (auth.uid() = profile_id)
-  with check (auth.uid() = profile_id);
 
-create index conversations_profile_id_idx on public.conversations(profile_id);
-create index conversations_created_at_idx on public.conversations(created_at desc);
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where tablename = 'conversations' and policyname = 'Users can manage own conversations'
+  ) then
+    create policy "Users can manage own conversations"
+      on public.conversations for all
+      using (auth.uid() = profile_id)
+      with check (auth.uid() = profile_id);
+  end if;
+end $$;
+
+create index if not exists conversations_profile_id_idx on public.conversations(profile_id);
+create index if not exists conversations_created_at_idx on public.conversations(created_at desc);
 
 -- Messages: individual turns within a conversation
-create table public.messages (
+create table if not exists public.messages (
   id uuid primary key default gen_random_uuid(),
   conversation_id uuid not null references public.conversations(id) on delete cascade,
   profile_id uuid not null references public.profiles(id) on delete cascade,
@@ -29,17 +37,25 @@ create table public.messages (
 );
 
 alter table public.messages enable row level security;
-create policy "Users can manage own messages"
-  on public.messages for all
-  using (auth.uid() = profile_id)
-  with check (auth.uid() = profile_id);
 
-create index messages_conversation_id_idx on public.messages(conversation_id);
-create index messages_profile_id_idx on public.messages(profile_id);
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where tablename = 'messages' and policyname = 'Users can manage own messages'
+  ) then
+    create policy "Users can manage own messages"
+      on public.messages for all
+      using (auth.uid() = profile_id)
+      with check (auth.uid() = profile_id);
+  end if;
+end $$;
 
--- Update ai_requests to reference conversations properly (foreign key)
+create index if not exists messages_conversation_id_idx on public.messages(conversation_id);
+create index if not exists messages_profile_id_idx on public.messages(profile_id);
+
+-- Add conversation_id to ai_requests if not already there
 alter table public.ai_requests
   drop column if exists conversation_id;
 
 alter table public.ai_requests
-  add column conversation_id uuid references public.conversations(id) on delete set null;
+  add column if not exists conversation_id uuid references public.conversations(id) on delete set null;

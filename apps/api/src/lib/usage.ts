@@ -51,7 +51,7 @@ export async function reserveFreeTierRequest(
     .insert({
       profile_id: profileId,
       usage_cycle_id: null,
-      conversation_id: null, // FK requires existing conversation; free tier doesn't persist conversations
+      conversation_id: conversationId || null,
       idempotency_key: idempotencyKey,
       chairman_mode: FREE_TIER_MODE,
       status: "reserved",
