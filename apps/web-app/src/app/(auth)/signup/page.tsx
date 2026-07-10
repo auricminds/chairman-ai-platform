@@ -4,9 +4,12 @@ import { useState } from "react";
 import Link from "next/link";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
+const APP_URL = "https://app.ai.chairmans.uk";
+
 export default function SignUpPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [oauthLoading, setOauthLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -18,7 +21,7 @@ export default function SignUpPage() {
     const supabase = getSupabaseBrowserClient();
     const { error: oauthError } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${window.location.origin}/intelligence` },
+      options: { redirectTo: `${APP_URL}/intelligence` },
     });
     if (oauthError) {
       setError(oauthError.message);
@@ -37,12 +40,18 @@ export default function SignUpPage() {
       return;
     }
 
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      setLoading(false);
+      return;
+    }
+
     const supabase = getSupabaseBrowserClient();
     const { error: signUpError } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/intelligence`,
+        emailRedirectTo: `${APP_URL}/intelligence`,
       },
     });
 
@@ -151,10 +160,25 @@ export default function SignUpPage() {
               <p className="auth-hint">At least 8 characters.</p>
             </div>
 
+            <div className="auth-field">
+              <label className="auth-label" htmlFor="confirmPassword">Confirm password</label>
+              <input
+                id="confirmPassword"
+                className="auth-input"
+                type="password"
+                autoComplete="new-password"
+                required
+                minLength={8}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Re-enter your password"
+              />
+            </div>
+
             <button
               type="submit"
               className="auth-btn-primary"
-              disabled={loading || !email || !password}
+              disabled={loading || !email || !password || !confirmPassword}
             >
               {loading ? "Creating account…" : "Create account"}
               {!loading && <span className="auth-btn-arrow">→</span>}
