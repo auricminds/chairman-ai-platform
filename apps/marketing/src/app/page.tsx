@@ -73,6 +73,17 @@ function Nav() {
         {/* Right: links */}
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
           <a
+            href="#for-platforms"
+            style={{
+              fontSize: 13,
+              color: "rgba(255,255,255,0.38)",
+              textDecoration: "none",
+              padding: "6px 14px",
+            }}
+          >
+            API
+          </a>
+          <a
             href={`${APP_URL}/signin`}
             style={{
               fontSize: 13,
@@ -1045,6 +1056,185 @@ function PricingPreview() {
 }
 
 
+// ─── For Platforms / API section ─────────────────────────────────────────────
+function ForPlatformsSection() {
+  const apiPlans = [
+    {
+      name: "API Sandbox",
+      price: "$9",
+      desc: "For testing and experiments.",
+      features: ["300 API calls / month", "Standard mode", "1 project", "Basic structured outputs"],
+      popular: false,
+    },
+    {
+      name: "API Starter",
+      price: "$19",
+      desc: "For small integrations.",
+      features: ["1,000 API calls / month", "Guidance workflows", "30 req / min", "Usage dashboard"],
+      popular: false,
+    },
+    {
+      name: "API Business",
+      price: "$49",
+      desc: "For active platforms.",
+      features: ["5,000 API calls / month", "All workflow APIs", "Industry pack", "Pulse events", "Custom rules"],
+      popular: true,
+    },
+    {
+      name: "API Growth",
+      price: "$149",
+      desc: "For SaaS & marketplaces.",
+      features: ["25,000 API calls / month", "Custom endpoints", "Webhooks", "Priority routing"],
+      popular: false,
+    },
+    {
+      name: "Private Enterprise",
+      price: "From $399",
+      desc: "For serious companies.",
+      features: ["Custom volume", "Private workflows", "Dedicated routing", "Custom deployment"],
+      popular: false,
+    },
+  ];
+
+  const workflows = [
+    { name: "Guidance API",    desc: "Profile checks, forms, onboarding.",    endpoint: "POST /v1/guidance/profile-check" },
+    { name: "Readiness API",   desc: "Score listings, posts, applications.",  endpoint: "POST /v1/readiness/job-post" },
+    { name: "Draft API",       desc: "Safe drafts users approve before live.", endpoint: "POST /v1/drafts/improve" },
+    { name: "Risk Check API",  desc: "Flag risky claims and missing proof.",   endpoint: "POST /v1/risk/check" },
+    { name: "Pulse Events API",desc: "Detect where users get stuck.",          endpoint: "POST /v1/pulse/events" },
+    { name: "Decision Memo",   desc: "Turn data into structured briefs.",      endpoint: "POST /v1/decision/memo" },
+  ];
+
+  const gold = "rgba(201,168,76,0.9)";
+  const goldFaint = "rgba(201,168,76,0.08)";
+  const goldBorder = "rgba(201,168,76,0.2)";
+  const card = "rgba(255,255,255,0.025)";
+  const border = "rgba(255,255,255,0.06)";
+  const textSec = "rgba(255,255,255,0.3)";
+
+  return (
+    <section
+      id="for-platforms"
+      style={{ padding: "120px 24px", borderTop: "1px solid rgba(255,255,255,0.04)" }}
+    >
+      <div style={{ maxWidth: 1000, margin: "0 auto" }}>
+
+        {/* Header */}
+        <div style={{ marginBottom: 72 }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 6, marginBottom: 20 }}>
+            <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#c9a84c" }} />
+            <span style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase" as const, color: "rgba(201,168,76,0.65)", fontWeight: 500 }}>
+              Chairman API
+            </span>
+          </div>
+          <h2 style={{ fontSize: "clamp(32px, 4vw, 52px)", fontWeight: 700, letterSpacing: "-0.04em", color: "rgba(255,255,255,0.92)", lineHeight: 1.05, marginBottom: 16 }}>
+            Business Intelligence APIs<br />for serious platforms<span style={{ color: "#c9a84c" }}>.</span>
+          </h2>
+          <p style={{ fontSize: 15, color: textSec, maxWidth: 520, lineHeight: 1.65, marginBottom: 28 }}>
+            Add guided decisions, safe drafts, readiness scoring, risk checks, and Pulse intelligence to your product. Chairman API is a controlled business guidance layer — not a generic AI API.
+          </p>
+          <a
+            href={`${APP_URL}/developer`}
+            style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 22px", borderRadius: 9999, background: goldFaint, border: `1px solid ${goldBorder}`, color: gold, fontSize: 13, fontWeight: 600, textDecoration: "none" }}
+          >
+            Explore Chairman API ↗
+          </a>
+        </div>
+
+        {/* Comparison */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 14, marginBottom: 80 }}>
+          <div style={{ padding: "28px", background: card, border: `1px solid ${border}`, borderRadius: 16 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "rgba(255,255,255,0.2)", textTransform: "uppercase" as const, marginBottom: 20 }}>Generic AI APIs</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {["Raw chat completion", "No business workflow structure", "No built-in safety validation", "No readiness scoring", "No Pulse intelligence", "No approval workflow"].map(t => (
+                <div key={t} style={{ display: "flex", gap: 9 }}>
+                  <span style={{ color: "rgba(239,68,68,0.6)", flexShrink: 0 }}>✗</span>
+                  <span style={{ fontSize: 13, color: "rgba(255,255,255,0.2)" }}>{t}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div style={{ padding: "28px", background: "rgba(201,168,76,0.03)", border: `1px solid ${goldBorder}`, borderRadius: 16 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: gold, textTransform: "uppercase" as const, marginBottom: 20 }}>Chairman API</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {["Business workflow endpoints", "Structured outputs", "Safe drafts", "Readiness scores", "Risk warnings & missing facts", "Pulse events", "Next-best-action guidance", "Audit-friendly outputs", "Custom rules per workflow"].map(t => (
+                <div key={t} style={{ display: "flex", gap: 9 }}>
+                  <span style={{ color: gold, flexShrink: 0 }}>✓</span>
+                  <span style={{ fontSize: 13, color: textSec }}>{t}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Workflow products */}
+        <div style={{ marginBottom: 80 }}>
+          <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.1em", color: "rgba(255,255,255,0.2)", textTransform: "uppercase" as const, marginBottom: 20 }}>Ready workflow endpoints</p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 12 }}>
+            {workflows.map(w => (
+              <div key={w.name} style={{ padding: "20px", background: card, border: `1px solid ${border}`, borderRadius: 14 }}>
+                <p style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.75)", marginBottom: 4 }}>{w.name}</p>
+                <p style={{ fontSize: 12, color: textSec, marginBottom: 12 }}>{w.desc}</p>
+                <code style={{ fontSize: 10.5, fontFamily: "monospace", color: "rgba(201,168,76,0.6)", background: "rgba(0,0,0,0.25)", padding: "5px 9px", borderRadius: 5, display: "block" }}>
+                  {w.endpoint}
+                </code>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* API Pricing */}
+        <div>
+          <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.1em", color: "rgba(255,255,255,0.2)", textTransform: "uppercase" as const, marginBottom: 20 }}>API Plans</p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 12 }}>
+            {apiPlans.map(plan => (
+              <div
+                key={plan.name}
+                style={{ padding: "22px 18px", background: plan.popular ? "rgba(201,168,76,0.04)" : card, border: plan.popular ? `1px solid ${goldBorder}` : `1px solid ${border}`, borderRadius: 16, display: "flex", flexDirection: "column", position: "relative" as const }}
+              >
+                {plan.popular && (
+                  <span style={{ position: "absolute" as const, top: -9, left: "50%", transform: "translateX(-50%)", background: "#c9a84c", color: "#080806", fontSize: 8, fontWeight: 800, padding: "2px 9px", borderRadius: 9999, letterSpacing: "0.1em", whiteSpace: "nowrap" as const }}>
+                    MOST POPULAR
+                  </span>
+                )}
+                <p style={{ fontSize: 13, fontWeight: 700, color: "rgba(255,255,255,0.82)", marginBottom: 3 }}>{plan.name}</p>
+                <p style={{ fontSize: 11, color: "rgba(255,255,255,0.22)", marginBottom: 14, lineHeight: 1.4 }}>{plan.desc}</p>
+                <div style={{ marginBottom: 16 }}>
+                  <span style={{ fontSize: 26, fontWeight: 700, color: plan.popular ? "#c9a84c" : "rgba(255,255,255,0.82)", letterSpacing: "-0.03em" }}>{plan.price}</span>
+                  <span style={{ fontSize: 12, color: "rgba(255,255,255,0.22)" }}>/mo</span>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 6, flex: 1 }}>
+                  {plan.features.map(f => (
+                    <div key={f} style={{ display: "flex", gap: 7, alignItems: "flex-start" }}>
+                      <span style={{ color: plan.popular ? "#c9a84c" : "rgba(201,168,76,0.5)", flexShrink: 0, fontSize: 10, marginTop: 2 }}>✓</span>
+                      <span style={{ fontSize: 12, color: textSec }}>{f}</span>
+                    </div>
+                  ))}
+                </div>
+                <a
+                  href={`${APP_URL}/developer`}
+                  style={{ marginTop: 18, display: "block", textAlign: "center" as const, padding: "8px 0", fontSize: 12, fontWeight: 600, borderRadius: 9999, textDecoration: "none", background: plan.popular ? goldFaint : "rgba(255,255,255,0.04)", border: plan.popular ? `1px solid ${goldBorder}` : `1px solid ${border}`, color: plan.popular ? gold : "rgba(255,255,255,0.35)" }}
+                >
+                  {plan.name === "Private Enterprise" ? "Contact Sales" : "Get Started"}
+                </a>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: 28, textAlign: "center" as const }}>
+            <a
+              href={`${APP_URL}/developer`}
+              style={{ fontSize: 13, color: "rgba(255,255,255,0.2)", textDecoration: "underline", textUnderlineOffset: 3 }}
+            >
+              View full API documentation and workflow details
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  );
+}
+
 export default function HomePage() {
   return (
     <>
@@ -1054,6 +1244,7 @@ export default function HomePage() {
         <IntelligenceLayers />
         <Features />
         <PricingPreview />
+        <ForPlatformsSection />
       </main>
       <SiteFooter />
     </>
