@@ -301,27 +301,215 @@ function ComparisonSection() {
   );
 }
 
-// ─── 3. Business Modes ────────────────────────────────────────────────────────
-function BusinessModesSection() {
-  const modes = [
-    { key: "chairman-standard",  label: "Standard",  desc: "Practical, direct business guidance for everyday platform workflows.",                               tier: "All plans" },
-    { key: "chairman-extended",  label: "Extended",  desc: "Deeper review for longer forms, profiles, listings, and structured documents.",                      tier: "Starter and above" },
-    { key: "chairman-strategic", label: "Strategic", desc: "Planning, positioning, risk review, and competitive business analysis.",                              tier: "Business and above" },
-    { key: "chairman-executive", label: "Executive", desc: "High-stakes summaries, decision briefs, and management-ready recommendations.",                       tier: "Growth and Enterprise" },
-    { key: "chairman-board",     label: "Board",     desc: "Governance-grade analysis, investor reporting, and board-level decision memos.",                      tier: "Enterprise only" },
-  ];
+// ─── 3. Ready Workflow APIs ────────────────────────────────────────────────────
+interface WorkflowCard {
+  name: string;
+  short: string;
+  bestFor: string[];
+  solves: string[];
+  returns: string[];
+  endpoint: string;
+  ctaLabel: string;
+  ctaTarget: string;
+  safetyNote?: string;
+  extraNote?: string;
+  extraList?: string[];
+}
+
+const WORKFLOW_CARDS: WorkflowCard[] = [
+  {
+    name: "Guidance API",
+    short: "Guide users before they submit weak, incomplete, or risky information.",
+    bestFor: ["Onboarding flows", "User profiles", "Job applications", "Service requests", "Business listings", "Investor forms", "Marketplace submissions"],
+    solves: ["Users don't know what to write", "Profiles are incomplete", "Forms are abandoned", "Listings are low quality", "Support teams waste time explaining what's missing"],
+    returns: ["Missing facts", "Weak fields", "Next best actions", "Confidence level", "User-friendly guidance", "Structured checklist"],
+    endpoint: "POST /v1/guidance/profile-check",
+    ctaLabel: "Add guided onboarding",
+    ctaTarget: "api-keys",
+  },
+  {
+    name: "Readiness API",
+    short: "Score whether a profile, post, listing, request, or application is ready to publish.",
+    bestFor: ["Job posts", "Service provider profiles", "Real estate listings", "Investor listings", "Application forms", "Company profiles", "Public marketplace cards"],
+    solves: ["Low-quality listings", "Weak job posts", "Profiles published too early", "Missing business details", "Admin teams manually reviewing everything"],
+    returns: ["Readiness score", "Readiness level", "Missing required fields", "Optional improvements", "Publish warnings", "Next action"],
+    endpoint: "POST /v1/readiness/job-post",
+    ctaLabel: "Improve content quality",
+    ctaTarget: "api-keys",
+  },
+  {
+    name: "Draft API",
+    short: "Generate safe drafts that users must approve before publishing.",
+    bestFor: ["Video CV scripts", "Job post descriptions", "Service request descriptions", "Company summaries", "Investor summaries", "Application messages"],
+    solves: ["Users struggle to write professionally", "Companies publish unclear job posts", "Service requests lack detail", "Users copy weak generic text"],
+    returns: ["Safe draft", "Change summary", "Safety notes", "Editable version", "Suggested next action"],
+    endpoint: "POST /v1/drafts/improve",
+    ctaLabel: "Generate safer drafts",
+    ctaTarget: "api-keys",
+    safetyNote: "Chairman drafts never invent achievements, salaries, certificates, or business results unless the user provides them.",
+  },
+  {
+    name: "Risk Check API",
+    short: "Detect unsupported claims, missing proof, risky language, and weak business data.",
+    bestFor: ["Job posts", "Public profiles", "Investment listings", "Property listings", "Service provider claims", "Company descriptions"],
+    solves: ["Fake or exaggerated claims", "Unclear promises", "Unsupported numbers", "Risky public wording", "Missing proof before publishing"],
+    returns: ["Risk level", "Flagged claims", "Missing proof", "Unsupported statements", "Safer wording", "Recommended fix"],
+    endpoint: "POST /v1/risk/check",
+    ctaLabel: "Protect platform trust",
+    ctaTarget: "api-keys",
+  },
+  {
+    name: "Pulse Events API",
+    short: "Understand where users get stuck, abandon flows, or hit errors.",
+    bestFor: ["SaaS dashboards", "Marketplaces", "Onboarding journeys", "Video recording flows", "Application funnels", "Checkout flows"],
+    solves: ["Users abandon forms", "Camera/microphone errors are invisible", "Admins don't know where users get stuck", "Support tickets arrive after the problem"],
+    returns: ["Event status", "Flow insight", "Failure reason", "Severity level", "Recommended product fix", "Operational log"],
+    endpoint: "POST /v1/pulse/events",
+    ctaLabel: "Add Pulse intelligence",
+    ctaTarget: "pricing",
+    extraList: ["profile_publish_blocked", "video_cv_cancelled", "camera_permission_denied", "job_application_abandoned", "service_request_abandoned"],
+    safetyNote: "Pulse sends safe metadata only. No passwords, private messages, payment data, or ID files.",
+  },
+  {
+    name: "Decision Memo API",
+    short: "Turn business data into structured decision briefs for managers, investors, and teams.",
+    bestFor: ["Investor platforms", "Management dashboards", "Deal review", "Internal approvals", "Board summaries", "Strategic decisions"],
+    solves: ["Scattered business information", "Unclear options", "Slow decision-making", "Weak executive summaries", "No clear recommendation"],
+    returns: ["Executive summary", "Options", "Pros and cons", "Risks", "Confidence level", "Recommendation", "Next step"],
+    endpoint: "POST /v1/decision/memo",
+    ctaLabel: "Create decision briefs",
+    ctaTarget: "api-keys",
+  },
+  {
+    name: "Custom Workflow API",
+    short: "Build private endpoints for your exact platform, industry, and business rules.",
+    bestFor: ["SaaS companies", "Marketplaces", "Private portals", "Investor clubs", "Real estate platforms", "Internal enterprise systems"],
+    solves: ["Generic AI doesn't understand the business flow", "Every platform has different rules", "Developers don't want to build prompt systems from zero"],
+    returns: ["Custom structured output", "Workflow-specific scoring", "Client-specific rules", "Safe drafts", "Audit logs", "Private endpoint documentation"],
+    endpoint: "POST /v1/workflows/{client}/{workflow}",
+    ctaLabel: "Request custom workflow",
+    ctaTarget: "custom-workflow",
+  },
+  {
+    name: "Translation & Localization API",
+    short: "Adapt business guidance across languages without sounding like machine translation.",
+    bestFor: ["Arabic/English platforms", "GCC companies", "International marketplaces", "Recruitment platforms", "Education platforms"],
+    solves: ["Translated content sounds unnatural", "Arabic output feels like translated English", "Tone doesn't match local business culture", "Platforms need RTL-ready outputs"],
+    returns: ["Localized text", "Language-specific tone", "RTL/LTR display hints", "Translated safe drafts", "Next actions in the selected language"],
+    endpoint: "POST /v1/localization/business-text",
+    ctaLabel: "Localize workflows",
+    ctaTarget: "api-keys",
+  },
+  {
+    name: "Compliance Guard API",
+    short: "Keep AI output inside the rules your business defines.",
+    bestFor: ["Regulated platforms", "Job platforms", "Investment platforms", "Legal document workflows", "Financial service portals", "Enterprise systems"],
+    solves: ["AI inventing facts", "AI making promises", "Risky wording", "False verification claims", "Content that violates platform policy"],
+    returns: ["Blocked phrases", "Policy warnings", "Safe replacement", "Approval requirement", "Compliance notes", "Retry/fallback result"],
+    endpoint: "POST /v1/compliance/guard",
+    ctaLabel: "Control AI output",
+    ctaTarget: "api-keys",
+    extraNote: "This is not legal advice. It is platform policy and content safety guidance.",
+  },
+  {
+    name: "Business Scoring API",
+    short: "Turn messy user input into clear business scores your dashboard can use.",
+    bestFor: ["Profile completion", "Provider trust", "Buyer seriousness", "Listing quality", "Job post quality", "Application strength", "Deal readiness"],
+    solves: ["Admins can't quickly compare quality", "Platforms need ranking signals", "Users need clear progress", "Manual review is slow"],
+    returns: ["Score", "Score reason", "Missing data", "Improvement actions", "Risk flags", "Dashboard-ready fields"],
+    endpoint: "POST /v1/scoring/business-readiness",
+    ctaLabel: "Add business scoring",
+    ctaTarget: "api-keys",
+  },
+];
+
+function ReadyWorkflowApisSection() {
   return (
-    <Wrap>
-      <SHead eyebrow="Business Modes" title="Chairman Business Modes" subtitle="Each mode is a calibrated business workflow. Send the mode that fits your use case — no model selection required." />
-      <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, overflow: "hidden", overflowX: "auto" }}>
-        {modes.map((m, i) => (
-          <div key={m.key} style={{ display: "grid", gridTemplateColumns: "190px 1fr 160px", padding: "14px 18px", gap: 14, alignItems: "center", borderBottom: i < modes.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none", minWidth: 560 }}>
-            <code style={{ fontSize: 12, fontFamily: "monospace", color: C.goldText }}>{m.key}</code>
+    <Wrap id="api-products" alt>
+      <SHead
+        eyebrow="API Products"
+        title="Ready Business Workflow APIs"
+        subtitle="Plug controlled business intelligence into the places where your users make decisions, submit forms, publish profiles, apply for jobs, request services, or create listings."
+      />
+      <p style={{ fontSize: 13, color: C.textSec, lineHeight: 1.7, marginBottom: 36, maxWidth: 760 }}>
+        Instead of sending a raw prompt to a general AI model, Chairman API gives your platform structured business outputs your product can use immediately: scores, missing facts, safe drafts, warnings, next actions, and approval-ready recommendations.
+      </p>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 16 }}>
+        {WORKFLOW_CARDS.map(card => (
+          <div key={card.name} style={{ padding: "28px", background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, display: "flex", flexDirection: "column", gap: 16 }}>
             <div>
-              <span style={{ fontSize: 13, fontWeight: 600, color: C.text, marginRight: 10 }}>{m.label}</span>
-              <span style={{ fontSize: 12, color: C.textSec }}>{m.desc}</span>
+              <p style={{ fontSize: 15, fontWeight: 700, color: C.text, marginBottom: 6 }}>{card.name}</p>
+              <p style={{ fontSize: 13, color: C.textSec, lineHeight: 1.55 }}>{card.short}</p>
             </div>
-            <span style={{ fontSize: 11, color: C.textMuted, textAlign: "right" }}>{m.tier}</span>
+
+            <div>
+              <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", color: C.textMuted, marginBottom: 6 }}>BEST FOR</p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                {card.bestFor.map(item => (
+                  <div key={item} style={{ display: "flex", gap: 7, alignItems: "flex-start" }}>
+                    <span style={{ color: C.goldText, fontSize: 9, flexShrink: 0, marginTop: 4 }}>▸</span>
+                    <span style={{ fontSize: 12, color: C.textMuted }}>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", color: C.textMuted, marginBottom: 6 }}>SOLVES</p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                {card.solves.map(item => (
+                  <div key={item} style={{ display: "flex", gap: 7, alignItems: "flex-start" }}>
+                    <span style={{ color: C.danger, fontSize: 9, flexShrink: 0, marginTop: 4 }}>✗</span>
+                    <span style={{ fontSize: 12, color: C.textMuted }}>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", color: C.textMuted, marginBottom: 6 }}>RETURNS</p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                {card.returns.map(item => (
+                  <div key={item} style={{ display: "flex", gap: 7, alignItems: "flex-start" }}>
+                    <span style={{ color: C.gold, fontSize: 9, flexShrink: 0, marginTop: 4 }}>✓</span>
+                    <span style={{ fontSize: 12, color: C.textSec }}>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {card.safetyNote && (
+              <p style={{ fontSize: 11, color: C.textMuted, fontStyle: "italic", lineHeight: 1.5, borderLeft: `2px solid ${C.border}`, paddingLeft: 10 }}>
+                {card.safetyNote}
+              </p>
+            )}
+
+            {card.extraList && (
+              <div>
+                <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", color: C.textMuted, marginBottom: 6 }}>EXAMPLE EVENTS</p>
+                <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                  {card.extraList.map(item => (
+                    <code key={item} style={{ fontSize: 11, fontFamily: "monospace", color: C.goldText }}>{item}</code>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {card.extraNote && (
+              <p style={{ fontSize: 11, color: C.textMuted, fontStyle: "italic", lineHeight: 1.5 }}>{card.extraNote}</p>
+            )}
+
+            <div style={{ marginTop: "auto" }}>
+              <code style={{ fontSize: 11, fontFamily: "monospace", color: C.goldText, background: "rgba(0,0,0,0.25)", padding: "6px 10px", borderRadius: 6, display: "block", marginBottom: 12 }}>
+                {card.endpoint}
+              </code>
+              <button
+                onClick={() => jumpTo(card.ctaTarget)}
+                style={{ width: "100%", padding: "8px 0", fontSize: 12, fontWeight: 600, cursor: "pointer", borderRadius: 7, background: C.goldFaint, border: `1px solid ${C.goldBorder}`, color: C.gold }}
+              >
+                {card.ctaLabel}
+              </button>
+            </div>
           </div>
         ))}
       </div>
@@ -329,35 +517,135 @@ function BusinessModesSection() {
   );
 }
 
-// ─── 4. API Products ──────────────────────────────────────────────────────────
-const API_PRODUCTS = [
-  { name: "Guidance API",         use: "Profiles, forms, onboarding, applications, and user journeys.",                      returns: "Missing fields, risks, next actions, confidence.",           endpoint: "POST /v1/guidance/profile-check" },
-  { name: "Draft API",            use: "Generate safe drafts users can approve before publishing.",                           returns: "Editable drafts, change summary, safety notes.",             endpoint: "POST /v1/drafts/improve" },
-  { name: "Readiness API",        use: "Score if a profile, job post, listing, or request is ready.",                        returns: "Readiness score, missing data, publish warnings.",           endpoint: "POST /v1/readiness/job-post" },
-  { name: "Risk Check API",       use: "Detect unsupported claims, missing proof, risky wording, or weak business data.",    returns: "Risk level, flagged claims, recommended fixes.",             endpoint: "POST /v1/risk/check" },
-  { name: "Pulse Events API",     use: "Send product events and detect where users get stuck.",                               returns: "Event status, operational insight, recommended fixes.",       endpoint: "POST /v1/pulse/events" },
-  { name: "Decision Memo API",    use: "Turn business data into a structured decision brief.",                                returns: "Summary, options, risks, recommendation, next step.",        endpoint: "POST /v1/decision/memo" },
-  { name: "Custom Workflow API",  use: "Private workflows built for your exact platform and business rules.",                 returns: "Custom structured output based on your business rules.",     endpoint: "POST /v1/workflows/{client}/{workflow}" },
+// ─── 4. Who Should Use ────────────────────────────────────────────────────────
+interface PersonaCard {
+  title: string;
+  pain: string;
+  chairman: string;
+  pack: string[];
+  ctaLabel: string;
+  ctaTarget: string;
+}
+
+const PERSONAS: PersonaCard[] = [
+  {
+    title: "SaaS Founders",
+    pain: "You need AI features but don't want to build prompts, safety, scoring, and logs from scratch.",
+    chairman: "Ready workflows, structured outputs, usage control, and admin visibility.",
+    pack: ["Guidance API", "Readiness API", "Pulse Events"],
+    ctaLabel: "See workflows",
+    ctaTarget: "api-products",
+  },
+  {
+    title: "Marketplace Owners",
+    pain: "Users publish weak profiles, unclear requests, and low-quality listings.",
+    chairman: "Guidance, readiness scoring, safer drafts, and trust signals.",
+    pack: ["Guidance API", "Readiness API", "Risk Check API"],
+    ctaLabel: "See workflows",
+    ctaTarget: "api-products",
+  },
+  {
+    title: "Recruitment Platforms",
+    pain: "Job seekers struggle to present themselves, and companies publish weak job posts.",
+    chairman: "Profile guidance, video CV scripts, job fit, job post readiness.",
+    pack: ["Recruitment Pack", "Guidance API", "Readiness API"],
+    ctaLabel: "See industry packs",
+    ctaTarget: "industry-packs",
+  },
+  {
+    title: "Real Estate Platforms",
+    pain: "Listings lack proof, buyers are hard to qualify, and investment details are incomplete.",
+    chairman: "Listing readiness, buyer seriousness, risk flags, investment summaries.",
+    pack: ["Real Estate Pack", "Readiness API", "Risk Check API"],
+    ctaLabel: "See industry packs",
+    ctaTarget: "industry-packs",
+  },
+  {
+    title: "Investor Platforms",
+    pain: "Business opportunities need structure before investors can review them.",
+    chairman: "Deal memos, missing facts, introduction risk, investor-ready summaries.",
+    pack: ["Investor Pack", "Decision Memo API"],
+    ctaLabel: "See industry packs",
+    ctaTarget: "industry-packs",
+  },
+  {
+    title: "Service Marketplaces",
+    pain: "Providers don't explain services well and customers submit unclear requests.",
+    chairman: "Provider guidance, request improvement, trust scoring, draft replies.",
+    pack: ["Services Pack", "Draft API", "Business Scoring API"],
+    ctaLabel: "See workflows",
+    ctaTarget: "api-products",
+  },
+  {
+    title: "Agencies and Consultants",
+    pain: "Clients need AI features but custom implementation takes too long.",
+    chairman: "White-label workflows, custom endpoints, business-ready API products.",
+    pack: ["Custom Workflow API"],
+    ctaLabel: "Request custom setup",
+    ctaTarget: "custom-workflow",
+  },
+  {
+    title: "Enterprise Teams",
+    pain: "Internal workflows need control, auditability, and safe outputs.",
+    chairman: "Private workflows, custom rules, logs, admin control, optional private deployment.",
+    pack: ["Compliance Guard", "Custom Workflow", "Private Enterprise"],
+    ctaLabel: "Request Enterprise",
+    ctaTarget: "custom-workflow",
+  },
+  {
+    title: "Developers",
+    pain: "Normal AI APIs are powerful but require too much prompt engineering and validation.",
+    chairman: "Ready endpoints, structured JSON, policy guard, retry/sanitize/fallback.",
+    pack: ["All APIs", "Sandbox Plan"],
+    ctaLabel: "Start Sandbox",
+    ctaTarget: "api-keys",
+  },
+  {
+    title: "Non-technical Business Owners",
+    pain: "You want smart features in your platform but don't know how to design AI logic.",
+    chairman: "Business workflows that can be connected by your developer without building everything from zero.",
+    pack: ["All packs available"],
+    ctaLabel: "Talk to Chairman AI",
+    ctaTarget: "final-cta",
+  },
 ];
 
-function ApiProductsSection() {
+function WhoShouldUseSection() {
   return (
-    <Wrap alt id="api-products">
-      <SHead eyebrow="API Products" title="Choose your workflow." subtitle="Ready business workflow endpoints. Connect what your platform needs — or request a custom workflow built for your system." />
+    <Wrap id="who-should-use">
+      <SHead
+        eyebrow="For platforms"
+        title="Who should use Chairman API?"
+        subtitle="Built for platforms where users must complete serious business actions — not just chat."
+      />
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 14 }}>
-        {API_PRODUCTS.map(prod => (
-          <div key={prod.name} style={{ padding: "22px", background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, display: "flex", flexDirection: "column", gap: 12 }}>
+        {PERSONAS.map(persona => (
+          <div key={persona.title} style={{ padding: "24px", background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, display: "flex", flexDirection: "column", gap: 12 }}>
+            <p style={{ fontSize: 14, fontWeight: 700, color: C.text }}>{persona.title}</p>
             <div>
-              <p style={{ fontSize: 14, fontWeight: 700, color: C.text, marginBottom: 5 }}>{prod.name}</p>
-              <p style={{ fontSize: 12, color: C.textSec, lineHeight: 1.55 }}>{prod.use}</p>
+              <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", color: C.textMuted, marginBottom: 5 }}>CHALLENGE</p>
+              <p style={{ fontSize: 12, color: C.textSec, lineHeight: 1.55 }}>{persona.pain}</p>
             </div>
             <div>
-              <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", color: C.textMuted, marginBottom: 4 }}>RETURNS</p>
-              <p style={{ fontSize: 12, color: C.textMuted, lineHeight: 1.5 }}>{prod.returns}</p>
+              <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", color: C.textMuted, marginBottom: 5 }}>CHAIRMAN GIVES YOU</p>
+              <p style={{ fontSize: 12, color: C.textSec, lineHeight: 1.55 }}>{persona.chairman}</p>
             </div>
-            <code style={{ fontSize: 11, fontFamily: "monospace", color: C.goldText, background: "rgba(0,0,0,0.25)", padding: "6px 10px", borderRadius: 6, display: "block", marginTop: "auto" }}>
-              {prod.endpoint}
-            </code>
+            <div>
+              <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", color: C.textMuted, marginBottom: 6 }}>SUGGESTED PACK</p>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+                {persona.pack.map(p => (
+                  <span key={p} style={{ fontSize: 10, fontWeight: 600, padding: "3px 8px", borderRadius: 4, background: C.goldFaint, border: `1px solid ${C.goldBorder}`, color: C.goldText }}>
+                    {p}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <button
+              onClick={() => jumpTo(persona.ctaTarget)}
+              style={{ marginTop: "auto", padding: "7px 0", fontSize: 12, fontWeight: 600, cursor: "pointer", borderRadius: 7, background: "none", border: `1px solid ${C.border}`, color: C.textMuted, width: "100%" }}
+            >
+              {persona.ctaLabel}
+            </button>
           </div>
         ))}
       </div>
@@ -366,36 +654,124 @@ function ApiProductsSection() {
 }
 
 // ─── 5. Industry Packs ────────────────────────────────────────────────────────
-const INDUSTRY_PACKS = [
-  { name: "Recruitment Platforms",   examples: ["Profile guidance", "Video CV scripts", "Job fit scoring", "Job post readiness"] },
-  { name: "Real Estate Platforms",   examples: ["Listing readiness", "Buyer seriousness check", "Property risk check", "Investment summary"] },
-  { name: "Investor Platforms",      examples: ["Investor profile check", "Business listing readiness", "Deal memo", "Introduction risk"] },
-  { name: "Services Marketplaces",   examples: ["Provider trust scoring", "Request improvement", "Quote guidance", "Profile readiness"] },
-  { name: "Education Platforms",     examples: ["Student profile guidance", "Course fit scoring", "Application review", "Learning plan drafts"] },
-  { name: "E-commerce",              examples: ["Product listing readiness", "Buyer support drafts", "Return-risk guidance"] },
-  { name: "CRM / Sales",             examples: ["Lead quality scoring", "Sales script improvement", "Follow-up drafting", "Deal risk check"] },
-  { name: "Legal Document Review",   examples: ["Missing facts detection", "Risky wording check", "Clause summary", "Document readiness"] },
-  { name: "Hospitality / Travel",    examples: ["Guest request improvement", "Listing quality check", "Complaint response drafts"] },
-  { name: "Custom Private System",   examples: ["Private workflows", "Your exact business rules", "Custom structured outputs"] },
+interface IndustryPack {
+  name: string;
+  forLine: string;
+  workflows: string[];
+  outputs: string[];
+  note?: string;
+}
+
+const INDUSTRY_PACKS_DATA: IndustryPack[] = [
+  {
+    name: "Recruitment Pack",
+    forLine: "Job boards, HR platforms, CV builders, hiring marketplaces",
+    workflows: ["Job seeker profile check", "Video CV script", "Improve script", "Job fit", "Job post readiness"],
+    outputs: ["Readiness score", "Script draft", "Missing facts", "Fit guidance"],
+  },
+  {
+    name: "Real Estate Pack",
+    forLine: "Property platforms, brokers, investment listing sites",
+    workflows: ["Listing readiness", "Buyer seriousness", "Property risk check", "Investment summary"],
+    outputs: ["Listing score", "Missing documents", "Risk flags", "Buyer questions"],
+  },
+  {
+    name: "Investor Platform Pack",
+    forLine: "Investor clubs, business-for-sale platforms, funding marketplaces",
+    workflows: ["Investor profile guidance", "Business listing readiness", "Deal memo", "Introduction risk"],
+    outputs: ["Deal summary", "Missing facts", "Risk level", "Next action"],
+  },
+  {
+    name: "Services Marketplace Pack",
+    forLine: "Freelance platforms, service request apps, local service marketplaces",
+    workflows: ["Provider profile check", "Service request improvement", "Quote guidance", "Trust score"],
+    outputs: ["Provider score", "Request draft", "Missing info", "Trust suggestions"],
+  },
+  {
+    name: "Education Pack",
+    forLine: "Schools, course platforms, training portals",
+    workflows: ["Student profile guidance", "Course fit", "Application review", "Study plan draft"],
+    outputs: ["Fit level", "Missing info", "Plan draft", "Next action"],
+  },
+  {
+    name: "E-commerce Pack",
+    forLine: "Marketplaces, product sellers, catalog platforms",
+    workflows: ["Product listing readiness", "Buyer support draft", "Return-risk guidance", "Product Q&A improvement"],
+    outputs: ["Listing score", "Missing specs", "Safer descriptions", "Support draft"],
+  },
+  {
+    name: "CRM / Sales Pack",
+    forLine: "Sales teams, lead platforms, CRM products",
+    workflows: ["Lead quality score", "Follow-up draft", "Sales script improvement", "Deal risk"],
+    outputs: ["Lead score", "Follow-up draft", "Risk flags", "Next step"],
+  },
+  {
+    name: "Legal Document Review Pack",
+    forLine: "Document platforms, compliance teams, admin review tools",
+    workflows: ["Missing facts", "Clause summary", "Risky wording", "Document readiness"],
+    outputs: ["Missing points", "Risk notes", "Plain-language summary"],
+    note: "Does not constitute legal advice.",
+  },
+  {
+    name: "Hospitality / Travel Pack",
+    forLine: "Travel platforms, hotels, concierge apps, rental platforms",
+    workflows: ["Guest request improvement", "Listing quality check", "Complaint response draft", "Booking issue summary"],
+    outputs: ["Clear request", "Response draft", "Issue level", "Next action"],
+  },
+  {
+    name: "Custom Private System Pack",
+    forLine: "Companies with unique workflows",
+    workflows: ["Built around your exact forms, users, rules, and approval process"],
+    outputs: ["Custom structured JSON", "Custom scoring", "Private workflow logic"],
+  },
 ];
 
 function IndustryPacksSection() {
   return (
-    <Wrap>
-      <SHead eyebrow="Industry Packs" title="Start faster with ready workflow packs." subtitle="Industry-specific workflow packs adapted to your business type. Deploy faster with pre-configured guidance rules." />
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 14 }}>
-        {INDUSTRY_PACKS.map(pack => (
-          <div key={pack.name} style={{ padding: "20px", background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, display: "flex", flexDirection: "column", gap: 12 }}>
-            <p style={{ fontSize: 13, fontWeight: 700, color: C.text }}>{pack.name}</p>
-            <div style={{ display: "flex", flexDirection: "column", gap: 6, flex: 1 }}>
-              {pack.examples.map(ex => (
-                <div key={ex} style={{ display: "flex", gap: 7, alignItems: "flex-start" }}>
-                  <span style={{ color: C.goldText, fontSize: 10, flexShrink: 0, marginTop: 3 }}>▸</span>
-                  <span style={{ fontSize: 12, color: C.textSec }}>{ex}</span>
-                </div>
-              ))}
+    <Wrap id="industry-packs" alt>
+      <SHead
+        eyebrow="Industry Packs"
+        title="Start faster with ready workflow packs."
+        subtitle="Industry-specific workflow packs adapted to your business type."
+      />
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 14 }}>
+        {INDUSTRY_PACKS_DATA.map(pack => (
+          <div key={pack.name} style={{ padding: "24px", background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, display: "flex", flexDirection: "column", gap: 14 }}>
+            <div>
+              <p style={{ fontSize: 14, fontWeight: 700, color: C.text, marginBottom: 4 }}>{pack.name}</p>
+              <p style={{ fontSize: 11, color: C.textMuted, lineHeight: 1.5 }}>
+                <span style={{ fontWeight: 600, color: C.goldText }}>For:</span> {pack.forLine}
+              </p>
             </div>
-            <button onClick={() => jumpTo("custom-workflow")} style={{ marginTop: 4, padding: "7px 0", fontSize: 12, fontWeight: 600, cursor: "pointer", background: "none", border: `1px solid ${C.border}`, borderRadius: 7, color: C.textMuted, width: "100%" }}>
+            <div>
+              <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", color: C.textMuted, marginBottom: 6 }}>WORKFLOWS</p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                {pack.workflows.map(w => (
+                  <div key={w} style={{ display: "flex", gap: 7, alignItems: "flex-start" }}>
+                    <span style={{ color: C.goldText, fontSize: 9, flexShrink: 0, marginTop: 4 }}>▸</span>
+                    <span style={{ fontSize: 12, color: C.textSec }}>{w}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", color: C.textMuted, marginBottom: 6 }}>OUTPUTS</p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                {pack.outputs.map(o => (
+                  <div key={o} style={{ display: "flex", gap: 7, alignItems: "flex-start" }}>
+                    <span style={{ color: C.gold, fontSize: 9, flexShrink: 0, marginTop: 4 }}>✓</span>
+                    <span style={{ fontSize: 12, color: C.textSec }}>{o}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            {pack.note && (
+              <p style={{ fontSize: 11, color: C.textMuted, fontStyle: "italic" }}>{pack.note}</p>
+            )}
+            <button
+              onClick={() => jumpTo("custom-workflow")}
+              style={{ marginTop: "auto", padding: "7px 0", fontSize: 12, fontWeight: 600, cursor: "pointer", background: "none", border: `1px solid ${C.border}`, borderRadius: 7, color: C.textMuted, width: "100%" }}
+            >
               Request this pack
             </button>
           </div>
@@ -405,19 +781,60 @@ function IndustryPacksSection() {
   );
 }
 
-// ─── 6. Structured Output ─────────────────────────────────────────────────────
+// ─── 6. Process Flow ──────────────────────────────────────────────────────────
+const PROCESS_STEPS = [
+  { num: "1", title: "User submits data", desc: "A profile, job post, request, listing, or business form." },
+  { num: "2", title: "Chairman applies workflow rules", desc: "The API understands what the platform is trying to achieve." },
+  { num: "3", title: "Safety checks run", desc: "Unsupported claims, fake numbers, risky wording, and missing proof are detected." },
+  { num: "4", title: "Structured output returns", desc: "Scores, missing facts, risks, safe drafts, and next actions." },
+  { num: "5", title: "User approves", desc: "Nothing is auto-published without user or platform approval." },
+  { num: "6", title: "Platform improves", desc: "Better content, fewer abandoned flows, stronger trust, cleaner data." },
+];
+
+function ProcessFlowSection() {
+  return (
+    <Wrap id="process-flow">
+      <SHead
+        eyebrow="How it works"
+        title="From raw input to business output."
+        subtitle="Chairman API transforms user data into structured, safe, approval-ready business intelligence."
+      />
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "flex-start" }}>
+        {PROCESS_STEPS.map((step, i) => (
+          <div key={step.num} style={{ display: "flex", alignItems: "flex-start", gap: 8, flexWrap: "wrap" }}>
+            <div style={{ padding: "20px", background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, minWidth: 160, maxWidth: 200, flex: "1 1 160px" }}>
+              <div style={{ fontSize: 18, fontWeight: 800, color: C.gold, marginBottom: 8, lineHeight: 1 }}>{step.num}</div>
+              <p style={{ fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 6 }}>{step.title}</p>
+              <p style={{ fontSize: 12, color: C.textSec, lineHeight: 1.55 }}>{step.desc}</p>
+            </div>
+            {i < PROCESS_STEPS.length - 1 && (
+              <div style={{ alignSelf: "center", fontSize: 18, color: C.gold, fontWeight: 700, padding: "0 4px", flexShrink: 0 }}>→</div>
+            )}
+          </div>
+        ))}
+      </div>
+    </Wrap>
+  );
+}
+
+// ─── 7. Structured Output ─────────────────────────────────────────────────────
 const OUTPUT_EXAMPLE = `{
-  "readinessScore": 78,
-  "confidence": "medium",
+  "completionPercentage": 72,
+  "readinessLevel": "almost_ready",
   "missingFacts": [
-    "Salary range is missing",
-    "Application deadline is missing"
+    "Previous company name",
+    "Video CV",
+    "Location preference"
   ],
   "risks": [
-    "Benefits are mentioned but not clearly defined"
+    "Experience mentioned but not supported with examples"
   ],
-  "safeDraft": "Updated job post draft...",
-  "nextBestAction": "Add salary range and deadline before publishing."
+  "nextBestActions": [
+    "Add a short video CV",
+    "Add one real example of your sales experience"
+  ],
+  "safeDraft": "Suggested profile summary...",
+  "requiresUserApproval": true
 }`;
 
 function StructuredOutputSection() {
@@ -437,19 +854,24 @@ function StructuredOutputSection() {
         </div>
         <div style={{ background: "rgba(0,0,0,0.3)", border: `1px solid ${C.border}`, borderRadius: 12, overflow: "hidden" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 14px", background: "rgba(255,255,255,0.02)", borderBottom: `1px solid ${C.border}` }}>
-            <span style={{ fontSize: 11, color: C.textMuted, fontWeight: 500 }}>Example response — Readiness API</span>
+            <span style={{ fontSize: 11, color: C.textMuted, fontWeight: 500 }}>Example response — Profile Guidance API</span>
             <CopyButton text={OUTPUT_EXAMPLE} />
           </div>
           <pre style={{ margin: 0, padding: "18px 16px", fontSize: 12, fontFamily: "monospace", color: "rgba(255,255,255,0.7)", lineHeight: 1.75, overflowX: "auto", whiteSpace: "pre" }}>
             {OUTPUT_EXAMPLE}
           </pre>
+          <div style={{ padding: "10px 16px 14px", borderTop: `1px solid ${C.border}` }}>
+            <p style={{ fontSize: 12, color: C.textMuted, lineHeight: 1.55 }}>
+              This response can be shown directly inside your product UI. Your platform gets structure, not just text.
+            </p>
+          </div>
         </div>
       </div>
     </Wrap>
   );
 }
 
-// ─── 7. Developer Examples ────────────────────────────────────────────────────
+// ─── 8. Developer Examples ────────────────────────────────────────────────────
 const DEV_EXAMPLES = [
   {
     label: "Profile Check",
@@ -522,83 +944,52 @@ function DeveloperExamplesSection() {
   );
 }
 
-// ─── 8. Pricing ───────────────────────────────────────────────────────────────
-const PRICING_PLANS = [
+// ─── 9. Implementation Options ────────────────────────────────────────────────
+const IMPL_OPTIONS = [
   {
-    key: "sandbox",
-    name: "API Sandbox",
-    price: "$9",
-    desc: "For testing and small experiments.",
-    features: ["300 API calls / month", "Standard mode", "1 project", "Developer test dashboard", "Basic structured outputs"],
-    note: "Not for production-heavy usage",
-    popular: false,
+    title: "API only",
+    desc: "For teams with developers. Use REST endpoints and structured JSON. Start in minutes with any language.",
+    ctaLabel: "Start Sandbox",
+    ctaTarget: "api-keys",
   },
   {
-    key: "starter",
-    name: "API Starter",
-    price: "$19",
-    desc: "For small websites and early integrations.",
-    features: ["1,000 API calls / month", "Standard + Guidance workflows", "30 requests / minute", "1 project", "Basic safety validation", "Usage dashboard"],
-    popular: false,
+    title: "API + ready UI blocks",
+    desc: "For platforms that want faster implementation. Use prebuilt guidance cards, draft panels, readiness widgets.",
+    ctaLabel: "Talk to Chairman AI",
+    ctaTarget: "final-cta",
   },
   {
-    key: "business",
-    name: "API Business",
-    price: "$49",
-    desc: "For active platforms that need real business workflows.",
-    features: ["5,000 API calls / month", "All workflow APIs", "Industry pack included", "Arabic + English", "Pulse events", "Admin dashboard", "Safety validation", "Custom rules"],
-    popular: true,
+    title: "Custom workflow setup",
+    desc: "For businesses that need a private workflow designed around their own forms, users, and rules.",
+    ctaLabel: "Request custom workflow",
+    ctaTarget: "custom-workflow",
   },
   {
-    key: "growth",
-    name: "API Growth",
-    price: "$149",
-    desc: "For SaaS platforms and marketplaces with higher volume.",
-    features: ["25,000 API calls / month", "Multiple workflows", "Custom endpoints", "Webhooks", "Pulse intelligence", "Higher rate limits", "Priority routing"],
-    popular: false,
-  },
-  {
-    key: "enterprise",
-    name: "Private Enterprise",
-    price: "From $399",
-    desc: "For serious companies and private systems.",
-    features: ["Custom volume", "Private business constitution", "Custom workflows", "Advanced logs", "Dedicated routing", "Optional private deployment", "Custom integration support"],
-    popular: false,
+    title: "Enterprise / private deployment",
+    desc: "For companies needing stronger data control, custom routing, and dedicated support.",
+    ctaLabel: "Request Enterprise",
+    ctaTarget: "custom-workflow",
   },
 ];
 
-function PricingSection() {
+function ImplementationOptionsSection() {
   return (
-    <Wrap alt id="pricing">
-      <SHead center eyebrow="API Plans" title="Pricing built for platforms." subtitle="Start with a sandbox and scale to a private enterprise deployment." />
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 14 }}>
-        {PRICING_PLANS.map(plan => (
-          <div key={plan.key} style={{ padding: "24px 20px", background: plan.popular ? "rgba(201,168,76,0.05)" : C.card, border: plan.popular ? `1px solid ${C.goldBorder}` : `1px solid ${C.border}`, borderRadius: 12, display: "flex", flexDirection: "column", position: "relative" }}>
-            {plan.popular && (
-              <span style={{ position: "absolute", top: -10, left: "50%", transform: "translateX(-50%)", background: C.gold, color: "#111114", fontSize: 9, fontWeight: 800, padding: "3px 10px", borderRadius: 10, letterSpacing: "0.1em", whiteSpace: "nowrap" }}>
-                MOST POPULAR
-              </span>
-            )}
-            <p style={{ fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 4 }}>{plan.name}</p>
-            <p style={{ fontSize: 11, color: C.textMuted, marginBottom: 16, lineHeight: 1.4 }}>{plan.desc}</p>
-            <div style={{ marginBottom: 18 }}>
-              <span style={{ fontSize: 28, fontWeight: 700, color: plan.popular ? C.gold : C.text }}>{plan.price}</span>
-              <span style={{ fontSize: 12, color: C.textMuted }}>/mo</span>
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 7, marginBottom: 16, flex: 1 }}>
-              {plan.features.map(f => (
-                <div key={f} style={{ display: "flex", gap: 7, alignItems: "flex-start" }}>
-                  <span style={{ color: plan.popular ? C.gold : C.goldText, flexShrink: 0, fontSize: 11, marginTop: 1 }}>✓</span>
-                  <span style={{ fontSize: 12, color: C.textSec }}>{f}</span>
-                </div>
-              ))}
-            </div>
-            {plan.note && <p style={{ fontSize: 11, color: C.textMuted, fontStyle: "italic", marginBottom: 14 }}>{plan.note}</p>}
+    <Wrap id="implementation" alt>
+      <SHead
+        eyebrow="Integration"
+        title="How you can integrate."
+        subtitle="Choose the integration path that fits your team and timeline."
+      />
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 14 }}>
+        {IMPL_OPTIONS.map(opt => (
+          <div key={opt.title} style={{ padding: "24px", background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, display: "flex", flexDirection: "column", gap: 12 }}>
+            <p style={{ fontSize: 14, fontWeight: 700, color: C.text }}>{opt.title}</p>
+            <p style={{ fontSize: 13, color: C.textSec, lineHeight: 1.6, flex: 1 }}>{opt.desc}</p>
             <button
-              onClick={() => jumpTo(plan.key === "enterprise" ? "custom-workflow" : "api-keys")}
-              style={{ padding: "8px 0", fontSize: 12, fontWeight: 600, cursor: "pointer", borderRadius: 8, width: "100%", background: plan.popular ? C.goldFaint : "rgba(255,255,255,0.04)", border: plan.popular ? `1px solid ${C.goldBorder}` : `1px solid ${C.border}`, color: plan.popular ? C.gold : C.textSec }}
+              onClick={() => jumpTo(opt.ctaTarget)}
+              style={{ padding: "8px 0", fontSize: 12, fontWeight: 600, cursor: "pointer", borderRadius: 7, background: C.goldFaint, border: `1px solid ${C.goldBorder}`, color: C.gold, width: "100%" }}
             >
-              {plan.key === "enterprise" ? "Contact Sales" : "Get Started"}
+              {opt.ctaLabel}
             </button>
           </div>
         ))}
@@ -607,69 +998,7 @@ function PricingSection() {
   );
 }
 
-// ─── 9. Custom Workflow ───────────────────────────────────────────────────────
-const CUSTOM_EXAMPLES = [
-  { industry: "Recruitment",         endpoints: ["POST /v1/workflows/recruitment/video-cv-script", "POST /v1/workflows/recruitment/job-fit"] },
-  { industry: "Real Estate",         endpoints: ["POST /v1/workflows/real-estate/listing-readiness", "POST /v1/workflows/real-estate/buyer-seriousness"] },
-  { industry: "Investor Platforms",  endpoints: ["POST /v1/workflows/investors/deal-memo", "POST /v1/workflows/investors/introduction-risk"] },
-  { industry: "Services Marketplace",endpoints: ["POST /v1/workflows/services/provider-trust", "POST /v1/workflows/services/request-improvement"] },
-];
-
-function CustomWorkflowSection() {
-  return (
-    <Wrap id="custom-workflow">
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 48, alignItems: "start" }}>
-        <div>
-          <SHead eyebrow="Custom API Workflows" title="Private endpoints built for your platform." subtitle="For each client, Chairman can create private workflow endpoints based on their exact platform rules and business context." />
-          <button onClick={() => jumpTo("final-cta")} style={{ padding: "10px 22px", borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: "pointer", background: C.goldFaint, border: `1px solid ${C.goldBorder}`, color: C.gold }}>
-            Request Custom Workflow
-          </button>
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          {CUSTOM_EXAMPLES.map(({ industry, endpoints }) => (
-            <div key={industry} style={{ padding: "16px 18px", background: C.card, border: `1px solid ${C.border}`, borderRadius: 10 }}>
-              <p style={{ fontSize: 12, fontWeight: 600, color: C.textSec, marginBottom: 10 }}>{industry}</p>
-              {endpoints.map(ep => (
-                <code key={ep} style={{ display: "block", fontSize: 11, fontFamily: "monospace", color: C.goldText, marginBottom: 4 }}>{ep}</code>
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
-    </Wrap>
-  );
-}
-
-// ─── 10. Safety ───────────────────────────────────────────────────────────────
-const SAFETY_CONTROLS = [
-  "No unsupported claims in outputs",
-  "No invented numbers or statistics",
-  "No unverified certificates or credentials",
-  "Draft approval before publishing",
-  "Missing facts detection per field",
-  "Client rules enforced per workflow",
-  "Audit-friendly structured outputs",
-  "Rate limits and usage controls",
-  "Manual fallback if API is unavailable",
-];
-
-function SafetySection() {
-  return (
-    <Wrap alt>
-      <SHead eyebrow="Safety and Control" title="Built for controlled business output." subtitle="Chairman API is designed for platforms where trust matters. Every response is governed, validated, and auditable." />
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 10 }}>
-        {SAFETY_CONTROLS.map(c => (
-          <div key={c} style={{ display: "flex", gap: 10, alignItems: "flex-start", padding: "14px 16px", background: C.card, border: `1px solid ${C.border}`, borderRadius: 10 }}>
-            <span style={{ color: C.gold, flexShrink: 0, marginTop: 1 }}>✓</span>
-            <span style={{ fontSize: 13, color: C.textSec }}>{c}</span>
-          </div>
-        ))}
-      </div>
-    </Wrap>
-  );
-}
-
-// ─── 11. Pulse ────────────────────────────────────────────────────────────────
+// ─── 10. Pulse ────────────────────────────────────────────────────────────────
 const PULSE_EVENTS = ["profile_publish_blocked", "video_cv_cancelled", "camera_permission_denied", "job_post_incomplete", "job_application_abandoned", "service_request_abandoned", "form_error", "route_error"];
 
 function PulseSection() {
@@ -705,7 +1034,168 @@ function PulseSection() {
   );
 }
 
-// ─── 12. Final CTA ────────────────────────────────────────────────────────────
+// ─── 11. Safety Strip ─────────────────────────────────────────────────────────
+const SAFETY_ITEMS = [
+  "No unsupported claims",
+  "No fake numbers",
+  "No fake certificates",
+  "No auto-publish",
+  "User approval required",
+  "Rate limits included",
+  "Safe metadata for Pulse",
+  "Manual fallback supported",
+];
+
+function SafetyStripSection() {
+  return (
+    <section id="safety-strip" style={{ borderTop: `1px solid ${C.goldBorder}`, borderBottom: `1px solid ${C.goldBorder}`, background: "rgba(201,168,76,0.04)", padding: "32px 24px" }}>
+      <div style={{ maxWidth: 1080, margin: "0 auto" }}>
+        <p style={{ fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 20, textAlign: "center" }}>Built for platforms where trust matters.</p>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 10, justifyContent: "center" }}>
+          {SAFETY_ITEMS.map(item => (
+            <div key={item} style={{ display: "flex", alignItems: "center", gap: 7, padding: "7px 14px", borderRadius: 9999, border: `1px solid ${C.goldBorder}`, background: "rgba(201,168,76,0.06)" }}>
+              <span style={{ color: C.gold, fontSize: 12, fontWeight: 700 }}>✓</span>
+              <span style={{ fontSize: 12, color: C.textSec }}>{item}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── 12. Pricing ──────────────────────────────────────────────────────────────
+const PRICING_PLANS = [
+  {
+    key: "sandbox",
+    name: "API Sandbox",
+    price: "$9",
+    desc: "Test Chairman workflows before connecting production. For developers, founders, and agencies.",
+    forLine: "Developers, founders, agencies testing Chairman API",
+    features: ["300 API calls / month", "Standard mode", "1 project", "Developer test dashboard", "Basic structured outputs"],
+    note: "Not for production-heavy usage",
+    popular: false,
+    ctaLabel: "Start Sandbox",
+  },
+  {
+    key: "starter",
+    name: "API Starter",
+    price: "$19",
+    desc: "Add guidance to one product flow without building your own AI system. For small websites and first live integrations.",
+    forLine: "Small websites and first live integrations",
+    features: ["1,000 API calls / month", "Standard + Guidance workflows", "30 requests / minute", "1 project", "Basic safety validation", "Usage dashboard"],
+    popular: false,
+    ctaLabel: "Start Starter",
+  },
+  {
+    key: "business",
+    name: "API Business",
+    price: "$49",
+    desc: "The best plan for platforms that want real workflows, scoring, drafts, and Pulse intelligence.",
+    forLine: "Active platforms and marketplaces",
+    features: ["5,000 API calls / month", "All workflow APIs", "Industry pack included", "Arabic + English", "Pulse events", "Admin dashboard", "Safety validation", "Custom rules"],
+    popular: true,
+    ctaLabel: "Choose Business",
+  },
+  {
+    key: "growth",
+    name: "API Growth",
+    price: "$149",
+    desc: "For teams that need higher volume, multiple workflows, custom endpoints, and operational intelligence.",
+    forLine: "SaaS platforms and growing marketplaces",
+    features: ["25,000 API calls / month", "Multiple workflows", "Custom endpoints", "Webhooks", "Pulse intelligence", "Higher rate limits", "Priority routing"],
+    popular: false,
+    ctaLabel: "Scale with Growth",
+  },
+  {
+    key: "enterprise",
+    name: "Private Enterprise",
+    price: "From $399",
+    desc: "A private Chairman API setup built around your business rules, workflows, and approval process.",
+    forLine: "Serious companies and private systems",
+    features: ["Custom volume", "Private business constitution", "Custom workflows", "Advanced logs", "Dedicated routing", "Optional private deployment", "Custom integration support"],
+    popular: false,
+    ctaLabel: "Request Enterprise",
+  },
+];
+
+function PricingSection() {
+  return (
+    <Wrap alt id="pricing">
+      <SHead center eyebrow="API Plans" title="Pricing built for platforms." subtitle="Start with a sandbox and scale to a private enterprise deployment." />
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 14 }}>
+        {PRICING_PLANS.map(plan => (
+          <div key={plan.key} style={{ padding: "24px 20px", background: plan.popular ? "rgba(201,168,76,0.05)" : C.card, border: plan.popular ? `1px solid ${C.goldBorder}` : `1px solid ${C.border}`, borderRadius: 12, display: "flex", flexDirection: "column", position: "relative" }}>
+            {plan.popular && (
+              <span style={{ position: "absolute", top: -10, left: "50%", transform: "translateX(-50%)", background: C.gold, color: "#111114", fontSize: 9, fontWeight: 800, padding: "3px 10px", borderRadius: 10, letterSpacing: "0.1em", whiteSpace: "nowrap" }}>
+                MOST POPULAR
+              </span>
+            )}
+            <p style={{ fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 4 }}>{plan.name}</p>
+            <p style={{ fontSize: 11, color: C.textMuted, marginBottom: 6, lineHeight: 1.4 }}>{plan.desc}</p>
+            <p style={{ fontSize: 10, color: C.goldText, marginBottom: 16, lineHeight: 1.4 }}>
+              <span style={{ fontWeight: 600 }}>For:</span> {plan.forLine}
+            </p>
+            <div style={{ marginBottom: 18 }}>
+              <span style={{ fontSize: 28, fontWeight: 700, color: plan.popular ? C.gold : C.text }}>{plan.price}</span>
+              <span style={{ fontSize: 12, color: C.textMuted }}>/mo</span>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 7, marginBottom: 16, flex: 1 }}>
+              {plan.features.map(f => (
+                <div key={f} style={{ display: "flex", gap: 7, alignItems: "flex-start" }}>
+                  <span style={{ color: plan.popular ? C.gold : C.goldText, flexShrink: 0, fontSize: 11, marginTop: 1 }}>✓</span>
+                  <span style={{ fontSize: 12, color: C.textSec }}>{f}</span>
+                </div>
+              ))}
+            </div>
+            {"note" in plan && plan.note && <p style={{ fontSize: 11, color: C.textMuted, fontStyle: "italic", marginBottom: 14 }}>{plan.note}</p>}
+            <button
+              onClick={() => jumpTo(plan.key === "enterprise" ? "custom-workflow" : "api-keys")}
+              style={{ padding: "8px 0", fontSize: 12, fontWeight: 600, cursor: "pointer", borderRadius: 8, width: "100%", background: plan.popular ? C.goldFaint : "rgba(255,255,255,0.04)", border: plan.popular ? `1px solid ${C.goldBorder}` : `1px solid ${C.border}`, color: plan.popular ? C.gold : C.textSec }}
+            >
+              {plan.ctaLabel}
+            </button>
+          </div>
+        ))}
+      </div>
+    </Wrap>
+  );
+}
+
+// ─── 13. Custom Workflow ──────────────────────────────────────────────────────
+const CUSTOM_EXAMPLES = [
+  { industry: "Recruitment",         endpoints: ["POST /v1/workflows/recruitment/video-cv-script", "POST /v1/workflows/recruitment/job-fit"] },
+  { industry: "Real Estate",         endpoints: ["POST /v1/workflows/real-estate/listing-readiness", "POST /v1/workflows/real-estate/buyer-seriousness"] },
+  { industry: "Investor Platforms",  endpoints: ["POST /v1/workflows/investors/deal-memo", "POST /v1/workflows/investors/introduction-risk"] },
+  { industry: "Services Marketplace",endpoints: ["POST /v1/workflows/services/provider-trust", "POST /v1/workflows/services/request-improvement"] },
+];
+
+function CustomWorkflowSection() {
+  return (
+    <Wrap id="custom-workflow">
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 48, alignItems: "start" }}>
+        <div>
+          <SHead eyebrow="Custom API Workflows" title="Private endpoints built for your platform." subtitle="For each client, Chairman can create private workflow endpoints based on their exact platform rules and business context." />
+          <button onClick={() => jumpTo("final-cta")} style={{ padding: "10px 22px", borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: "pointer", background: C.goldFaint, border: `1px solid ${C.goldBorder}`, color: C.gold }}>
+            Request Custom Workflow
+          </button>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          {CUSTOM_EXAMPLES.map(({ industry, endpoints }) => (
+            <div key={industry} style={{ padding: "16px 18px", background: C.card, border: `1px solid ${C.border}`, borderRadius: 10 }}>
+              <p style={{ fontSize: 12, fontWeight: 600, color: C.textSec, marginBottom: 10 }}>{industry}</p>
+              {endpoints.map(ep => (
+                <code key={ep} style={{ display: "block", fontSize: 11, fontFamily: "monospace", color: C.goldText, marginBottom: 4 }}>{ep}</code>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    </Wrap>
+  );
+}
+
+// ─── 14. Final CTA ────────────────────────────────────────────────────────────
 function FinalCtaSection() {
   return (
     <section id="final-cta" style={{ padding: "80px 24px", borderTop: `1px solid ${C.border}`, textAlign: "center" }}>
@@ -805,15 +1295,17 @@ export default function DeveloperPage() {
         onDismissCreated={() => setCreatedKey(null)}
       />
       <ComparisonSection />
-      <BusinessModesSection />
-      <ApiProductsSection />
+      <ReadyWorkflowApisSection />
+      <WhoShouldUseSection />
       <IndustryPacksSection />
+      <ProcessFlowSection />
       <StructuredOutputSection />
       <DeveloperExamplesSection />
+      <ImplementationOptionsSection />
+      <PulseSection />
+      <SafetyStripSection />
       <PricingSection />
       <CustomWorkflowSection />
-      <SafetySection />
-      <PulseSection />
       <FinalCtaSection />
     </div>
   );
