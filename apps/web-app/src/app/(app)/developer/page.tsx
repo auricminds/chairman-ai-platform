@@ -1195,6 +1195,162 @@ function CustomWorkflowSection() {
   );
 }
 
+// ─── Third Eye Business Intelligence ─────────────────────────────────────────
+const THIRD_EYE_CARDS = [
+  {
+    title: "Tired of developer delays?",
+    copy: "When every improvement depends on long development cycles, your business moves slowly. Chairman API gives you ready guidance, scoring, draft, and risk workflows without building the intelligence layer from zero.",
+    cta: "Speed up product intelligence",
+    anchor: "api-products",
+  },
+  {
+    title: "Spending money without clear visibility?",
+    copy: "Marketing, operations, staff time, and platform errors can drain cash quietly. Chairman Pulse detects weak flows, repeated issues, abandoned actions, and operational signals that deserve immediate attention.",
+    cta: "Find hidden waste",
+    anchor: "api-products",
+  },
+  {
+    title: "Want to detect problems earlier?",
+    copy: "Chairman does not guess the future. It reads patterns in your available data and surfaces early signals before they become expensive problems — giving your team time to act.",
+    cta: "Add early-warning intelligence",
+    anchor: "api-products",
+  },
+  {
+    title: "Want to understand team effectiveness?",
+    copy: "With authorized systems and privacy-aware rules, Chairman can help analyze workflow completion, bottlenecks, response quality, task movement, and team performance signals — so managers get clarity, not guesswork.",
+    cta: "Improve team visibility",
+    anchor: "custom-workflow",
+  },
+  {
+    title: "Want smarter security and camera intelligence?",
+    copy: "Where legally permitted and properly authorized, Chairman can connect with approved security or monitoring systems to summarize incidents, detect patterns, flag unusual activity, and generate operational reports.",
+    cta: "Request security workflow",
+    anchor: "contact-api",
+  },
+  {
+    title: "Want better career and staff development?",
+    copy: "Chairman can help companies understand skill gaps, role readiness, training needs, and career path suggestions — using approved HR data and clear business rules that you define.",
+    cta: "Build career intelligence",
+    anchor: "custom-workflow",
+  },
+  {
+    title: "Want stronger product marketing?",
+    copy: "Chairman can analyze product pages, user behavior signals, campaign drafts, audience fit, and conversion weaknesses to recommend clearer positioning, better messaging, and next actions your team can act on.",
+    cta: "Improve marketing direction",
+    anchor: "custom-workflow",
+  },
+  {
+    title: "Want your platform to guide users automatically?",
+    copy: "Instead of leaving users alone inside forms and dashboards, Chairman guides them step by step — with missing facts, safe drafts, readiness scores, and next actions built directly into your product flow.",
+    cta: "Add guided journeys",
+    anchor: "api-products",
+  },
+];
+
+function ThirdEyeSection() {
+  return (
+    <section id="third-eye" style={{ padding: "80px 24px", borderTop: `1px solid ${C.border}`, background: "rgba(201,168,76,0.018)" }}>
+      <div style={{ maxWidth: 1080, margin: "0 auto" }}>
+
+        {/* Header */}
+        <div style={{ marginBottom: 56, maxWidth: 720 }}>
+          <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.16em", color: C.gold, textTransform: "uppercase", marginBottom: 14 }}>
+            The Third Eye Business Intelligence
+          </p>
+          <h2 style={{ fontSize: "clamp(24px, 3.5vw, 38px)", fontWeight: 700, letterSpacing: "-0.025em", color: C.text, lineHeight: 1.2, marginBottom: 16 }}>
+            When your business feels blind,<br />Chairman becomes the third eye.
+          </h2>
+          <p style={{ fontSize: 15, color: C.textSec, lineHeight: 1.7, marginBottom: 14, maxWidth: 660 }}>
+            For companies that want to see problems earlier, understand what is draining money, improve team performance, and turn scattered data into clear business action.
+          </p>
+          <p style={{ fontSize: 13, color: C.textMuted, lineHeight: 1.7, maxWidth: 640 }}>
+            If you are tired of guessing what is wrong inside your company, Chairman API can turn your platform, team activity, customer flows, forms, dashboards, and operational signals into structured business intelligence — helping you understand where money is being wasted, where users are abandoning your system, which processes are slowing down growth, and which risks are appearing early. Chairman does not replace your team. It gives your team a clearer operating view.
+          </p>
+        </div>
+
+        {/* Pain point cards */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 14, marginBottom: 56 }}>
+          {THIRD_EYE_CARDS.map(card => (
+            <div key={card.title} style={{ padding: "26px 24px", background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, display: "flex", flexDirection: "column", gap: 14 }}>
+              <div>
+                <p style={{ fontSize: 15, fontWeight: 700, color: C.text, marginBottom: 10, lineHeight: 1.3 }}>{card.title}</p>
+                <p style={{ fontSize: 13, color: C.textSec, lineHeight: 1.65 }}>{card.copy}</p>
+              </div>
+              <button
+                onClick={() => jumpTo(card.anchor)}
+                style={{ marginTop: "auto", padding: "8px 14px", borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: "pointer", background: C.goldFaint, border: `1px solid ${C.goldBorder}`, color: C.gold, textAlign: "left", width: "fit-content" }}
+              >
+                {card.cta} →
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {/* Third Eye Company highlighted box */}
+        <div style={{ padding: "40px 36px", background: "rgba(201,168,76,0.05)", border: `1px solid ${C.goldBorder}`, borderRadius: 16, boxShadow: "0 0 60px rgba(201,168,76,0.06)" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 32, alignItems: "start" }}>
+            <div>
+              <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", color: C.gold, textTransform: "uppercase", marginBottom: 12 }}>
+                Private Intelligence Setup
+              </p>
+              <h3 style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", color: C.text, marginBottom: 14, lineHeight: 1.3 }}>
+                Need more than an API?<br />Work directly with The Third Eye Company.
+              </h3>
+              <p style={{ fontSize: 13, color: C.textSec, lineHeight: 1.7, marginBottom: 20 }}>
+                Some companies do not only need API access. They need a private intelligence workflow designed around their real business — their exact forms, systems, risks, and approval process.
+              </p>
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                <button onClick={() => jumpTo("contact-api")} style={{ padding: "10px 20px", borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: "pointer", background: C.goldFaint, border: `1px solid ${C.goldBorder}`, color: C.gold }}>
+                  Contact The Third Eye Company
+                </button>
+                <button onClick={() => jumpTo("custom-workflow")} style={{ padding: "10px 20px", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", background: "rgba(255,255,255,0.04)", border: `1px solid ${C.border}`, color: C.textSec }}>
+                  Request Private Intelligence Setup
+                </button>
+              </div>
+            </div>
+            <div>
+              <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.09em", color: C.textMuted, marginBottom: 14 }}>WHAT WE CAN DESIGN FOR YOU</p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
+                {[
+                  "Private business intelligence workflows",
+                  "Early-warning dashboards and pattern detection",
+                  "Team effectiveness and workflow analysis",
+                  "Platform behavior and user flow analysis",
+                  "Security and operations reporting (authorized systems)",
+                  "Product marketing intelligence and positioning",
+                  "Career path and HR intelligence",
+                  "Cash waste and process bottleneck detection",
+                  "Custom Chairman API endpoints for your company",
+                ].map(item => (
+                  <div key={item} style={{ display: "flex", gap: 9, alignItems: "flex-start" }}>
+                    <span style={{ color: C.gold, flexShrink: 0, fontSize: 12, marginTop: 1 }}>✓</span>
+                    <span style={{ fontSize: 13, color: C.textSec }}>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Trust / safety note */}
+        <div style={{ marginTop: 28, padding: "14px 18px", background: "rgba(255,255,255,0.02)", border: `1px solid ${C.border}`, borderRadius: 10, display: "flex", gap: 12, alignItems: "flex-start" }}>
+          <span style={{ color: C.goldText, fontSize: 14, flexShrink: 0 }}>⚠</span>
+          <p style={{ fontSize: 12, color: C.textMuted, lineHeight: 1.65, margin: 0 }}>
+            <strong style={{ color: C.textSec, fontWeight: 600 }}>Authorized systems only.</strong>{" "}
+            Chairman works only with data and systems you are authorized to use. For employee, camera, HR, security, or sensitive business analysis, customers must follow applicable privacy laws, internal policies, and user consent requirements. Chairman does not enable unauthorized data collection.
+          </p>
+        </div>
+
+      </div>
+    </section>
+  );
+}
+
+// ─── Contact API anchor (empty target for jumpTo) ─────────────────────────────
+function ContactAnchor() {
+  return <div id="contact-api" style={{ scrollMarginTop: 80 }} />;
+}
+
 // ─── 14. Final CTA ────────────────────────────────────────────────────────────
 function FinalCtaSection() {
   return (
@@ -1303,6 +1459,8 @@ export default function DeveloperPage() {
       <DeveloperExamplesSection />
       <ImplementationOptionsSection />
       <PulseSection />
+      <ThirdEyeSection />
+      <ContactAnchor />
       <SafetyStripSection />
       <PricingSection />
       <CustomWorkflowSection />
