@@ -136,15 +136,10 @@ export function Sidebar({ role }: SidebarProps) {
           display: flex;
           align-items: center;
           justify-content: center;
-          transition: background 0.15s, color 0.15s, opacity 0.15s;
+          transition: background 0.15s, color 0.15s;
           flex-shrink: 0;
           padding: 0;
           margin-left: auto;
-          opacity: 0;
-        }
-
-        .sidebar-root:hover .sidebar-collapse-btn {
-          opacity: 1;
         }
 
         .sidebar-collapse-btn:hover {
@@ -287,7 +282,6 @@ export function Sidebar({ role }: SidebarProps) {
         }
 
         .sidebar-root[data-collapsed="true"] .sidebar-collapse-btn {
-          opacity: 1;
           margin-left: 0;
           position: absolute;
           right: 8px;
