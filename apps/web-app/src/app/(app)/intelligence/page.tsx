@@ -298,16 +298,27 @@ export default function IntelligencePage() {
           min-width: 260px;
           height: 100%;
           background: #070708;
-          border-right: 1px solid rgba(255,255,255,0.04);
+          border-right: 1px solid rgba(201,168,76,0.08);
           display: flex;
           flex-direction: column;
           font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", system-ui, sans-serif;
+          box-shadow: inset -1px 0 0 rgba(201,168,76,0.04);
         }
 
         .conv-panel-header {
-          padding: 16px 14px 12px;
+          padding: 14px 12px 12px;
           border-bottom: 1px solid rgba(255,255,255,0.04);
           flex-shrink: 0;
+        }
+
+        .conv-panel-label {
+          font-size: 9px;
+          font-weight: 600;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          color: rgba(201,168,76,0.45);
+          padding: 0 2px;
+          margin-bottom: 9px;
         }
 
         .conv-new-btn {
@@ -317,20 +328,22 @@ export default function IntelligencePage() {
           width: 100%;
           padding: 9px 12px;
           border-radius: 10px;
-          background: rgba(201,168,76,0.08);
-          border: 1px solid rgba(201,168,76,0.18);
-          color: rgba(201,168,76,0.85);
-          font-size: 13px;
+          background: rgba(201,168,76,0.07);
+          border: 1px solid rgba(201,168,76,0.2);
+          color: rgba(201,168,76,0.88);
+          font-size: 12px;
           font-weight: 500;
           cursor: pointer;
           transition: all 0.2s;
           letter-spacing: -0.01em;
+          box-shadow: 0 2px 8px rgba(201,168,76,0.05), inset 0 1px 0 rgba(201,168,76,0.06);
         }
 
         .conv-new-btn:hover {
           background: rgba(201,168,76,0.12);
-          border-color: rgba(201,168,76,0.28);
+          border-color: rgba(201,168,76,0.32);
           color: rgba(201,168,76,1);
+          box-shadow: 0 4px 14px rgba(201,168,76,0.1), inset 0 1px 0 rgba(201,168,76,0.08);
         }
 
         .conv-list {
@@ -339,11 +352,28 @@ export default function IntelligencePage() {
           padding: 8px 6px;
         }
 
+        .conv-list::-webkit-scrollbar {
+          width: 3px;
+        }
+
+        .conv-list::-webkit-scrollbar-track {
+          background: transparent;
+        }
+
+        .conv-list::-webkit-scrollbar-thumb {
+          background: rgba(201,168,76,0.15);
+          border-radius: 999px;
+        }
+
+        .conv-list::-webkit-scrollbar-thumb:hover {
+          background: rgba(201,168,76,0.3);
+        }
+
         .conv-empty {
           padding: 24px 14px;
           text-align: center;
           font-size: 12px;
-          color: rgba(255,255,255,0.4);
+          color: rgba(255,255,255,0.25);
           line-height: 1.6;
         }
 
@@ -351,44 +381,72 @@ export default function IntelligencePage() {
           display: flex;
           align-items: center;
           gap: 8px;
-          padding: 9px 10px;
+          padding: 9px 10px 9px 12px;
           border-radius: 8px;
           cursor: pointer;
-          transition: background 0.15s;
+          transition: background 0.15s, border-color 0.15s;
           margin-bottom: 1px;
+          border: 1px solid transparent;
+          position: relative;
         }
 
         .conv-item:hover {
-          background: rgba(255,255,255,0.04);
+          background: rgba(201,168,76,0.04);
+          border-color: rgba(201,168,76,0.07);
         }
 
         .conv-item.active {
-          background: rgba(201,168,76,0.07);
+          background: rgba(201,168,76,0.09);
+          border-color: rgba(201,168,76,0.18);
+        }
+
+        .conv-item.active::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 20%;
+          bottom: 20%;
+          width: 2px;
+          border-radius: 0 2px 2px 0;
+          background: rgba(201,168,76,0.65);
+          box-shadow: 0 0 6px rgba(201,168,76,0.35);
         }
 
         .conv-item-dot {
-          width: 6px;
-          height: 6px;
+          width: 5px;
+          height: 5px;
           border-radius: 50%;
-          background: rgba(255,255,255,0.15);
+          background: rgba(255,255,255,0.12);
           flex-shrink: 0;
+          transition: background 0.15s, box-shadow 0.15s;
+        }
+
+        .conv-item:hover .conv-item-dot {
+          background: rgba(201,168,76,0.35);
         }
 
         .conv-item.active .conv-item-dot {
-          background: rgba(201,168,76,0.7);
+          background: rgba(201,168,76,0.75);
+          box-shadow: 0 0 5px rgba(201,168,76,0.4);
         }
 
         .conv-item-title {
           font-size: 12px;
-          color: rgba(255,255,255,0.6);
+          color: rgba(255,255,255,0.5);
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
           flex: 1;
+          transition: color 0.15s;
+        }
+
+        .conv-item:hover .conv-item-title {
+          color: rgba(255,255,255,0.72);
         }
 
         .conv-item.active .conv-item-title {
-          color: rgba(255,255,255,0.92);
+          color: rgba(255,255,255,0.9);
+          font-weight: 500;
         }
 
         /* ── Chat panel ── */
@@ -1184,8 +1242,9 @@ export default function IntelligencePage() {
         {/* ── Conversation sidebar ── */}
         <div className={`conv-panel${mobileConvOpen ? " mobile-open" : ""}`}>
           <div className="conv-panel-header">
+            <div className="conv-panel-label">Conversations</div>
             <button className="conv-new-btn" onClick={startNewChat}>
-              <svg style={{ width: 13, height: 13 }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <svg style={{ width: 12, height: 12 }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
               </svg>
               New conversation

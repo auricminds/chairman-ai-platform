@@ -129,22 +129,25 @@ export function Sidebar({ role }: SidebarProps) {
           width: 22px;
           height: 22px;
           border-radius: 6px;
-          background: rgba(255,255,255,0.04);
-          border: 1px solid rgba(255,255,255,0.07);
-          color: rgba(255,255,255,0.4);
+          background: rgba(201,168,76,0.08);
+          border: 1px solid rgba(201,168,76,0.22);
+          color: rgba(201,168,76,0.65);
           cursor: pointer;
           display: flex;
           align-items: center;
           justify-content: center;
-          transition: background 0.15s, color 0.15s;
+          transition: background 0.15s, color 0.15s, border-color 0.15s, box-shadow 0.15s;
           flex-shrink: 0;
           padding: 0;
           margin-left: auto;
+          box-shadow: 0 0 8px rgba(201,168,76,0.06);
         }
 
         .sidebar-collapse-btn:hover {
-          background: rgba(255,255,255,0.08);
-          color: rgba(255,255,255,0.75);
+          background: rgba(201,168,76,0.15);
+          border-color: rgba(201,168,76,0.38);
+          color: rgba(201,168,76,0.95);
+          box-shadow: 0 0 12px rgba(201,168,76,0.12);
         }
 
         .sidebar-nav {
