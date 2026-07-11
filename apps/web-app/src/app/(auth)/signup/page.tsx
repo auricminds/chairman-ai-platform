@@ -5,6 +5,7 @@ import Link from "next/link";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
 const APP_URL = "https://app.ai.chairmans.uk";
+const AUTH_CALLBACK = `${APP_URL}/auth/callback`;
 
 export default function SignUpPage() {
   const [email, setEmail] = useState("");
@@ -21,7 +22,7 @@ export default function SignUpPage() {
     const supabase = getSupabaseBrowserClient();
     const { error: oauthError } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${APP_URL}/intelligence` },
+      options: { redirectTo: AUTH_CALLBACK },
     });
     if (oauthError) {
       setError(oauthError.message);
@@ -51,7 +52,7 @@ export default function SignUpPage() {
       email,
       password,
       options: {
-        emailRedirectTo: `${APP_URL}/intelligence`,
+        emailRedirectTo: AUTH_CALLBACK,
       },
     });
 
