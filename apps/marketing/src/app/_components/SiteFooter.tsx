@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-const APP_URL = "https://app.ai.chairmans.uk";
+const APP_URL = "https://app.chameleoneye.ai";
 
 export function SiteFooter() {
   return (
@@ -33,7 +33,7 @@ export function SiteFooter() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/logo-icon.png"
-              alt="Chairman AI"
+              alt="ChameleonEye AI"
               style={{
                 width: 22,
                 height: 22,
@@ -42,7 +42,7 @@ export function SiteFooter() {
               }}
             />
             <span style={{ fontSize: 13, color: "rgba(255,255,255,0.22)" }}>
-              Chairman AI
+              ChameleonEye AI
             </span>
           </div>
 
@@ -90,9 +90,9 @@ export function SiteFooter() {
           }}
         >
           <p style={{ fontSize: 12, color: "rgba(255,255,255,0.1)" }}>
-            &copy; {new Date().getFullYear()} Chairman AI. A product of{" "}
+            &copy; {new Date().getFullYear()} ChameleonEye AI. A product of{" "}
             <a
-              href="https://chairmans.uk"
+              href="https://chameleoneye.ai"
               target="_blank"
               rel="noopener noreferrer"
               style={{
@@ -100,12 +100,12 @@ export function SiteFooter() {
                 textDecoration: "none",
               }}
             >
-              Chairmans Holding
+              ChameleonEye
             </a>
             .
           </p>
           <p style={{ fontSize: 12, color: "rgba(255,255,255,0.07)" }}>
-            chairmans.uk
+            chameleoneye.ai
           </p>
         </div>
       </div>

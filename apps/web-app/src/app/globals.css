@@ -5,6 +5,9 @@
 :root {
   --background: #111114;
   --foreground: #f5f0e8;
+  /* Brand palette */
+  --gold: rgba(201,168,76,1);
+  --emerald: rgba(22,163,74,1);
 }
 
 body {

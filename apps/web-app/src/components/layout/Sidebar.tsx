@@ -112,7 +112,7 @@ export function Sidebar({ role }: SidebarProps) {
           width: 26px;
           height: 26px;
           object-fit: contain;
-          filter: drop-shadow(0 0 6px rgba(201,168,76,0.35));
+          filter: drop-shadow(0 0 5px rgba(201,168,76,0.35)) drop-shadow(0 0 14px rgba(22,163,74,0.2));
           flex-shrink: 0;
         }
 
@@ -395,8 +395,8 @@ export function Sidebar({ role }: SidebarProps) {
         {/* Logo + collapse toggle */}
         <div className="sidebar-logo">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo-icon.png" alt="Chairman AI" className="sidebar-logo-icon" />
-          <span className="sidebar-logo-name">Chairman AI</span>
+          <img src="/logo-icon.png" alt="ChameleonEye AI" className="sidebar-logo-icon" />
+          <span className="sidebar-logo-name">ChameleonEye AI</span>
           <button
             className="sidebar-collapse-btn"
             onClick={toggle}

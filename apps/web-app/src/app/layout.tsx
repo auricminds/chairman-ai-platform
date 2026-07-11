@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Chairman AI",
+  title: "ChameleonEye AI",
   description: "Your private intelligence platform.",
 };
 

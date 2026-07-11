@@ -3,11 +3,11 @@ import { SiteNav } from "../_components/SiteNav";
 import { SiteFooter } from "../_components/SiteFooter";
 
 export const metadata: Metadata = {
-  title: "Pricing — Chairman AI",
-  description: "Chairman Private at $10/month and Chairman Executive at $50/month. No hidden tiers.",
+  title: "Pricing — ChameleonEye AI",
+  description: "ChameleonEye Private at $10/month and ChameleonEye Executive at $50/month. No hidden tiers.",
 };
 
-const APP_URL = "https://app.ai.chairmans.uk";
+const APP_URL = "https://app.chameleoneye.ai";
 
 const FEATURES = [
   {
@@ -123,7 +123,7 @@ export default function PricingPage() {
                   marginBottom: 12,
                 }}
               >
-                Chairman Private
+                ChameleonEye Private
               </h2>
               <div style={{ marginBottom: 12 }}>
                 <span
@@ -212,7 +212,7 @@ export default function PricingPage() {
                   marginBottom: 12,
                 }}
               >
-                Chairman Executive
+                ChameleonEye Executive
               </h2>
               <div style={{ marginBottom: 12 }}>
                 <span
@@ -388,7 +388,7 @@ export default function PricingPage() {
           >
             {[
               "All prices are in USD. Subscriptions renew monthly via Stripe.",
-              "Private Intelligence is available exclusively through Chairman AI Desktop (macOS). Cloud Intelligence requires an active subscription.",
+              "Private Intelligence is available exclusively through ChameleonEye AI Desktop (macOS). Cloud Intelligence requires an active subscription.",
               "Usage counts are per calendar billing period. There are no rollover allowances. Unused allowances do not carry forward.",
               "Executive Analysis and Board Review require in-app confirmation before each use.",
             ].map((note) => (

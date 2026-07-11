@@ -283,7 +283,7 @@ export default function BillingPage() {
           </p>
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-            {/* Chairman Private */}
+            {/* ChameleonEye Private */}
             {!hasSubscription && (
               <div style={{
                 background: "rgba(255,255,255,0.025)",
@@ -292,7 +292,7 @@ export default function BillingPage() {
                 display: "flex", flexDirection: "column",
               }}>
                 <div style={{ marginBottom: 20 }}>
-                  <p style={{ fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 8 }}>Chairman</p>
+                  <p style={{ fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 8 }}>ChameleonEye</p>
                   <p style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-0.035em", color: "rgba(255,255,255,0.9)", marginBottom: 4 }}>Private</p>
                   <p style={{ fontSize: 28, fontWeight: 800, letterSpacing: "-0.04em", color: "rgba(255,255,255,0.95)" }}>
                     $10<span style={{ fontSize: 14, fontWeight: 500, color: "rgba(255,255,255,0.35)" }}>/mo</span>
@@ -322,7 +322,7 @@ export default function BillingPage() {
               </div>
             )}
 
-            {/* Chairman Executive */}
+            {/* ChameleonEye Executive */}
             <div style={{
               background: "rgba(201,168,76,0.04)",
               border: "1px solid rgba(201,168,76,0.2)",
@@ -338,7 +338,7 @@ export default function BillingPage() {
               }} />
               <div style={{ marginBottom: 20 }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-                  <p style={{ fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(201,168,76,0.55)" }}>Chairman</p>
+                  <p style={{ fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(201,168,76,0.55)" }}>ChameleonEye</p>
                   <span style={{
                     fontSize: 9, letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 600,
                     padding: "3px 8px", borderRadius: 9999,

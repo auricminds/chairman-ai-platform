@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
-const AUTH_CALLBACK = "https://app.ai.chairmans.uk/auth/callback";
+const AUTH_CALLBACK = "https://app.chameleoneye.ai/auth/callback";
 
 export default function SignInPage() {
   const [email, setEmail] = useState("");
@@ -153,7 +153,7 @@ export default function SignInPage() {
         <div className="auth-inner-core">
           <div className="auth-eyebrow">Welcome back</div>
           <h1 className="auth-heading">Sign in</h1>
-          <p className="auth-subheading">Your private AI workspace is waiting.</p>
+          <p className="auth-subheading">Your ChameleonEye AI workspace is waiting.</p>
 
           {error && <div className="auth-alert auth-alert-error">{error}</div>}
 

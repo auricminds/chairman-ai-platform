@@ -2,14 +2,14 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Chairman AI — Private Intelligence Platform",
+  title: "ChameleonEye AI — Private Intelligence Platform",
   description:
-    "Chairman AI brings enterprise-grade intelligence to your decisions. Private by design. Powered by cloud when you choose.",
+    "ChameleonEye AI brings enterprise-grade intelligence to your decisions. Private by design. Powered by cloud when you choose.",
   openGraph: {
-    title: "Chairman AI",
+    title: "ChameleonEye AI",
     description: "Private intelligence platform for serious decisions.",
-    url: "https://ai.chairmans.uk",
-    siteName: "Chairman AI",
+    url: "https://chameleoneye.ai",
+    siteName: "ChameleonEye AI",
     type: "website",
   },
 };

@@ -316,7 +316,7 @@ export default function IntelligencePage() {
           font-weight: 600;
           letter-spacing: 0.1em;
           text-transform: uppercase;
-          color: rgba(201,168,76,0.45);
+          color: rgba(22,163,74,0.5);
           padding: 0 2px;
           margin-bottom: 9px;
         }
@@ -553,19 +553,19 @@ export default function IntelligencePage() {
           width: 44px;
           height: 44px;
           border-radius: 50%;
-          background: rgba(201,168,76,0.06);
-          border: 1px solid rgba(201,168,76,0.13);
+          background: rgba(201,168,76,0.04);
+          border: 1px solid rgba(201,168,76,0.12);
           display: flex;
           align-items: center;
           justify-content: center;
-          box-shadow: 0 0 20px rgba(201,168,76,0.05);
+          box-shadow: 0 0 20px rgba(201,168,76,0.05), 0 0 32px rgba(22,163,74,0.06);
         }
 
         .chat-empty-icon img {
           width: 20px;
           height: 20px;
           object-fit: contain;
-          filter: drop-shadow(0 0 4px rgba(201,168,76,0.25));
+          filter: drop-shadow(0 0 4px rgba(201,168,76,0.25)) drop-shadow(0 0 10px rgba(22,163,74,0.15));
         }
 
         .chat-empty-label {
@@ -1290,7 +1290,7 @@ export default function IntelligencePage() {
             <div
               className="mode-pill"
               style={{ cursor: "not-allowed", opacity: 0.3 }}
-              title="Runs on your device. Use Chairman AI Desktop."
+              title="Runs on your device. Use ChameleonEye AI Desktop."
             >
               <svg style={{ width: 10, height: 10 }} viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clipRule="evenodd" />
@@ -1441,7 +1441,7 @@ export default function IntelligencePage() {
                   onChange={handleInput}
                   onKeyDown={handleKeyDown}
                   disabled={streaming || (freeTier?.exhausted === true && hasSubscription === false)}
-                  placeholder={freeTier?.exhausted && hasSubscription === false ? "Upgrade to continue…" : "Message Chairman AI…"}
+                  placeholder={freeTier?.exhausted && hasSubscription === false ? "Upgrade to continue…" : "Message ChameleonEye AI…"}
                   rows={1}
                 />
                 {/* Voice button */}
@@ -1490,7 +1490,7 @@ export default function IntelligencePage() {
             <div className="upgrade-inner">
               <div className="upgrade-eyebrow">Free trial ended</div>
               <h2 className="upgrade-heading">
-                Unlock Chairman AI<span style={{ color: "#c9a84c" }}>.</span>
+                Unlock ChameleonEye AI<span style={{ color: "#c9a84c" }}>.</span>
               </h2>
               <p className="upgrade-sub">
                 You&apos;ve used your 3 free messages. Upgrade for full access to Business, Strategic, and Executive intelligence.

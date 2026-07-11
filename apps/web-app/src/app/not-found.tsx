@@ -65,7 +65,7 @@ export default function NotFound() {
             boxShadow: "0 4px 20px rgba(201,168,76,0.18)",
           }}
         >
-          Go to Chairman AI
+          Go to ChameleonEye AI
         </Link>
       </div>
     </div>

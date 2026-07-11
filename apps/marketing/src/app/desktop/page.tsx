@@ -3,12 +3,12 @@ import { SiteNav } from "../_components/SiteNav";
 import { SiteFooter } from "../_components/SiteFooter";
 
 export const metadata: Metadata = {
-  title: "Chairman AI Desktop — Private Intelligence on your device",
+  title: "ChameleonEye AI Desktop — Private Intelligence on your device",
   description:
-    "Chairman AI Desktop runs Private Intelligence entirely on your device. No cloud, no server, no data transmitted.",
+    "ChameleonEye AI Desktop runs Private Intelligence entirely on your device. No cloud, no server, no data transmitted.",
 };
 
-const APP_URL = "https://app.ai.chairmans.uk";
+const APP_URL = "https://app.chameleoneye.ai";
 
 export default function DesktopPage() {
   return (
@@ -87,7 +87,7 @@ export default function DesktopPage() {
                 maxWidth: 560,
               }}
             >
-              Chairman AI Desktop runs Private Intelligence entirely on your machine.
+              ChameleonEye AI Desktop runs Private Intelligence entirely on your machine.
               No network call is made. No API is hit. No data leaves your device.
               This is the architecture, not a setting.
             </p>
@@ -104,7 +104,7 @@ export default function DesktopPage() {
                 marginBottom: 24,
               }}
             >
-              What Chairman AI Desktop includes
+              What ChameleonEye AI Desktop includes
             </h3>
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
               {[
@@ -190,7 +190,7 @@ export default function DesktopPage() {
                 marginBottom: 14,
               }}
             >
-              Chairman AI Desktop is being prepared
+              ChameleonEye AI Desktop is being prepared
               <span style={{ color: "#c9a84c" }}>.</span>
             </h3>
             <p
@@ -217,7 +217,7 @@ export default function DesktopPage() {
               contact us directly. No waitlist form — just a real conversation.
             </p>
             <a
-              href="mailto:desk@chairmans.uk"
+              href="mailto:desk@chameleoneye.ai"
               style={{
                 display: "inline-flex",
                 alignItems: "center",
@@ -232,7 +232,7 @@ export default function DesktopPage() {
                 letterSpacing: "0.02em",
               }}
             >
-              desk@chairmans.uk
+              desk@chameleoneye.ai
             </a>
           </div>
 
@@ -264,7 +264,7 @@ export default function DesktopPage() {
                 maxWidth: 520,
               }}
             >
-              While Desktop is in preparation, Chairman AI&apos;s full Cloud Intelligence suite is
+              While Desktop is in preparation, ChameleonEye AI&apos;s full Cloud Intelligence suite is
               available through the web application. Business Intelligence, Extended Review,
               Strategic Review, Executive Analysis, and Board Review — all accessible today.
             </p>

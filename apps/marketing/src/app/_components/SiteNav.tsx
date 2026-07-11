@@ -1,4 +1,4 @@
-const APP_URL = "https://app.ai.chairmans.uk";
+const APP_URL = "https://app.chameleoneye.ai";
 
 export function SiteNav() {
   return (
@@ -46,12 +46,12 @@ export function SiteNav() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/logo-icon.png"
-            alt="Chairman AI"
+            alt="ChameleonEye AI"
             style={{
               width: 28,
               height: 28,
               objectFit: "contain",
-              filter: "drop-shadow(0 0 6px rgba(201,168,76,0.4))",
+              filter: "drop-shadow(0 0 5px rgba(201,168,76,0.38)) drop-shadow(0 0 14px rgba(22,163,74,0.22))",
             }}
           />
           <span
@@ -62,7 +62,7 @@ export function SiteNav() {
               letterSpacing: "-0.025em",
             }}
           >
-            Chairman AI
+            ChameleonEye AI
           </span>
         </a>
 

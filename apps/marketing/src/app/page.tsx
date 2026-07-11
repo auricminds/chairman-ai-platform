@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { SiteFooter } from "./_components/SiteFooter";
 
-const APP_URL = "https://app.ai.chairmans.uk";
+const APP_URL = "https://app.chameleoneye.ai";
 
 function Nav() {
   return (
@@ -50,12 +50,12 @@ function Nav() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/logo-icon.png"
-            alt="Chairman AI"
+            alt="ChameleonEye AI"
             style={{
               width: 28,
               height: 28,
               objectFit: "contain",
-              filter: "drop-shadow(0 0 6px rgba(201,168,76,0.4))",
+              filter: "drop-shadow(0 0 5px rgba(201,168,76,0.38)) drop-shadow(0 0 14px rgba(22,163,74,0.22))",
             }}
           />
           <span
@@ -66,7 +66,7 @@ function Nav() {
               letterSpacing: "-0.025em",
             }}
           >
-            Chairman AI
+            ChameleonEye AI
           </span>
         </a>
 
@@ -147,7 +147,7 @@ function Hero() {
         position: "relative",
       }}
     >
-      {/* Local hero accent glow */}
+      {/* Gold hero glow */}
       <div
         aria-hidden
         style={{
@@ -160,6 +160,35 @@ function Hero() {
           background:
             "radial-gradient(ellipse at center, rgba(201,168,76,0.07) 0%, rgba(201,168,76,0.02) 50%, transparent 70%)",
           pointerEvents: "none",
+        }}
+      />
+      {/* Emerald accent glow — chameleon identity */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          top: "15%",
+          left: "15%",
+          width: 360,
+          height: 360,
+          background:
+            "radial-gradient(ellipse at center, rgba(22,163,74,0.055) 0%, rgba(22,163,74,0.015) 45%, transparent 70%)",
+          pointerEvents: "none",
+          filter: "blur(2px)",
+        }}
+      />
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          top: "15%",
+          right: "15%",
+          width: 280,
+          height: 280,
+          background:
+            "radial-gradient(ellipse at center, rgba(22,163,74,0.04) 0%, transparent 65%)",
+          pointerEvents: "none",
+          filter: "blur(2px)",
         }}
       />
 
@@ -228,7 +257,7 @@ function Hero() {
             margin: "0 auto 52px",
           }}
         >
-          Board-level analysis, strategic reviews, and private intelligence.
+          Intelligence that adapts. Board-level analysis, strategic reviews, and private intelligence.
           Affordable plans. Cancel anytime.
         </p>
 
@@ -310,7 +339,7 @@ function IntelligenceLayers() {
       mode: "Private Intelligence",
       label: "Stays on your device",
       description:
-        "Runs entirely locally. No cloud, no server, no network call. Your most sensitive thinking never leaves your machine. Available through Chairman AI Desktop.",
+        "Runs entirely locally. No cloud, no server, no network call. Your most sensitive thinking never leaves your machine. Available through ChameleonEye AI Desktop.",
       badge: "Desktop only",
     },
     {
@@ -534,7 +563,7 @@ function Features() {
                 lineHeight: 1.7,
               }}
             >
-              When you use Private Intelligence on Chairman AI Desktop, your message never leaves
+              When you use Private Intelligence on ChameleonEye AI Desktop, your message never leaves
               your device. There is no API call, no log, no cloud processing. The model runs
               entirely on your machine. This is not a privacy setting — it is the architecture.
             </p>
@@ -746,7 +775,7 @@ function PricingPreview() {
                 marginBottom: 8,
               }}
             >
-              Chairman Private
+              ChameleonEye Private
             </h3>
             <div style={{ marginBottom: 32 }}>
               <span
@@ -867,7 +896,7 @@ function PricingPreview() {
                 marginBottom: 8,
               }}
             >
-              Chairman Executive
+              ChameleonEye Executive
             </h3>
             <div style={{ marginBottom: 32 }}>
               <span
@@ -1041,20 +1070,20 @@ function ForPlatformsSection() {
           <div style={{ display: "inline-flex", alignItems: "center", gap: 6, marginBottom: 20 }}>
             <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#c9a84c" }} />
             <span style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase" as const, color: "rgba(201,168,76,0.65)", fontWeight: 500 }}>
-              Chairman API
+              ChameleonEye API
             </span>
           </div>
           <h2 style={{ fontSize: "clamp(32px, 4vw, 52px)", fontWeight: 700, letterSpacing: "-0.04em", color: "rgba(255,255,255,0.92)", lineHeight: 1.05, marginBottom: 16 }}>
             Business Intelligence APIs<br />for serious platforms<span style={{ color: "#c9a84c" }}>.</span>
           </h2>
           <p style={{ fontSize: 15, color: textSec, maxWidth: 520, lineHeight: 1.65, marginBottom: 28 }}>
-            Add guided decisions, safe drafts, readiness scoring, risk checks, and Pulse intelligence to your product. Chairman API is a controlled business guidance layer — not a generic AI API.
+            Add guided decisions, safe drafts, readiness scoring, risk checks, and Pulse intelligence to your product. ChameleonEye API is a controlled business guidance layer — not a generic AI API.
           </p>
           <a
             href={`${APP_URL}/developer`}
             style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 22px", borderRadius: 9999, background: goldFaint, border: `1px solid ${goldBorder}`, color: gold, fontSize: 13, fontWeight: 600, textDecoration: "none" }}
           >
-            Explore Chairman API ↗
+            Explore ChameleonEye API ↗
           </a>
         </div>
 
@@ -1072,7 +1101,7 @@ function ForPlatformsSection() {
             </div>
           </div>
           <div style={{ padding: "28px", background: "rgba(201,168,76,0.03)", border: `1px solid ${goldBorder}`, borderRadius: 16 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: gold, textTransform: "uppercase" as const, marginBottom: 20 }}>Chairman API</p>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: gold, textTransform: "uppercase" as const, marginBottom: 20 }}>ChameleonEye API</p>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {["Business workflow endpoints", "Structured outputs", "Safe drafts", "Readiness scores", "Risk warnings & missing facts", "Pulse events", "Next-best-action guidance", "Audit-friendly outputs", "Custom rules per workflow"].map(t => (
                 <div key={t} style={{ display: "flex", gap: 9 }}>

@@ -2,7 +2,7 @@
 
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "https://api.ai.chairmans.uk";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "https://api.chameleoneye.ai";
 
 async function authHeaders(): Promise<Record<string, string>> {
   const supabase = getSupabaseBrowserClient();

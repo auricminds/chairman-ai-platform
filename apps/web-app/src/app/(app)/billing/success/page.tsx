@@ -20,7 +20,7 @@ export default function BillingSuccessPage() {
         <div>
           <h1 className="text-xl font-semibold text-zinc-100 mb-2">Subscription activated</h1>
           <p className="text-sm text-zinc-400">
-            Your Chairman AI subscription is now active. It may take a moment for your access to reflect.
+            Your ChameleonEye AI subscription is now active. It may take a moment for your access to reflect.
           </p>
         </div>
         <Link

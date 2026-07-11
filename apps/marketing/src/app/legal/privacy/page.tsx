@@ -3,28 +3,28 @@ import { SiteNav } from "../../_components/SiteNav";
 import { SiteFooter } from "../../_components/SiteFooter";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Chairman AI",
+  title: "Privacy Policy — ChameleonEye AI",
 };
 
 const sections = [
   {
     title: "1. What we collect",
     content: [
-      "When you create a Chairman AI account, we collect your email address and, optionally, a display name. We do not collect your name, phone number, address, or payment card details. Payment is handled directly by Stripe.",
+      "When you create a ChameleonEye AI account, we collect your email address and, optionally, a display name. We do not collect your name, phone number, address, or payment card details. Payment is handled directly by Stripe.",
       "When you use Cloud Intelligence, we record usage counters (how many analyses of each type you have used in the current billing period). We do not permanently store the content of your messages unless required by applicable law.",
     ],
   },
   {
     title: "2. Private Intelligence",
     content: [
-      "When you use Private Intelligence on Chairman AI Desktop, no data is transmitted to our servers. The model runs locally on your device. We have no technical ability to access or log Private Intelligence conversations.",
+      "When you use Private Intelligence on ChameleonEye AI Desktop, no data is transmitted to our servers. The model runs locally on your device. We have no technical ability to access or log Private Intelligence conversations.",
     ],
   },
   {
     title: "3. Cloud Intelligence processing",
     content: [
       "Cloud Intelligence messages are routed through our API to an AI provider via OpenRouter. We do not display or log the name of the AI model or provider to you. Messages may be retained by the AI provider according to their policies.",
-      "We recommend you review OpenRouter's data policies before sending highly sensitive information through Cloud Intelligence. For your most sensitive work, use Private Intelligence on Chairman AI Desktop.",
+      "We recommend you review OpenRouter's data policies before sending highly sensitive information through Cloud Intelligence. For your most sensitive work, use Private Intelligence on ChameleonEye AI Desktop.",
     ],
   },
   {
@@ -42,12 +42,12 @@ const sections = [
   {
     title: "6. Your rights",
     content: [
-      "You can request deletion of your account and associated data by contacting us at desk@chairmans.uk. We will process deletion requests within 30 days.",
+      "You can request deletion of your account and associated data by contacting us at desk@chameleoneye.ai. We will process deletion requests within 30 days.",
     ],
   },
   {
     title: "7. Contact",
-    content: ["Privacy questions: desk@chairmans.uk"],
+    content: ["Privacy questions: desk@chameleoneye.ai"],
     hasEmail: true,
   },
 ];
@@ -111,14 +111,14 @@ export default function PrivacyPage() {
                         lineHeight: 1.75,
                       }}
                     >
-                      {section.hasEmail && para.includes("desk@chairmans.uk") ? (
+                      {section.hasEmail && para.includes("desk@chameleoneye.ai") ? (
                         <>
                           Privacy questions:{" "}
                           <a
-                            href="mailto:desk@chairmans.uk"
+                            href="mailto:desk@chameleoneye.ai"
                             style={{ color: "rgba(201,168,76,0.6)", textDecoration: "none" }}
                           >
-                            desk@chairmans.uk
+                            desk@chameleoneye.ai
                           </a>
                         </>
                       ) : (

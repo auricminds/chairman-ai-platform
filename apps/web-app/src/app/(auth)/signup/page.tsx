@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
-const APP_URL = "https://app.ai.chairmans.uk";
+const APP_URL = "https://app.chameleoneye.ai";
 const AUTH_CALLBACK = `${APP_URL}/auth/callback`;
 
 export default function SignUpPage() {
@@ -188,9 +188,9 @@ export default function SignUpPage() {
 
           <p className="auth-terms">
             By creating an account you agree to our{" "}
-            <a href="https://ai.chairmans.uk/legal/terms">Terms of Service</a>{" "}
+            <a href="https://chameleoneye.ai/legal/terms">Terms of Service</a>{" "}
             and{" "}
-            <a href="https://ai.chairmans.uk/legal/privacy">Privacy Policy</a>.
+            <a href="https://chameleoneye.ai/legal/privacy">Privacy Policy</a>.
           </p>
 
           <p className="auth-link-row">

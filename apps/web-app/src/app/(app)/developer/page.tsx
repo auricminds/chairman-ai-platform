@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { listApiKeys, createApiKey, revokeApiKey, type ApiKey } from "@/lib/api/client";
 
-const API_BASE_URL = "https://api.ai.chairmans.uk";
+const API_BASE_URL = "https://api.chameleoneye.ai";
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const C = {
@@ -94,7 +94,7 @@ function Hero() {
     <section style={{ padding: "72px 24px 60px", borderBottom: `1px solid ${C.border}` }}>
       <div style={{ maxWidth: 780, margin: "0 auto" }}>
         <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", color: C.gold, textTransform: "uppercase", marginBottom: 16 }}>
-          Chairman API
+          ChameleonEye API
         </p>
         <h1 style={{ fontSize: "clamp(28px, 4vw, 42px)", fontWeight: 700, letterSpacing: "-0.025em", color: C.text, lineHeight: 1.2, marginBottom: 18 }}>
           Business Intelligence APIs<br />for serious platforms.
@@ -103,7 +103,7 @@ function Hero() {
           Add guided decisions, safe drafts, readiness scoring, risk checks, and Pulse intelligence to your product.
         </p>
         <p style={{ fontSize: 13, color: C.textMuted, lineHeight: 1.65, marginBottom: 36, maxWidth: 580, borderLeft: `2px solid ${C.goldBorder}`, paddingLeft: 14 }}>
-          Chairman API is not a general chatbot API. It is a controlled business guidance layer for platforms, marketplaces, and private systems.
+          ChameleonEye API is not a general chatbot API. It is a controlled business guidance layer for platforms, marketplaces, and private systems.
         </p>
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
           <button onClick={() => jumpTo("api-keys")} style={{ padding: "10px 22px", borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: "pointer", background: C.goldFaint, border: `1px solid ${C.goldBorder}`, color: C.gold, letterSpacing: "0.02em" }}>
@@ -225,7 +225,7 @@ function ApiKeysSection(p: KeysSectionProps) {
           <div style={{ padding: "32px 0", textAlign: "center", color: C.textMuted, fontSize: 13 }}>Loading keys…</div>
         ) : p.keys.length === 0 ? (
           <div style={{ padding: "32px 24px", textAlign: "center", background: C.card, border: `1px solid ${C.border}`, borderRadius: 10, color: C.textMuted, fontSize: 13 }}>
-            No API keys yet. Create one above to start integrating Chairman API.
+            No API keys yet. Create one above to start integrating ChameleonEye API.
           </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -272,7 +272,7 @@ function ComparisonSection() {
   const chairman = ["Business workflow endpoints", "Client-specific rules", "Structured outputs", "Safe drafts", "Missing facts detection", "Risk warnings", "Readiness scores", "Next-best-action guidance", "Audit logs", "Pulse events"];
   return (
     <Wrap alt>
-      <SHead eyebrow="Why Chairman API" title="Controlled workflows, not raw AI access." subtitle="Most AI APIs give you raw intelligence. Chairman API gives your platform structured, safe, business-grade output." />
+      <SHead eyebrow="Why ChameleonEye API" title="Controlled workflows, not raw AI access." subtitle="Most AI APIs give you raw intelligence. ChameleonEye API gives your platform structured, safe, business-grade output." />
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16 }}>
         <div style={{ padding: "28px", background: C.card, border: `1px solid ${C.border}`, borderRadius: 12 }}>
           <p style={{ fontSize: 11, fontWeight: 700, color: C.textMuted, letterSpacing: "0.09em", marginBottom: 20 }}>GENERIC AI APIS</p>
@@ -286,7 +286,7 @@ function ComparisonSection() {
           </div>
         </div>
         <div style={{ padding: "28px", background: "rgba(201,168,76,0.04)", border: `1px solid ${C.goldBorder}`, borderRadius: 12 }}>
-          <p style={{ fontSize: 11, fontWeight: 700, color: C.gold, letterSpacing: "0.09em", marginBottom: 20 }}>CHAIRMAN API</p>
+          <p style={{ fontSize: 11, fontWeight: 700, color: C.gold, letterSpacing: "0.09em", marginBottom: 20 }}>CHAMELEONEYE API</p>
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {chairman.map(t => (
               <div key={t} style={{ display: "flex", gap: 9, alignItems: "flex-start" }}>
@@ -346,7 +346,7 @@ const WORKFLOW_CARDS: WorkflowCard[] = [
     endpoint: "POST /v1/drafts/improve",
     ctaLabel: "Generate safer drafts",
     ctaTarget: "api-keys",
-    safetyNote: "Chairman drafts never invent achievements, salaries, certificates, or business results unless the user provides them.",
+    safetyNote: "ChameleonEye drafts never invent achievements, salaries, certificates, or business results unless the user provides them.",
   },
   {
     name: "Risk Check API",
@@ -432,7 +432,7 @@ function ReadyWorkflowApisSection() {
         subtitle="Plug controlled business intelligence into the places where your users make decisions, submit forms, publish profiles, apply for jobs, request services, or create listings."
       />
       <p style={{ fontSize: 13, color: C.textSec, lineHeight: 1.7, marginBottom: 36, maxWidth: 760 }}>
-        Instead of sending a raw prompt to a general AI model, Chairman API gives your platform structured business outputs your product can use immediately: scores, missing facts, safe drafts, warnings, next actions, and approval-ready recommendations.
+        Instead of sending a raw prompt to a general AI model, ChameleonEye API gives your platform structured business outputs your product can use immediately: scores, missing facts, safe drafts, warnings, next actions, and approval-ready recommendations.
       </p>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 16 }}>
         {WORKFLOW_CARDS.map(card => (
@@ -605,7 +605,7 @@ const PERSONAS: PersonaCard[] = [
     pain: "You want smart features in your platform but don't know how to design AI logic.",
     chairman: "Business workflows that can be connected by your developer without building everything from zero.",
     pack: ["All packs available"],
-    ctaLabel: "Talk to Chairman AI",
+    ctaLabel: "Talk to ChameleonEye AI",
     ctaTarget: "final-cta",
   },
 ];
@@ -615,7 +615,7 @@ function WhoShouldUseSection() {
     <Wrap id="who-should-use">
       <SHead
         eyebrow="For platforms"
-        title="Who should use Chairman API?"
+        title="Who should use ChameleonEye API?"
         subtitle="Built for platforms where users must complete serious business actions — not just chat."
       />
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 14 }}>
@@ -627,7 +627,7 @@ function WhoShouldUseSection() {
               <p style={{ fontSize: 12, color: C.textSec, lineHeight: 1.55 }}>{persona.pain}</p>
             </div>
             <div>
-              <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", color: C.textMuted, marginBottom: 5 }}>CHAIRMAN GIVES YOU</p>
+              <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", color: C.textMuted, marginBottom: 5 }}>CHAMELEONEYE GIVES YOU</p>
               <p style={{ fontSize: 12, color: C.textSec, lineHeight: 1.55 }}>{persona.chairman}</p>
             </div>
             <div>
@@ -784,7 +784,7 @@ function IndustryPacksSection() {
 // ─── 6. Process Flow ──────────────────────────────────────────────────────────
 const PROCESS_STEPS = [
   { num: "1", title: "User submits data", desc: "A profile, job post, request, listing, or business form." },
-  { num: "2", title: "Chairman applies workflow rules", desc: "The API understands what the platform is trying to achieve." },
+  { num: "2", title: "ChameleonEye applies workflow rules", desc: "The API understands what the platform is trying to achieve." },
   { num: "3", title: "Safety checks run", desc: "Unsupported claims, fake numbers, risky wording, and missing proof are detected." },
   { num: "4", title: "Structured output returns", desc: "Scores, missing facts, risks, safe drafts, and next actions." },
   { num: "5", title: "User approves", desc: "Nothing is auto-published without user or platform approval." },
@@ -797,7 +797,7 @@ function ProcessFlowSection() {
       <SHead
         eyebrow="How it works"
         title="From raw input to business output."
-        subtitle="Chairman API transforms user data into structured, safe, approval-ready business intelligence."
+        subtitle="ChameleonEye API transforms user data into structured, safe, approval-ready business intelligence."
       />
       <div style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "flex-start" }}>
         {PROCESS_STEPS.map((step, i) => (
@@ -842,7 +842,7 @@ function StructuredOutputSection() {
     <Wrap alt>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 48, alignItems: "center" }}>
         <div>
-          <SHead eyebrow="Structured Outputs" title="What Chairman API returns." subtitle="Every response is structured for product UI, dashboards, and approval workflows — not just plain text." />
+          <SHead eyebrow="Structured Outputs" title="What ChameleonEye API returns." subtitle="Every response is structured for product UI, dashboards, and approval workflows — not just plain text." />
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {["Readiness scores ready for direct display", "Missing facts listed per field", "Risk warnings by severity", "Safe editable drafts", "Next-best-action guidance"].map(t => (
               <div key={t} style={{ display: "flex", gap: 9, alignItems: "flex-start" }}>
@@ -877,7 +877,7 @@ const DEV_EXAMPLES = [
     label: "Profile Check",
     endpoint: "POST /v1/guidance/profile-check",
     code: `curl -X POST ${API_BASE_URL}/v1/guidance/profile-check \\
-  -H "Authorization: Bearer sk-chairman-..." \\
+  -H "Authorization: Bearer sk-chameleoneye-..." \\
   -H "Content-Type: application/json" \\
   -d '{
     "mode": "chairman-standard",
@@ -894,7 +894,7 @@ const DEV_EXAMPLES = [
     label: "Job Post Readiness",
     endpoint: "POST /v1/readiness/job-post",
     code: `curl -X POST ${API_BASE_URL}/v1/readiness/job-post \\
-  -H "Authorization: Bearer sk-chairman-..." \\
+  -H "Authorization: Bearer sk-chameleoneye-..." \\
   -H "Content-Type: application/json" \\
   -d '{
     "mode": "chairman-extended",
@@ -907,7 +907,7 @@ const DEV_EXAMPLES = [
     label: "Pulse Event",
     endpoint: "POST /v1/pulse/events",
     code: `curl -X POST ${API_BASE_URL}/v1/pulse/events \\
-  -H "Authorization: Bearer sk-chairman-..." \\
+  -H "Authorization: Bearer sk-chameleoneye-..." \\
   -H "Content-Type: application/json" \\
   -d '{
     "event": "job_application_abandoned",
@@ -923,7 +923,7 @@ const DEV_EXAMPLES = [
 function DeveloperExamplesSection() {
   return (
     <Wrap>
-      <SHead eyebrow="Integration" title="Business workflow examples." subtitle="Connect Chairman API to your platform using structured business workflow endpoints." />
+      <SHead eyebrow="Integration" title="Business workflow examples." subtitle="Connect ChameleonEye API to your platform using structured business workflow endpoints." />
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         {DEV_EXAMPLES.map(({ label, endpoint, code }) => (
           <div key={label} style={{ background: "rgba(0,0,0,0.25)", border: `1px solid ${C.border}`, borderRadius: 12, overflow: "hidden" }}>
@@ -955,7 +955,7 @@ const IMPL_OPTIONS = [
   {
     title: "API + ready UI blocks",
     desc: "For platforms that want faster implementation. Use prebuilt guidance cards, draft panels, readiness widgets.",
-    ctaLabel: "Talk to Chairman AI",
+    ctaLabel: "Talk to ChameleonEye AI",
     ctaTarget: "final-cta",
   },
   {
@@ -1006,7 +1006,7 @@ function PulseSection() {
     <Wrap>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 48, alignItems: "start" }}>
         <div>
-          <SHead eyebrow="Pulse Intelligence" title="Chairman Pulse." subtitle="Send safe product events to Chairman API and understand exactly where users get stuck — and why." />
+          <SHead eyebrow="Pulse Intelligence" title="ChameleonEye Pulse." subtitle="Send safe product events to ChameleonEye API and understand exactly where users get stuck — and why." />
           <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
             {["What happened in each session", "Why it matters to your product", "Which flows need immediate attention", "Suggested product fixes"].map(t => (
               <div key={t} style={{ display: "flex", gap: 9 }}>
@@ -1070,8 +1070,8 @@ const PRICING_PLANS = [
     key: "sandbox",
     name: "API Sandbox",
     price: "$9",
-    desc: "Test Chairman workflows before connecting production. For developers, founders, and agencies.",
-    forLine: "Developers, founders, agencies testing Chairman API",
+    desc: "Test ChameleonEye workflows before connecting production. For developers, founders, and agencies.",
+    forLine: "Developers, founders, agencies testing ChameleonEye API",
     features: ["300 API calls / month", "Standard mode", "1 project", "Developer test dashboard", "Basic structured outputs"],
     note: "Not for production-heavy usage",
     popular: false,
@@ -1111,7 +1111,7 @@ const PRICING_PLANS = [
     key: "enterprise",
     name: "Private Enterprise",
     price: "From $399",
-    desc: "A private Chairman API setup built around your business rules, workflows, and approval process.",
+    desc: "A private ChameleonEye API setup built around your business rules, workflows, and approval process.",
     forLine: "Serious companies and private systems",
     features: ["Custom volume", "Private business constitution", "Custom workflows", "Advanced logs", "Dedicated routing", "Optional private deployment", "Custom integration support"],
     popular: false,
@@ -1175,7 +1175,7 @@ function CustomWorkflowSection() {
     <Wrap id="custom-workflow">
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 48, alignItems: "start" }}>
         <div>
-          <SHead eyebrow="Custom API Workflows" title="Private endpoints built for your platform." subtitle="For each client, Chairman can create private workflow endpoints based on their exact platform rules and business context." />
+          <SHead eyebrow="Custom API Workflows" title="Private endpoints built for your platform." subtitle="For each client, ChameleonEye can create private workflow endpoints based on their exact platform rules and business context." />
           <button onClick={() => jumpTo("final-cta")} style={{ padding: "10px 22px", borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: "pointer", background: C.goldFaint, border: `1px solid ${C.goldBorder}`, color: C.gold }}>
             Request Custom Workflow
           </button>
@@ -1199,49 +1199,49 @@ function CustomWorkflowSection() {
 const THIRD_EYE_CARDS = [
   {
     title: "Tired of developer delays?",
-    copy: "When every improvement depends on long development cycles, your business moves slowly. Chairman API gives you ready guidance, scoring, draft, and risk workflows without building the intelligence layer from zero.",
+    copy: "When every improvement depends on long development cycles, your business moves slowly. ChameleonEye API gives you ready guidance, scoring, draft, and risk workflows without building the intelligence layer from zero.",
     cta: "Speed up product intelligence",
     anchor: "api-products",
   },
   {
     title: "Spending money without clear visibility?",
-    copy: "Marketing, operations, staff time, and platform errors can drain cash quietly. Chairman Pulse detects weak flows, repeated issues, abandoned actions, and operational signals that deserve immediate attention.",
+    copy: "Marketing, operations, staff time, and platform errors can drain cash quietly. ChameleonEye Pulse detects weak flows, repeated issues, abandoned actions, and operational signals that deserve immediate attention.",
     cta: "Find hidden waste",
     anchor: "api-products",
   },
   {
     title: "Want to detect problems earlier?",
-    copy: "Chairman does not guess the future. It reads patterns in your available data and surfaces early signals before they become expensive problems — giving your team time to act.",
+    copy: "ChameleonEye does not guess the future. It reads patterns in your available data and surfaces early signals before they become expensive problems — giving your team time to act.",
     cta: "Add early-warning intelligence",
     anchor: "api-products",
   },
   {
     title: "Want to understand team effectiveness?",
-    copy: "With authorized systems and privacy-aware rules, Chairman can help analyze workflow completion, bottlenecks, response quality, task movement, and team performance signals — so managers get clarity, not guesswork.",
+    copy: "With authorized systems and privacy-aware rules, ChameleonEye can help analyze workflow completion, bottlenecks, response quality, task movement, and team performance signals — so managers get clarity, not guesswork.",
     cta: "Improve team visibility",
     anchor: "custom-workflow",
   },
   {
     title: "Want smarter security and camera intelligence?",
-    copy: "Where legally permitted and properly authorized, Chairman can connect with approved security or monitoring systems to summarize incidents, detect patterns, flag unusual activity, and generate operational reports.",
+    copy: "Where legally permitted and properly authorized, ChameleonEye can connect with approved security or monitoring systems to summarize incidents, detect patterns, flag unusual activity, and generate operational reports.",
     cta: "Request security workflow",
     anchor: "contact-api",
   },
   {
     title: "Want better career and staff development?",
-    copy: "Chairman can help companies understand skill gaps, role readiness, training needs, and career path suggestions — using approved HR data and clear business rules that you define.",
+    copy: "ChameleonEye can help companies understand skill gaps, role readiness, training needs, and career path suggestions — using approved HR data and clear business rules that you define.",
     cta: "Build career intelligence",
     anchor: "custom-workflow",
   },
   {
     title: "Want stronger product marketing?",
-    copy: "Chairman can analyze product pages, user behavior signals, campaign drafts, audience fit, and conversion weaknesses to recommend clearer positioning, better messaging, and next actions your team can act on.",
+    copy: "ChameleonEye can analyze product pages, user behavior signals, campaign drafts, audience fit, and conversion weaknesses to recommend clearer positioning, better messaging, and next actions your team can act on.",
     cta: "Improve marketing direction",
     anchor: "custom-workflow",
   },
   {
     title: "Want your platform to guide users automatically?",
-    copy: "Instead of leaving users alone inside forms and dashboards, Chairman guides them step by step — with missing facts, safe drafts, readiness scores, and next actions built directly into your product flow.",
+    copy: "Instead of leaving users alone inside forms and dashboards, ChameleonEye guides them step by step — with missing facts, safe drafts, readiness scores, and next actions built directly into your product flow.",
     cta: "Add guided journeys",
     anchor: "api-products",
   },
@@ -1258,13 +1258,13 @@ function ThirdEyeSection() {
             The Third Eye Business Intelligence
           </p>
           <h2 style={{ fontSize: "clamp(24px, 3.5vw, 38px)", fontWeight: 700, letterSpacing: "-0.025em", color: C.text, lineHeight: 1.2, marginBottom: 16 }}>
-            When your business feels blind,<br />Chairman becomes the third eye.
+            When your business feels blind,<br />ChameleonEye becomes the third eye.
           </h2>
           <p style={{ fontSize: 15, color: C.textSec, lineHeight: 1.7, marginBottom: 14, maxWidth: 660 }}>
             For companies that want to see problems earlier, understand what is draining money, improve team performance, and turn scattered data into clear business action.
           </p>
           <p style={{ fontSize: 13, color: C.textMuted, lineHeight: 1.7, maxWidth: 640 }}>
-            If you are tired of guessing what is wrong inside your company, Chairman API can turn your platform, team activity, customer flows, forms, dashboards, and operational signals into structured business intelligence — helping you understand where money is being wasted, where users are abandoning your system, which processes are slowing down growth, and which risks are appearing early. Chairman does not replace your team. It gives your team a clearer operating view.
+            If you are tired of guessing what is wrong inside your company, ChameleonEye API can turn your platform, team activity, customer flows, forms, dashboards, and operational signals into structured business intelligence — helping you understand where money is being wasted, where users are abandoning your system, which processes are slowing down growth, and which risks are appearing early. ChameleonEye does not replace your team. It gives your team a clearer operating view.
           </p>
         </div>
 
@@ -1320,7 +1320,7 @@ function ThirdEyeSection() {
                   "Product marketing intelligence and positioning",
                   "Career path and HR intelligence",
                   "Cash waste and process bottleneck detection",
-                  "Custom Chairman API endpoints for your company",
+                  "Custom ChameleonEye API endpoints for your company",
                 ].map(item => (
                   <div key={item} style={{ display: "flex", gap: 9, alignItems: "flex-start" }}>
                     <span style={{ color: C.gold, flexShrink: 0, fontSize: 12, marginTop: 1 }}>✓</span>
@@ -1337,7 +1337,7 @@ function ThirdEyeSection() {
           <span style={{ color: C.goldText, fontSize: 14, flexShrink: 0 }}>⚠</span>
           <p style={{ fontSize: 12, color: C.textMuted, lineHeight: 1.65, margin: 0 }}>
             <strong style={{ color: C.textSec, fontWeight: 600 }}>Authorized systems only.</strong>{" "}
-            Chairman works only with data and systems you are authorized to use. For employee, camera, HR, security, or sensitive business analysis, customers must follow applicable privacy laws, internal policies, and user consent requirements. Chairman does not enable unauthorized data collection.
+            ChameleonEye works only with data and systems you are authorized to use. For employee, camera, HR, security, or sensitive business analysis, customers must follow applicable privacy laws, internal policies, and user consent requirements. ChameleonEye does not enable unauthorized data collection.
           </p>
         </div>
 
@@ -1361,7 +1361,7 @@ function FinalCtaSection() {
           Build your own business intelligence layer.
         </h2>
         <p style={{ fontSize: 14, color: C.textSec, lineHeight: 1.65, marginBottom: 36 }}>
-          Start with a sandbox, connect a ready workflow, or request a private Chairman API built for your platform.
+          Start with a sandbox, connect a ready workflow, or request a private ChameleonEye API built for your platform.
         </p>
         <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
           <button onClick={() => jumpTo("api-keys")} style={{ padding: "11px 26px", borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: "pointer", background: C.goldFaint, border: `1px solid ${C.goldBorder}`, color: C.gold }}>

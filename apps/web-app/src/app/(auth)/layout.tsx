@@ -37,7 +37,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           width: 400px;
           height: 300px;
           background: radial-gradient(ellipse at center,
-            rgba(201,168,76,0.06) 0%,
+            rgba(22,163,74,0.06) 0%,
+            rgba(22,163,74,0.02) 40%,
             transparent 60%
           );
           pointer-events: none;
@@ -89,7 +90,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           height: 28px;
           object-fit: contain;
           flex-shrink: 0;
-          filter: drop-shadow(0 0 6px rgba(201,168,76,0.4));
+          filter: drop-shadow(0 0 5px rgba(201,168,76,0.38)) drop-shadow(0 0 14px rgba(22,163,74,0.22));
         }
 
         .auth-main {
@@ -385,9 +386,9 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         <div className="auth-grain" aria-hidden="true" />
 
         <nav className="auth-nav">
-          <a href="https://ai.chairmans.uk" className="auth-wordmark">
+          <a href="https://chameleoneye.ai" className="auth-wordmark">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo-icon.png" alt="Chairman AI" className="auth-wordmark-icon" />
+            <img src="/logo-icon.png" alt="ChameleonEye AI" className="auth-wordmark-icon" />
           </a>
         </nav>
 
@@ -396,7 +397,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         </main>
 
         <footer className="auth-footer">
-          <span>© 2025 Chairman AI</span>
+          <span>© 2025 ChameleonEye AI</span>
           <span>Private &amp; confidential</span>
         </footer>
       </div>
