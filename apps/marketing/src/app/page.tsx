@@ -211,8 +211,8 @@ function Hero() {
               width: 6,
               height: 6,
               borderRadius: "50%",
-              background: "#c9a84c",
-              boxShadow: "0 0 8px rgba(201,168,76,0.55)",
+              background: "rgba(22,163,74,0.9)",
+              boxShadow: "0 0 8px rgba(22,163,74,0.6)",
               flexShrink: 0,
             }}
           />
@@ -257,7 +257,7 @@ function Hero() {
             margin: "0 auto 52px",
           }}
         >
-          Intelligence that adapts. Board-level analysis, strategic reviews, and private intelligence.
+          Intelligence that <span style={{ color: "rgba(22,163,74,0.85)", fontStyle: "italic" }}>adapts</span>. Board-level analysis, strategic reviews, and private intelligence.
           Affordable plans. Cancel anytime.
         </p>
 
@@ -402,7 +402,8 @@ function IntelligenceLayers() {
                 width: 5,
                 height: 5,
                 borderRadius: "50%",
-                background: "#c9a84c",
+                background: "rgba(22,163,74,0.85)",
+                boxShadow: "0 0 6px rgba(22,163,74,0.5)",
               }}
             />
             <span
@@ -410,7 +411,7 @@ function IntelligenceLayers() {
                 fontSize: 11,
                 letterSpacing: "0.14em",
                 textTransform: "uppercase",
-                color: "rgba(201,168,76,0.65)",
+                color: "rgba(22,163,74,0.7)",
                 fontWeight: 500,
               }}
             >
@@ -453,16 +454,28 @@ function IntelligenceLayers() {
             gap: 12,
           }}
         >
-          {layers.map((layer, i) => (
+          {layers.map((layer, i) => {
+            const isGreen = i % 2 === 0;
+            const accent = isGreen ? "22,163,74" : "201,168,76";
+            return (
             <div
               key={i}
               style={{
-                background: "rgba(255,255,255,0.025)",
-                border: "1px solid rgba(255,255,255,0.06)",
+                background: `rgba(${accent},0.02)`,
+                border: `1px solid rgba(${accent},0.08)`,
                 borderRadius: 16,
                 padding: "28px",
+                position: "relative",
+                overflow: "hidden",
               }}
             >
+              {/* Top accent line */}
+              <div style={{
+                position: "absolute",
+                top: 0, left: "20%", right: "20%",
+                height: 1,
+                background: `linear-gradient(90deg, transparent, rgba(${accent},0.25), transparent)`,
+              }} />
               <div
                 style={{
                   display: "flex",
@@ -488,9 +501,9 @@ function IntelligenceLayers() {
                       fontSize: 9,
                       letterSpacing: "0.06em",
                       textTransform: "uppercase",
-                      color: "rgba(201,168,76,0.5)",
-                      background: "rgba(201,168,76,0.06)",
-                      border: "1px solid rgba(201,168,76,0.12)",
+                      color: `rgba(${accent},0.6)`,
+                      background: `rgba(${accent},0.06)`,
+                      border: `1px solid rgba(${accent},0.15)`,
                       padding: "3px 8px",
                       borderRadius: 9999,
                       flexShrink: 0,
@@ -504,7 +517,7 @@ function IntelligenceLayers() {
               <p
                 style={{
                   fontSize: 11,
-                  color: "rgba(201,168,76,0.5)",
+                  color: `rgba(${accent},0.55)`,
                   marginBottom: 10,
                   textTransform: "uppercase",
                   letterSpacing: "0.06em",
@@ -523,7 +536,8 @@ function IntelligenceLayers() {
                 {layer.description}
               </p>
             </div>
-          ))}
+          );
+          })}
         </div>
       </div>
     </section>
@@ -658,10 +672,10 @@ function Features() {
             />
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
               {[
-                { label: "Business Intelligence", pct: 45 },
-                { label: "Extended Review", pct: 30 },
-                { label: "Strategic Review", pct: 20 },
-              ].map(({ label, pct }) => (
+                { label: "Business Intelligence", pct: 45, color: "22,163,74" },
+                { label: "Extended Review", pct: 30, color: "201,168,76" },
+                { label: "Strategic Review", pct: 20, color: "22,163,74" },
+              ].map(({ label, pct, color }) => (
                 <div key={label}>
                   <div
                     style={{
@@ -673,7 +687,7 @@ function Features() {
                     }}
                   >
                     <span>{label}</span>
-                    <span>{pct}%</span>
+                    <span style={{ color: `rgba(${color},0.6)` }}>{pct}%</span>
                   </div>
                   <div
                     style={{
@@ -688,7 +702,7 @@ function Features() {
                         height: "100%",
                         width: `${pct}%`,
                         background:
-                          "linear-gradient(90deg, rgba(201,168,76,0.65) 0%, rgba(201,168,76,0.35) 100%)",
+                          `linear-gradient(90deg, rgba(${color},0.7) 0%, rgba(${color},0.35) 100%)`,
                         borderRadius: 9999,
                       }}
                     />
@@ -1068,8 +1082,8 @@ function ForPlatformsSection() {
         {/* Header */}
         <div style={{ marginBottom: 72 }}>
           <div style={{ display: "inline-flex", alignItems: "center", gap: 6, marginBottom: 20 }}>
-            <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#c9a84c" }} />
-            <span style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase" as const, color: "rgba(201,168,76,0.65)", fontWeight: 500 }}>
+            <span style={{ width: 5, height: 5, borderRadius: "50%", background: "rgba(22,163,74,0.85)", boxShadow: "0 0 6px rgba(22,163,74,0.5)" }} />
+            <span style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase" as const, color: "rgba(22,163,74,0.7)", fontWeight: 500 }}>
               ChameleonEye API
             </span>
           </div>
